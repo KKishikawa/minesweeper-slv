@@ -15,6 +15,9 @@ const MAX_PITCH_DIFFERENCE_RATIO = 0.05;
 const MIN_INTERSECTION_SUPPORT_RATIO = 0.9;
 const MIN_SCORE_SEPARATION_RATIO = 0.05;
 const MIN_COARSE_CANDIDATE_SCORE_RATIO = 0.65;
+const MAX_AXIS_CANDIDATE_SEQUENCE_COUNT = 200_000;
+const MAX_RETAINED_AXIS_CANDIDATES = 20_000;
+const GRID_CANDIDATE_REFINEMENT_BUDGET = 20_000;
 const COARSE_SCORE_BLEND_RATIO = 0.3;
 const MIN_ABOVE_MEDIAN_LOCAL_ENERGY = 1.3;
 const GRADIENT_HISTOGRAM_SCALE = 4;
@@ -50,6 +53,11 @@ interface AxisCandidate {
   readonly origin: number;
   readonly pitch: number;
   readonly score: number;
+}
+
+export interface GridCandidatePitchBucket {
+  readonly pitch: number;
+  readonly candidateCount: number;
 }
 
 interface GridCandidate {
@@ -167,32 +175,92 @@ function scoreBoundarySequence(profile: Float64Array, origin: number, pitch: num
   return energy / totalBoundaryWeight(boundaryCount) / baseline;
 }
 
-function selectAxisCandidates(profile: Float64Array, boundaryCount: number, maxPitch: number): readonly AxisCandidate[] {
+function axisCandidateSequenceCount(profileLength: number, boundaryCount: number, maxPitch: number): number {
+  let count = 0;
+  for (let pitch = MIN_CELL_PITCH; pitch <= maxPitch; pitch += 1) {
+    count += Math.max(0, profileLength - (boundaryCount - 1) * pitch);
+    if (count > MAX_AXIS_CANDIDATE_SEQUENCE_COUNT) return count;
+  }
+  return count;
+}
+
+function selectAxisCandidates(profile: Float64Array, boundaryCount: number, maxPitch: number): readonly AxisCandidate[] | null {
   const baseline = mean(profile);
   if (baseline <= 0) return [];
+  if (axisCandidateSequenceCount(profile.length, boundaryCount, maxPitch) > MAX_AXIS_CANDIDATE_SEQUENCE_COUNT) {
+    return null;
+  }
 
-  const candidates: AxisCandidate[] = [];
+  let bestScore = Number.NEGATIVE_INFINITY;
   for (let pitch = MIN_CELL_PITCH; pitch <= maxPitch; pitch += 1) {
     const lastOrigin = profile.length - 1 - (boundaryCount - 1) * pitch;
     for (let origin = 0; origin <= lastOrigin; origin += 1) {
-      candidates.push({ origin, pitch, score: scoreBoundarySequence(profile, origin, pitch, boundaryCount, baseline) });
+      bestScore = Math.max(bestScore, scoreBoundarySequence(profile, origin, pitch, boundaryCount, baseline));
     }
   }
+  if (!Number.isFinite(bestScore)) return [];
 
+  const candidates: AxisCandidate[] = [];
+  const minimumScore = bestScore * MIN_COARSE_CANDIDATE_SCORE_RATIO;
+  for (let pitch = MIN_CELL_PITCH; pitch <= maxPitch; pitch += 1) {
+    const lastOrigin = profile.length - 1 - (boundaryCount - 1) * pitch;
+    for (let origin = 0; origin <= lastOrigin; origin += 1) {
+      const score = scoreBoundarySequence(profile, origin, pitch, boundaryCount, baseline);
+      if (score < minimumScore) continue;
+      if (candidates.length >= MAX_RETAINED_AXIS_CANDIDATES) return null;
+      candidates.push({ origin, pitch, score });
+    }
+  }
   candidates.sort((a, b) => b.score - a.score);
-  const bestScore = candidates[0]?.score;
-  return bestScore === undefined
-    ? []
-    : candidates.filter((candidate) => candidate.score >= bestScore * MIN_COARSE_CANDIDATE_SCORE_RATIO);
+  return candidates;
 }
 
-function selectGridCandidates(vertical: readonly AxisCandidate[], horizontal: readonly AxisCandidate[]): readonly GridCandidate[] {
+function pitchesAreCompatible(first: number, second: number): boolean {
+  return Math.abs(first - second) / Math.max(first, second) <= MAX_PITCH_DIFFERENCE_RATIO;
+}
+
+export function countCompatibleGridCandidatePairs(
+  vertical: readonly GridCandidatePitchBucket[],
+  horizontal: readonly GridCandidatePitchBucket[],
+  budget = GRID_CANDIDATE_REFINEMENT_BUDGET,
+): number | null {
+  let count = 0;
+  for (const verticalBucket of vertical) {
+    for (const horizontalBucket of horizontal) {
+      if (!pitchesAreCompatible(verticalBucket.pitch, horizontalBucket.pitch)) continue;
+      count += verticalBucket.candidateCount * horizontalBucket.candidateCount;
+      if (count > budget) return null;
+    }
+  }
+  return count;
+}
+
+function bucketAxisCandidates(candidates: readonly AxisCandidate[]): readonly GridCandidatePitchBucket[] {
+  const byPitch = new Map<number, number>();
+  for (const candidate of candidates) {
+    byPitch.set(candidate.pitch, (byPitch.get(candidate.pitch) ?? 0) + 1);
+  }
+  return [...byPitch.entries()].map(([pitch, candidateCount]) => ({
+    pitch,
+    candidateCount,
+  }));
+}
+
+function selectGridCandidates(vertical: readonly AxisCandidate[], horizontal: readonly AxisCandidate[]): readonly GridCandidate[] | null {
+  const verticalBuckets = bucketAxisCandidates(vertical);
+  const horizontalBuckets = bucketAxisCandidates(horizontal);
+  if (countCompatibleGridCandidatePairs(verticalBuckets, horizontalBuckets) === null) return null;
+
+  const compatibleHorizontalByPitch = new Map<number, readonly AxisCandidate[]>();
+  for (const verticalBucket of verticalBuckets) {
+    compatibleHorizontalByPitch.set(
+      verticalBucket.pitch,
+      horizontal.filter((candidate) => pitchesAreCompatible(verticalBucket.pitch, candidate.pitch)),
+    );
+  }
   const candidates: GridCandidate[] = [];
   for (const verticalCandidate of vertical) {
-    for (const horizontalCandidate of horizontal) {
-      const pitchDifference = Math.abs(verticalCandidate.pitch - horizontalCandidate.pitch);
-      const largestPitch = Math.max(verticalCandidate.pitch, horizontalCandidate.pitch);
-      if (pitchDifference / largestPitch > MAX_PITCH_DIFFERENCE_RATIO) continue;
+    for (const horizontalCandidate of compatibleHorizontalByPitch.get(verticalCandidate.pitch) ?? []) {
       candidates.push({
         vertical: verticalCandidate,
         horizontal: horizontalCandidate,
@@ -707,7 +775,10 @@ export function detectGrid(image: PixelImage, dimensions: GridDimensions): GridG
   const profiles = buildEdgeProfiles(image);
   const verticalCandidates = selectAxisCandidates(profiles.vertical, dimensions.columns + 1, maxPitch);
   const horizontalCandidates = selectAxisCandidates(profiles.horizontal, dimensions.rows + 1, maxPitch);
-  const allRefinedCandidates = refineGridCandidates(selectGridCandidates(verticalCandidates, horizontalCandidates), profiles, image, dimensions);
+  if (verticalCandidates === null || horizontalCandidates === null) return null;
+  const gridCandidates = selectGridCandidates(verticalCandidates, horizontalCandidates);
+  if (gridCandidates === null) return null;
+  const allRefinedCandidates = refineGridCandidates(gridCandidates, profiles, image, dimensions);
   const phaseCandidates = allRefinedCandidates
     .filter((candidate) => hasConsistentInteriorBoundaryPhase(
       candidate.verticalBoundaries,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { cellRect, detectGrid } from "../../src/recognition/grid.js";
+import { cellRect, countCompatibleGridCandidatePairs, detectGrid } from "../../src/recognition/grid.js";
 import type { GridGeometry, PixelImage, Rect } from "../../src/recognition/types.js";
 import { deriveImages } from "./derive.js";
 import { loadFixtureCases } from "./fixture-manifest.js";
@@ -142,7 +142,39 @@ function syntheticCandidateOverflowImage(): PixelImage {
   return { width, height, data };
 }
 
+function syntheticDeterministicNoiseImage(): PixelImage {
+  const width = 400;
+  const height = 300;
+  const data = new Uint8ClampedArray(width * height * 4);
+  let state = 0x5eed1234;
+  for (let offset = 0; offset < data.length; offset += 4) {
+    state ^= state << 13;
+    state ^= state >>> 17;
+    state ^= state << 5;
+    const value = state & 0xff;
+    data[offset] = value;
+    data[offset + 1] = value;
+    data[offset + 2] = value;
+    data[offset + 3] = 255;
+  }
+  return { width, height, data };
+}
+
 describe("detectGrid", () => {
+  it("counts only pitch-compatible pairs and rejects over-budget refinement work", () => {
+    const verticalBuckets = [
+      { pitch: 10, candidateCount: 150 },
+      { pitch: 30, candidateCount: 1_000 },
+    ];
+    const horizontalBuckets = [
+      { pitch: 10, candidateCount: 150 },
+      { pitch: 20, candidateCount: 1_000 },
+    ];
+
+    expect(countCompatibleGridCandidatePairs(verticalBuckets, horizontalBuckets, 30_000)).toBe(22_500);
+    expect(countCompatibleGridCandidatePairs(verticalBuckets, horizontalBuckets, 20_000)).toBeNull();
+  });
+
   it("finds every source board without file-specific coordinates", async () => {
     for (const fixture of await loadFixtureCases()) {
       const image = await decodeImage(fixture.imagePath);
@@ -372,6 +404,10 @@ describe("detectGrid", () => {
 
     expect(detectGrid(image, { columns: 30, rows: 16 })).toBeNull();
   });
+
+  it("rejects deterministic non-board noise within the candidate work budget", () => {
+    expect(detectGrid(syntheticDeterministicNoiseImage(), { columns: 30, rows: 16 })).toBeNull();
+  }, 1_000);
 
   it("shares borders when a geometry has fractional pitches", () => {
     const grid: GridGeometry = {

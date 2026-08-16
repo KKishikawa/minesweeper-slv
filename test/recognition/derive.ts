@@ -16,7 +16,7 @@ async function decodeBuffer(data: Buffer): Promise<PixelImage> {
   return { width: info.width, height: info.height, data: new Uint8ClampedArray(pixels) };
 }
 
-async function resizeImage(sourcePath: string, scale: number): Promise<PixelImage> {
+export async function resizeLanczos3Image(sourcePath: string, scale: number): Promise<PixelImage> {
   const metadata = await sharp(sourcePath).metadata();
   if (metadata.width === undefined || metadata.height === undefined) {
     throw new Error(`Image has no dimensions: ${sourcePath}`);
@@ -24,7 +24,11 @@ async function resizeImage(sourcePath: string, scale: number): Promise<PixelImag
 
   const width = Math.round(metadata.width * scale);
   const height = Math.round(metadata.height * scale);
-  const data = await sharp(sourcePath).resize(width, height).ensureAlpha().raw().toBuffer();
+  const data = await sharp(sourcePath)
+    .resize(width, height, { kernel: sharp.kernel.lanczos3 })
+    .ensureAlpha()
+    .raw()
+    .toBuffer();
   return { width, height, data: new Uint8ClampedArray(data) };
 }
 
@@ -34,8 +38,8 @@ export async function deriveImages(sourcePath: string): Promise<readonly Derived
 
   return [
     { name: "source", image: source, scale: 1 },
-    { name: "scale-075", image: await resizeImage(sourcePath, 0.75), scale: 0.75 },
-    { name: "scale-125", image: await resizeImage(sourcePath, 1.25), scale: 1.25 },
+    { name: "scale-075", image: await resizeLanczos3Image(sourcePath, 0.75), scale: 0.75 },
+    { name: "scale-125", image: await resizeLanczos3Image(sourcePath, 1.25), scale: 1.25 },
     { name: "jpeg-q75", image: await decodeBuffer(jpeg), scale: 1 },
   ];
 }

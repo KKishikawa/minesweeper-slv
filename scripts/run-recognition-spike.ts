@@ -1,4 +1,4 @@
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -14,6 +14,7 @@ import { deriveImages } from "../test/recognition/derive.js";
 import { loadFixtureCases } from "../test/recognition/fixture-manifest.js";
 import { renderOverlay } from "../test/recognition/overlay.js";
 import { buildFixtureSamples } from "../test/recognition/samples.js";
+import { recreateArtifactDirectory } from "./artifact-directory.js";
 
 const repositoryRoot = path.resolve(fileURLToPath(new URL("../", import.meta.url)));
 const artifactParent = path.resolve(repositoryRoot, "test", "artifacts");
@@ -28,12 +29,6 @@ interface OptionalHintSummary {
 
 interface OptionalHintEvaluation {
   readonly correct: boolean;
-}
-
-function assertSafeArtifactDirectory(): void {
-  if (path.dirname(artifactDirectory) !== artifactParent || path.basename(artifactDirectory) !== "recognition") {
-    throw new Error(`Refusing to clean unsafe artifact directory: ${artifactDirectory}`);
-  }
 }
 
 function artifactPath(filename: string): string {
@@ -62,9 +57,7 @@ function summarizeOptionalHint(
   };
 }
 
-assertSafeArtifactDirectory();
-await rm(artifactDirectory, { recursive: true, force: true });
-await mkdir(artifactDirectory, { recursive: true });
+await recreateArtifactDirectory(repositoryRoot, ["test", "artifacts", "recognition"]);
 
 const fixtures = await loadFixtureCases();
 const prototypes = buildPrototypeSet(await buildFixtureSamples(fixtures));
