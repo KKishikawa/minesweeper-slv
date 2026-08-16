@@ -17,8 +17,13 @@ describe("optional image hints", () => {
     expect(evaluatedCases).toBe(16);
   }, 10_000);
 
-  it("keeps only exact left-counter readings as observed successes", async () => {
-    let correctCases = 0;
+  it("keeps each observed left-counter outcome fixed", async () => {
+    const expected = [
+      { value: 99, digits: [0, 9, 9] },
+      null,
+      { value: 80, digits: [0, 8, 0] },
+      { value: 2, digits: [0, 0, 2] },
+    ] as const;
     let evaluatedCases = 0;
     for (const fixture of await loadFixtureCases()) {
       const [source] = await deriveImages(fixture.imagePath);
@@ -27,11 +32,16 @@ describe("optional image hints", () => {
       if (!grid) throw new Error(`grid missing for ${fixture.id}`);
       const result = readRemainingMineCounter(source.image, grid);
       evaluatedCases += 1;
-      if (!result) continue;
-      expect(result.value, fixture.id).toBe(fixture.expectedRemainingMines);
-      expect(result.digits).toHaveLength(3);
-      correctCases += 1;
+      const expectedResult = expected[Number(fixture.id)];
+      if (!expectedResult) {
+        expect(result, fixture.id).toBeNull();
+        continue;
+      }
+      expect(result?.value, fixture.id).toBe(expectedResult.value);
+      expect(result?.digits, fixture.id).toEqual(expectedResult.digits);
+      expect(result?.confidence, fixture.id).toBeGreaterThan(0);
+      expect(result?.confidence, fixture.id).toBeLessThanOrEqual(1);
     }
-    expect({ correctCases, evaluatedCases }).toEqual({ correctCases: 3, evaluatedCases: 4 });
+    expect(evaluatedCases).toBe(4);
   });
 });
