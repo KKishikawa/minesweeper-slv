@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import { buildPrototypeSet } from "../src/recognition/prototypes.js";
+import { inferDimensions, readRemainingMineCounter } from "../src/recognition/infer.js";
 import {
   RECOGNITION_CONFIDENCE_THRESHOLD,
   evaluateConfidenceThresholds,
@@ -17,6 +18,17 @@ import { buildFixtureSamples } from "../test/recognition/samples.js";
 const repositoryRoot = path.resolve(fileURLToPath(new URL("../", import.meta.url)));
 const artifactParent = path.resolve(repositoryRoot, "test", "artifacts");
 const artifactDirectory = path.resolve(artifactParent, "recognition");
+
+interface OptionalHintSummary {
+  readonly status: "candidate" | "not-adopted";
+  readonly correctCases: number;
+  readonly evaluatedCases: number;
+  readonly evaluationScope: "all-derived-images" | "source-images";
+}
+
+interface OptionalHintEvaluation {
+  readonly correct: boolean;
+}
 
 function assertSafeArtifactDirectory(): void {
   if (path.dirname(artifactDirectory) !== artifactParent || path.basename(artifactDirectory) !== "recognition") {
@@ -36,6 +48,20 @@ async function writeJson(filename: string, value: unknown): Promise<void> {
   await writeFile(artifactPath(filename), `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
 
+function summarizeOptionalHint(
+  evaluations: readonly OptionalHintEvaluation[],
+  evaluationScope: OptionalHintSummary["evaluationScope"],
+): OptionalHintSummary {
+  const correctCases = evaluations.filter((evaluation) => evaluation.correct).length;
+  const evaluatedCases = evaluations.length;
+  return {
+    status: correctCases === evaluatedCases ? "candidate" : "not-adopted",
+    correctCases,
+    evaluatedCases,
+    evaluationScope,
+  };
+}
+
 assertSafeArtifactDirectory();
 await rm(artifactDirectory, { recursive: true, force: true });
 await mkdir(artifactDirectory, { recursive: true });
@@ -44,6 +70,8 @@ const fixtures = await loadFixtureCases();
 const prototypes = buildPrototypeSet(await buildFixtureSamples(fixtures));
 const caseSummaries = [];
 const calibrationCases = [];
+const dimensionEvaluations: OptionalHintEvaluation[] = [];
+const remainingMineEvaluations: OptionalHintEvaluation[] = [];
 
 for (const fixture of fixtures) {
   for (const derived of await deriveImages(fixture.imagePath)) {
@@ -57,6 +85,14 @@ for (const fixture of fixtures) {
     const correctness = result.cells.map((cell, index) => cell.label === fixture.expectedCells[index]);
     const highConfidenceErrors = correctness.filter((correct, index) => !correct && !uncertainty.has(index)).length;
     const correctCells = correctness.filter(Boolean).length;
+    const inferredDimensions = inferDimensions(derived.image);
+    const dimensionsCorrect = inferredDimensions?.columns === fixture.columns && inferredDimensions.rows === fixture.rows;
+    dimensionEvaluations.push({ correct: dimensionsCorrect });
+    const remainingMines = derived.name === "source" && result.geometry
+      ? readRemainingMineCounter(derived.image, result.geometry)
+      : null;
+    const remainingMinesCorrect = remainingMines?.value === fixture.expectedRemainingMines;
+    if (derived.name === "source") remainingMineEvaluations.push({ correct: remainingMinesCorrect });
 
     calibrationCases.push({
       kind: derived.name === "source" ? "source" as const : "derivative" as const,
@@ -74,6 +110,8 @@ for (const fixture of fixtures) {
       highConfidenceErrors,
       uncertainCells: result.uncertainCellIndices.length,
       elapsedMs: result.elapsedMs,
+      inferredDimensions,
+      remainingMines,
     });
 
     await writeJson(`${caseName}.json`, {
@@ -137,13 +175,18 @@ const mandatory = {
     derivativeUncertainCellsAtMostFour: derivativeCases.every((result) => result.uncertainCells <= 4),
   },
 };
+const optionalHints = {
+  dimensions: summarizeOptionalHint(dimensionEvaluations, "all-derived-images"),
+  remainingMines: summarizeOptionalHint(remainingMineEvaluations, "source-images"),
+};
 
 await writeJson("summary.json", {
   confidenceThresholdCandidates: thresholdEvaluations,
   cases: caseSummaries,
   totals,
   mandatory,
+  optionalHints,
 });
 
-console.log(JSON.stringify({ totals, mandatory }, null, 2));
+console.log(JSON.stringify({ totals, mandatory, optionalHints }, null, 2));
 if (!mandatory.passed) process.exitCode = 1;

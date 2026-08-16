@@ -97,7 +97,7 @@ function gradientHistogramMedian(histogram: Uint32Array, sampleCount: number): n
   return 0.5 / GRADIENT_HISTOGRAM_SCALE;
 }
 
-function buildEdgeProfiles(image: PixelImage): EdgeProfiles {
+export function buildEdgeProfiles(image: PixelImage): EdgeProfiles {
   const smoothed = new Float64Array(image.width * image.height);
 
   for (let y = 0; y < image.height; y += 1) {
