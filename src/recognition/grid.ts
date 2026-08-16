@@ -5,20 +5,20 @@ const MIN_CELL_PITCH = 8;
 const ROW_SMOOTHING_SPAN = 2;
 const BOUNDARY_REFINEMENT_RADIUS = 2;
 const EDGE_PHASE_COMPATIBILITY_RADIUS = 1;
+const MIN_CANONICAL_LEADING_EDGE_RATIO = 0.3;
+const MAX_CANONICAL_EDGE_SHOULDER_RATIO = 0.9;
+const MIN_DOMINANT_CANONICAL_EDGE_RATIO = 3;
+const VERTICAL_CANONICAL_LEADING_RADIUS = EDGE_PHASE_COMPATIBILITY_RADIUS;
+const HORIZONTAL_CANONICAL_LEADING_RADIUS = BOUNDARY_REFINEMENT_RADIUS;
 const LOCAL_ENERGY_RADIUS = 1;
 const MAX_PITCH_DIFFERENCE_RATIO = 0.05;
 const MIN_INTERSECTION_SUPPORT_RATIO = 0.9;
-const FULL_INTERSECTION_SUPPORT_RATIO = 1;
-const MIN_FLAT_GRID_INTERSECTION_SUPPORT_RATIO = 0.98;
-const MIN_LEADING_INTERSECTION_SUPPORT_RATIO = 0.75;
 const MIN_SCORE_SEPARATION_RATIO = 0.05;
+const MIN_COARSE_CANDIDATE_SCORE_RATIO = 0.65;
+const COARSE_SCORE_BLEND_RATIO = 0.3;
 const MIN_ABOVE_MEDIAN_LOCAL_ENERGY = 1.3;
 const GRADIENT_HISTOGRAM_SCALE = 4;
 const GRADIENT_HISTOGRAM_SIZE = 256 * GRADIENT_HISTOGRAM_SCALE;
-const CANDIDATE_ORIGIN_EQUIVALENCE_DISTANCE = BOUNDARY_REFINEMENT_RADIUS;
-const EQUIVALENT_EDGE_PHASE_DISTANCE = BOUNDARY_REFINEMENT_RADIUS * 2;
-const MAX_EQUIVALENT_EDGE_PHASE_RATIO = 0.15;
-const EQUIVALENT_EDGE_SCORE_RATIO = 1 - MIN_SCORE_SEPARATION_RATIO;
 const MIN_OUTER_BOUNDARY_DISTINCTIVENESS_RATIO = 1.1;
 const MIN_OUTER_BOUNDARY_BALANCE_RATIO = 0.45;
 const MIN_OUTER_BOUNDARY_ENERGY_RATIO = 1.3;
@@ -26,10 +26,10 @@ const MIN_RELATIVE_OUTER_BOUNDARY_ENERGY_RATIO = 0.97;
 const MIN_RELATIVE_OUTER_BOUNDARY_BALANCE_RATIO = 0.92;
 const MIN_RELATIVE_INTERSECTION_SUPPORT_RATIO = 0.97;
 const MIN_COMPETING_EXTENT_OVERLAP_RATIO = 0.9;
-const OUTER_EDGE_X_START_OFFSET_RATIO = 0.05;
-const OUTER_EDGE_Y_START_OFFSET_RATIO = 0.1;
-const OUTER_BOUNDARY_WEIGHT = 3;
-const AXIS_CANDIDATE_LIMIT = 64;
+const MIN_RELATIVE_RANGE_SCORE_FOR_LEADING_COMPARISON = 0.95;
+const MIN_LEADING_INTERSECTION_SUPPORT_ADVANTAGE = 0.25;
+const COARSE_OUTER_BOUNDARY_WEIGHT = 3;
+const RANGE_OUTER_BOUNDARY_WEIGHT = 3;
 
 interface GridDimensions {
   readonly columns: number;
@@ -62,13 +62,16 @@ interface RefinedGridCandidate {
   readonly candidate: GridCandidate;
   readonly verticalBoundaries: readonly number[];
   readonly horizontalBoundaries: readonly number[];
+  readonly duplicateHorizontalBoundaries: readonly number[];
+  readonly canonicalVerticalBoundaries: readonly number[];
+  readonly canonicalHorizontalBoundaries: readonly number[];
   readonly intersectionSupportRatio: number;
   readonly leadingIntersectionSupportRatio: number;
   readonly outerBoundaryDistinctiveness: number;
   readonly outerBoundaryBalance: number;
   readonly minimumOuterBoundaryEnergyRatio: number;
+  readonly localRangeScore: number;
   readonly rangeScore: number;
-  readonly score: number;
 }
 
 function isPositiveInteger(value: number): boolean {
@@ -148,12 +151,12 @@ function mean(profile: Float64Array): number {
   return total / profile.length;
 }
 
-function boundaryWeight(index: number, boundaryCount: number): number {
-  return index === 0 || index === boundaryCount - 1 ? OUTER_BOUNDARY_WEIGHT : 1;
+function boundaryWeight(index: number, boundaryCount: number, outerWeight = COARSE_OUTER_BOUNDARY_WEIGHT): number {
+  return index === 0 || index === boundaryCount - 1 ? outerWeight : 1;
 }
 
-function totalBoundaryWeight(boundaryCount: number): number {
-  return boundaryCount + 2 * (OUTER_BOUNDARY_WEIGHT - 1);
+function totalBoundaryWeight(boundaryCount: number, outerWeight = COARSE_OUTER_BOUNDARY_WEIGHT): number {
+  return boundaryCount + 2 * (outerWeight - 1);
 }
 
 function scoreBoundarySequence(profile: Float64Array, origin: number, pitch: number, boundaryCount: number, baseline: number): number {
@@ -177,16 +180,10 @@ function selectAxisCandidates(profile: Float64Array, boundaryCount: number, maxP
   }
 
   candidates.sort((a, b) => b.score - a.score);
-  const distinct: AxisCandidate[] = [];
-  for (const candidate of candidates) {
-    const isEquivalent = distinct.some((selected) => (
-      selected.pitch === candidate.pitch
-      && Math.abs(selected.origin - candidate.origin) <= CANDIDATE_ORIGIN_EQUIVALENCE_DISTANCE
-    ));
-    if (!isEquivalent) distinct.push(candidate);
-    if (distinct.length === AXIS_CANDIDATE_LIMIT) break;
-  }
-  return distinct;
+  const bestScore = candidates[0]?.score;
+  return bestScore === undefined
+    ? []
+    : candidates.filter((candidate) => candidate.score >= bestScore * MIN_COARSE_CANDIDATE_SCORE_RATIO);
 }
 
 function selectGridCandidates(vertical: readonly AxisCandidate[], horizontal: readonly AxisCandidate[]): readonly GridCandidate[] {
@@ -206,15 +203,20 @@ function selectGridCandidates(vertical: readonly AxisCandidate[], horizontal: re
   return candidates.sort((a, b) => b.score - a.score);
 }
 
-function refineBoundaries(profile: Float64Array, origin: number, pitch: number, boundaryCount: number): readonly number[] {
+function refineBoundaries(
+  profile: Float64Array,
+  origin: number,
+  pitch: number,
+  boundaryCount: number,
+  preferTrailingPlateau: boolean,
+): readonly number[] {
   const boundaries: number[] = [];
   for (let boundary = 0; boundary < boundaryCount; boundary += 1) {
     const estimate = origin + boundary * pitch;
-    const start = Math.max(0, estimate - BOUNDARY_REFINEMENT_RADIUS);
-    const end = Math.min(profile.length - 1, estimate + BOUNDARY_REFINEMENT_RADIUS);
+    const positions = refinementPositions(profile, estimate);
     let best = estimate;
-    for (let position = start; position <= end; position += 1) {
-      if (profile[position]! > profile[best]!) best = position;
+    for (const position of positions) {
+      if (profile[position]! > profile[best]! || (preferTrailingPlateau && profile[position] === profile[best]!)) best = position;
     }
     boundaries.push(best);
   }
@@ -227,12 +229,26 @@ function medianNumber(values: number[]): number {
   return values.length % 2 === 0 ? (values[middle - 1]! + values[middle]!) / 2 : values[middle]!;
 }
 
-function refinementTrend(boundaries: readonly number[], origin: number, pitch: number): readonly [number, number] {
+function refinementTrend(
+  boundaries: readonly number[],
+  origin: number,
+  pitch: number,
+  preferLeadingPhase: boolean,
+): readonly [number, number] {
   const points = boundaries.slice(1, -1).map((boundary, index) => ({
     index: index + 1,
-    offset: boundary - (origin + (index + 1) * pitch),
+    offset: boundary - origin - (index + 1) * pitch,
   }));
   if (points.length === 0) return [0, 0];
+
+  const clampOffset = (offset: number): number => Math.max(
+    -BOUNDARY_REFINEMENT_RADIUS,
+    Math.min(BOUNDARY_REFINEMENT_RADIUS, Math.round(offset)),
+  );
+  if (preferLeadingPhase) {
+    const leadingOffset = clampOffset(Math.min(...points.map((point) => point.offset)));
+    return [leadingOffset, leadingOffset];
+  }
 
   const slopes: number[] = [];
   for (let first = 0; first < points.length; first += 1) {
@@ -242,12 +258,8 @@ function refinementTrend(boundaries: readonly number[], origin: number, pitch: n
   }
   const slope = slopes.length > 0 ? medianNumber(slopes) : 0;
   const intercept = medianNumber(points.map((point) => point.offset - slope * point.index));
-  const lastIndex = boundaries.length - 1;
-  const clampOffset = (offset: number): number => Math.max(
-    -BOUNDARY_REFINEMENT_RADIUS,
-    Math.min(BOUNDARY_REFINEMENT_RADIUS, Math.round(offset)),
-  );
-  return [clampOffset(intercept), clampOffset(intercept + slope * lastIndex)];
+  const finalIndex = boundaries.length - 1;
+  return [clampOffset(intercept), clampOffset(intercept + slope * finalIndex)];
 }
 
 function hasConsistentInteriorBoundaryPhase(boundaries: readonly number[], origin: number, pitch: number): boolean {
@@ -256,51 +268,96 @@ function hasConsistentInteriorBoundaryPhase(boundaries: readonly number[], origi
   return offsets.every((offset) => Math.abs(offset - medianOffset) <= EDGE_PHASE_COMPATIBILITY_RADIUS);
 }
 
-function phaseCompatiblePositions(profile: Float64Array, estimate: number, predictedOffset: number): readonly number[] {
-  const start = Math.max(
-    0,
-    estimate - BOUNDARY_REFINEMENT_RADIUS,
-    estimate + predictedOffset - EDGE_PHASE_COMPATIBILITY_RADIUS,
-  );
-  const end = Math.min(
-    profile.length - 1,
-    estimate + BOUNDARY_REFINEMENT_RADIUS,
-    estimate + predictedOffset + EDGE_PHASE_COMPATIBILITY_RADIUS,
-  );
+function refinementPositions(profile: Float64Array, estimate: number): readonly number[] {
+  const start = Math.max(0, estimate - BOUNDARY_REFINEMENT_RADIUS);
+  const end = Math.min(profile.length - 1, estimate + BOUNDARY_REFINEMENT_RADIUS);
   return Array.from({ length: end - start + 1 }, (_, index) => start + index);
 }
 
-function refinePhaseCompatibleOuterBoundaries(
+function selectCanonicalEdgePosition(
+  profile: Float64Array,
+  positions: readonly number[],
+  preferred: number,
+  leadingRadius = 0,
+  preferTrailingPlateau = false,
+): number {
+  const selected = positions.includes(preferred)
+    ? preferred
+    : positions.reduce((closest, position) => (
+      Math.abs(position - preferred) < Math.abs(closest - preferred) ? position : closest
+    ));
+  const selectedEnergy = profile[selected]!;
+  if (selectedEnergy <= 0) return selected;
+
+  const maximum = Math.max(...positions.map((position) => profile[position]!));
+  const leading = selected - leadingRadius;
+  if (leadingRadius > 0 && positions.includes(leading) && profile[leading]! >= maximum * MIN_CANONICAL_LEADING_EDGE_RATIO) {
+    return leading;
+  }
+
+  const previous = selected - 1;
+  const next = selected + 1;
+  const previousEnergy = positions.includes(previous) ? profile[previous]! : 0;
+  const nextEnergy = positions.includes(next) ? profile[next]! : 0;
+  if (nextEnergy > Math.max(selectedEnergy, previousEnergy) * MIN_DOMINANT_CANONICAL_EDGE_RATIO) return next;
+  if (previousEnergy > Math.max(selectedEnergy, nextEnergy) * MIN_DOMINANT_CANONICAL_EDGE_RATIO) return previous;
+  if (preferTrailingPlateau && nextEnergy >= selectedEnergy * MAX_CANONICAL_EDGE_SHOULDER_RATIO) return next;
+
+  return selected;
+}
+
+function refineCanonicalBoundaries(
   profile: Float64Array,
   origin: number,
   pitch: number,
-  boundaries: readonly number[],
+  boundaryCount: number,
+  leadingRadius: number,
+  preferTrailingPlateau: boolean,
+): readonly number[] {
+  return Array.from({ length: boundaryCount }, (_, boundary) => {
+    const estimate = origin + boundary * pitch;
+    return selectCanonicalEdgePosition(
+      profile,
+      refinementPositions(profile, estimate),
+      estimate,
+      leadingRadius,
+      preferTrailingPlateau,
+    );
+  });
+}
+
+function canonicalEndpointPair(
+  profile: Float64Array,
+  origin: number,
+  pitch: number,
+  canonicalBoundaries: readonly number[],
+  leadingRadius: number,
+  preferLeadingPhase: boolean,
+  preferTrailingPlateau: boolean,
 ): readonly [number, number] {
-  const finalEstimate = origin + pitch * (boundaries.length - 1);
-  const [predictedFirstOffset, predictedFinalOffset] = refinementTrend(boundaries, origin, pitch);
-  const firstPositions = phaseCompatiblePositions(profile, origin, predictedFirstOffset);
-  const finalPositions = phaseCompatiblePositions(profile, finalEstimate, predictedFinalOffset);
-  let bestFirst = origin + predictedFirstOffset;
-  let bestFinal = finalEstimate + predictedFinalOffset;
-  let bestEnergy = Number.NEGATIVE_INFINITY;
-  let bestPhaseDistance = Number.POSITIVE_INFINITY;
-  for (const first of firstPositions) {
-    for (const final of finalPositions) {
-      const firstOffset = first - origin;
-      const finalOffset = final - finalEstimate;
-      const predictedSpanAdjustment = predictedFinalOffset - predictedFirstOffset;
-      if (Math.abs(finalOffset - firstOffset - predictedSpanAdjustment) > EDGE_PHASE_COMPATIBILITY_RADIUS) continue;
-      const energy = profile[first]! + profile[final]!;
-      const phaseDistance = Math.abs(firstOffset - predictedFirstOffset) + Math.abs(finalOffset - predictedFinalOffset);
-      if (energy > bestEnergy || (energy === bestEnergy && phaseDistance < bestPhaseDistance)) {
-        bestFirst = first;
-        bestFinal = final;
-        bestEnergy = energy;
-        bestPhaseDistance = phaseDistance;
-      }
-    }
-  }
-  return [bestFirst, bestFinal];
+  const finalEstimate = origin + pitch * (canonicalBoundaries.length - 1);
+  const [firstTrendOffset, finalTrendOffset] = refinementTrend(
+    canonicalBoundaries,
+    origin,
+    pitch,
+    preferLeadingPhase,
+  );
+  const predictedFirst = origin + firstTrendOffset;
+  const firstPositions = refinementPositions(profile, origin).filter((position) => (
+    Math.abs(position - predictedFirst) <= EDGE_PHASE_COMPATIBILITY_RADIUS
+  ));
+  const first = selectCanonicalEdgePosition(
+    profile,
+    firstPositions,
+    predictedFirst,
+    leadingRadius,
+    preferTrailingPlateau,
+  );
+  const predictedFinal = finalEstimate + finalTrendOffset + (first - predictedFirst);
+  const finalPositions = refinementPositions(profile, finalEstimate).filter((position) => (
+    Math.abs(position - predictedFinal) <= EDGE_PHASE_COMPATIBILITY_RADIUS
+  ));
+  return [first, selectCanonicalEdgePosition(profile, finalPositions, predictedFinal, 0, preferTrailingPlateau)];
 }
 
 function localGradientMaximum(
@@ -354,30 +411,58 @@ function horizontalLineEnergy(prefix: Float64Array, width: number, height: numbe
 function gridRangeScore(
   profiles: EdgeProfiles,
   image: PixelImage,
+  candidate: GridCandidate,
   verticalBoundaries: readonly number[],
   horizontalBoundaries: readonly number[],
-): number {
+): { readonly local: number; readonly normalized: number } {
   const left = verticalBoundaries[0]!;
   const right = verticalBoundaries[verticalBoundaries.length - 1]!;
   const top = horizontalBoundaries[0]!;
   const bottom = horizontalBoundaries[horizontalBoundaries.length - 1]!;
   const verticalBaseline = mean(profiles.vertical) / Math.max(1, image.height - 1);
   const horizontalBaseline = mean(profiles.horizontal) / Math.max(1, image.width - 1);
-  if (verticalBaseline <= 0 || horizontalBaseline <= 0) return 0;
+  if (verticalBaseline <= 0 || horizontalBaseline <= 0) return { local: 0, normalized: 0 };
 
   let verticalEnergy = 0;
   for (let index = 0; index < verticalBoundaries.length; index += 1) {
-    verticalEnergy += verticalLineEnergy(profiles.verticalLinePrefix, image.width, verticalBoundaries[index]!, top, bottom)
-      * boundaryWeight(index, verticalBoundaries.length);
+    const boundaryEnergy = verticalLineEnergy(
+      profiles.verticalLinePrefix,
+      image.width,
+      verticalBoundaries[index]!,
+      top,
+      bottom,
+    );
+    verticalEnergy += boundaryEnergy
+      * boundaryWeight(index, verticalBoundaries.length, RANGE_OUTER_BOUNDARY_WEIGHT);
   }
   let horizontalEnergy = 0;
   for (let index = 0; index < horizontalBoundaries.length; index += 1) {
-    horizontalEnergy += horizontalLineEnergy(profiles.horizontalLinePrefix, image.width, image.height, horizontalBoundaries[index]!, left, right)
-      * boundaryWeight(index, horizontalBoundaries.length);
+    const boundaryEnergy = horizontalLineEnergy(
+      profiles.horizontalLinePrefix,
+      image.width,
+      image.height,
+      horizontalBoundaries[index]!,
+      left,
+      right,
+    );
+    horizontalEnergy += boundaryEnergy
+      * boundaryWeight(index, horizontalBoundaries.length, RANGE_OUTER_BOUNDARY_WEIGHT);
   }
-  const normalizedVertical = verticalEnergy / totalBoundaryWeight(verticalBoundaries.length) / verticalBaseline;
-  const normalizedHorizontal = horizontalEnergy / totalBoundaryWeight(horizontalBoundaries.length) / horizontalBaseline;
-  return Math.sqrt(normalizedVertical * normalizedHorizontal);
+  const normalizedVertical = verticalEnergy
+    / totalBoundaryWeight(verticalBoundaries.length, RANGE_OUTER_BOUNDARY_WEIGHT)
+    / verticalBaseline;
+  const normalizedHorizontal = horizontalEnergy
+    / totalBoundaryWeight(horizontalBoundaries.length, RANGE_OUTER_BOUNDARY_WEIGHT)
+    / horizontalBaseline;
+  const rangeBlendRatio = 1 - COARSE_SCORE_BLEND_RATIO;
+  const verticalScore = normalizedVertical ** rangeBlendRatio
+    * candidate.vertical.score ** COARSE_SCORE_BLEND_RATIO;
+  const horizontalScore = normalizedHorizontal ** rangeBlendRatio
+    * candidate.horizontal.score ** COARSE_SCORE_BLEND_RATIO;
+  return {
+    local: normalizedVertical * normalizedHorizontal,
+    normalized: verticalScore * horizontalScore,
+  };
 }
 
 function outerBoundaryMetrics(
@@ -477,48 +562,70 @@ function refineGridCandidates(
   dimensions: GridDimensions,
 ): readonly RefinedGridCandidate[] {
   return candidates.map((candidate) => {
-    const verticalBoundaries = refineBoundaries(profiles.vertical, candidate.vertical.origin, candidate.vertical.pitch, dimensions.columns + 1);
-    const horizontalBoundaries = refineBoundaries(profiles.horizontal, candidate.horizontal.origin, candidate.horizontal.pitch, dimensions.rows + 1);
-    const leadingSupport = leadingIntersectionSupportRatio(profiles, image, verticalBoundaries, horizontalBoundaries);
-    const rangeScore = gridRangeScore(profiles, image, verticalBoundaries, horizontalBoundaries);
+    const verticalBoundaries = refineBoundaries(
+      profiles.vertical,
+      candidate.vertical.origin,
+      candidate.vertical.pitch,
+      dimensions.columns + 1,
+      false,
+    );
+    const horizontalBoundaries = refineBoundaries(
+      profiles.horizontal,
+      candidate.horizontal.origin,
+      candidate.horizontal.pitch,
+      dimensions.rows + 1,
+      false,
+    );
+    const duplicateHorizontalBoundaries = refineBoundaries(
+      profiles.horizontal,
+      candidate.horizontal.origin,
+      candidate.horizontal.pitch,
+      dimensions.rows + 1,
+      true,
+    );
+    const canonicalVerticalBoundaries = refineCanonicalBoundaries(
+      profiles.vertical,
+      candidate.vertical.origin,
+      candidate.vertical.pitch,
+      dimensions.columns + 1,
+      VERTICAL_CANONICAL_LEADING_RADIUS,
+      false,
+    );
+    const canonicalHorizontalBoundaries = refineCanonicalBoundaries(
+      profiles.horizontal,
+      candidate.horizontal.origin,
+      candidate.horizontal.pitch,
+      dimensions.rows + 1,
+      HORIZONTAL_CANONICAL_LEADING_RADIUS,
+      true,
+    );
+    const rangeScores = gridRangeScore(profiles, image, candidate, verticalBoundaries, horizontalBoundaries);
     const intersectionSupport = intersectionSupportRatio(profiles, image, verticalBoundaries, horizontalBoundaries);
+    const leadingSupport = leadingIntersectionSupportRatio(profiles, image, verticalBoundaries, horizontalBoundaries);
     const boundaryMetrics = outerBoundaryMetrics(profiles, image, verticalBoundaries, horizontalBoundaries);
     return {
       candidate,
       verticalBoundaries,
       horizontalBoundaries,
+      duplicateHorizontalBoundaries,
+      canonicalVerticalBoundaries,
+      canonicalHorizontalBoundaries,
       intersectionSupportRatio: intersectionSupport,
       leadingIntersectionSupportRatio: leadingSupport,
       outerBoundaryDistinctiveness: boundaryMetrics.distinctiveness,
       outerBoundaryBalance: boundaryMetrics.balance,
       minimumOuterBoundaryEnergyRatio: boundaryMetrics.minimumEnergyRatio,
-      rangeScore,
-      score: rangeScore,
+      localRangeScore: rangeScores.local,
+      rangeScore: rangeScores.normalized,
     };
-  }).sort((a, b) => b.score - a.score);
+  }).sort((a, b) => b.rangeScore - a.rangeScore);
 }
 
 function hasSeparatedScore(candidates: readonly RefinedGridCandidate[]): boolean {
   const [best, runnerUp] = candidates;
   if (!best) return false;
   if (!runnerUp) return true;
-  return (best.score - runnerUp.score) / best.score >= MIN_SCORE_SEPARATION_RATIO;
-}
-
-function representsSameGridPhase(first: RefinedGridCandidate, second: RefinedGridCandidate): boolean {
-  if (first.candidate.vertical.pitch !== second.candidate.vertical.pitch) return false;
-  if (first.candidate.horizontal.pitch !== second.candidate.horizontal.pitch) return false;
-  const verticalPhaseTolerance = Math.max(EQUIVALENT_EDGE_PHASE_DISTANCE, first.candidate.vertical.pitch * MAX_EQUIVALENT_EDGE_PHASE_RATIO);
-  const horizontalPhaseTolerance = Math.max(EQUIVALENT_EDGE_PHASE_DISTANCE, first.candidate.horizontal.pitch * MAX_EQUIVALENT_EDGE_PHASE_RATIO);
-  if (Math.abs(first.candidate.vertical.origin - second.candidate.vertical.origin) > verticalPhaseTolerance) return false;
-  if (Math.abs(first.candidate.horizontal.origin - second.candidate.horizontal.origin) > horizontalPhaseTolerance) return false;
-
-  const firstRight = first.verticalBoundaries[first.verticalBoundaries.length - 1]!;
-  const secondRight = second.verticalBoundaries[second.verticalBoundaries.length - 1]!;
-  const firstBottom = first.horizontalBoundaries[first.horizontalBoundaries.length - 1]!;
-  const secondBottom = second.horizontalBoundaries[second.horizontalBoundaries.length - 1]!;
-  return Math.abs(firstRight - secondRight) <= verticalPhaseTolerance
-    && Math.abs(firstBottom - secondBottom) <= horizontalPhaseTolerance;
+  return (best.rangeScore - runnerUp.rangeScore) / best.rangeScore >= MIN_SCORE_SEPARATION_RATIO;
 }
 
 function rangeOverlapRatio(firstStart: number, firstEnd: number, secondStart: number, secondEnd: number): number {
@@ -530,15 +637,15 @@ function overlappingSamePitchExtent(first: RefinedGridCandidate, second: Refined
   if (first.candidate.vertical.pitch !== second.candidate.vertical.pitch) return false;
   if (first.candidate.horizontal.pitch !== second.candidate.horizontal.pitch) return false;
   return rangeOverlapRatio(
-    first.verticalBoundaries[0]!,
-    first.verticalBoundaries[first.verticalBoundaries.length - 1]!,
-    second.verticalBoundaries[0]!,
-    second.verticalBoundaries[second.verticalBoundaries.length - 1]!,
+    first.canonicalVerticalBoundaries[0]!,
+    first.canonicalVerticalBoundaries[first.canonicalVerticalBoundaries.length - 1]!,
+    second.canonicalVerticalBoundaries[0]!,
+    second.canonicalVerticalBoundaries[second.canonicalVerticalBoundaries.length - 1]!,
   ) >= MIN_COMPETING_EXTENT_OVERLAP_RATIO && rangeOverlapRatio(
-    first.horizontalBoundaries[0]!,
-    first.horizontalBoundaries[first.horizontalBoundaries.length - 1]!,
-    second.horizontalBoundaries[0]!,
-    second.horizontalBoundaries[second.horizontalBoundaries.length - 1]!,
+    first.canonicalHorizontalBoundaries[0]!,
+    first.canonicalHorizontalBoundaries[first.canonicalHorizontalBoundaries.length - 1]!,
+    second.canonicalHorizontalBoundaries[0]!,
+    second.canonicalHorizontalBoundaries[second.canonicalHorizontalBoundaries.length - 1]!,
   ) >= MIN_COMPETING_EXTENT_OVERLAP_RATIO;
 }
 
@@ -550,8 +657,18 @@ function filterWeakOverlappingExtents(candidates: readonly RefinedGridCandidate[
   ));
   return candidates.filter((candidate) => {
     if (candidate.minimumOuterBoundaryEnergyRatio < MIN_OUTER_BOUNDARY_ENERGY_RATIO) return false;
+    const hasBetterSupportedLeadingExtent = candidates.some((other) => (
+      other !== candidate
+      && other.localRangeScore >= candidate.localRangeScore * MIN_RELATIVE_RANGE_SCORE_FOR_LEADING_COMPARISON
+      && other.leadingIntersectionSupportRatio
+        >= candidate.leadingIntersectionSupportRatio + MIN_LEADING_INTERSECTION_SUPPORT_ADVANTAGE
+      && overlappingSamePitchExtent(candidate, other)
+    ));
+    if (hasBetterSupportedLeadingExtent) return false;
     const overlapping = candidates.filter((other) => (
-      other.rangeScore >= candidate.rangeScore
+      other.localRangeScore >= candidate.localRangeScore
+      && other.leadingIntersectionSupportRatio + MIN_LEADING_INTERSECTION_SUPPORT_ADVANTAGE
+        >= candidate.leadingIntersectionSupportRatio
       && other.minimumOuterBoundaryEnergyRatio >= MIN_OUTER_BOUNDARY_ENERGY_RATIO
       && overlappingSamePitchExtent(candidate, other)
     ));
@@ -566,27 +683,18 @@ function filterWeakOverlappingExtents(candidates: readonly RefinedGridCandidate[
     const hasDistinctOuterBoundaries = candidate.outerBoundaryDistinctiveness >= MIN_OUTER_BOUNDARY_DISTINCTIVENESS_RATIO
       && candidate.outerBoundaryBalance >= MIN_OUTER_BOUNDARY_BALANCE_RATIO;
     return hasDistinctOuterBoundaries || !stronglyBounded.some((strong) => (
-      strong.rangeScore >= candidate.rangeScore && overlappingSamePitchExtent(candidate, strong)
+      strong.localRangeScore >= candidate.localRangeScore && overlappingSamePitchExtent(candidate, strong)
     ));
   });
 }
 
 function selectDistinctGridCandidates(candidates: readonly RefinedGridCandidate[]): readonly RefinedGridCandidate[] {
-  const clusters: Array<{ best: RefinedGridCandidate; representative: RefinedGridCandidate }> = [];
+  const distinct = new Map<string, RefinedGridCandidate>();
   for (const candidate of candidates) {
-    const cluster = clusters.find(({ best }) => representsSameGridPhase(candidate, best));
-    if (!cluster) {
-      clusters.push({ best: candidate, representative: candidate });
-      continue;
-    }
-    const sameVerticalEdge = Math.abs(candidate.candidate.vertical.origin - cluster.best.candidate.vertical.origin) <= CANDIDATE_ORIGIN_EQUIVALENCE_DISTANCE;
-    const nearbyHorizontalEdge = Math.abs(candidate.candidate.horizontal.origin - cluster.best.candidate.horizontal.origin) <= EQUIVALENT_EDGE_PHASE_DISTANCE;
-    const comparableScore = candidate.rangeScore >= cluster.best.rangeScore * EQUIVALENT_EDGE_SCORE_RATIO;
-    if (sameVerticalEdge && nearbyHorizontalEdge && comparableScore && candidate.candidate.horizontal.origin > cluster.representative.candidate.horizontal.origin) {
-      cluster.representative = candidate;
-    }
+    const key = `${candidate.verticalBoundaries.join(",")}|${candidate.duplicateHorizontalBoundaries.join(",")}`;
+    if (!distinct.has(key)) distinct.set(key, candidate);
   }
-  return clusters.map(({ best, representative }) => ({ ...representative, score: best.score })).sort((a, b) => b.score - a.score);
+  return [...distinct.values()].sort((a, b) => b.rangeScore - a.rangeScore);
 }
 
 export function detectGrid(image: PixelImage, dimensions: GridDimensions): GridGeometry | null {
@@ -599,7 +707,8 @@ export function detectGrid(image: PixelImage, dimensions: GridDimensions): GridG
   const profiles = buildEdgeProfiles(image);
   const verticalCandidates = selectAxisCandidates(profiles.vertical, dimensions.columns + 1, maxPitch);
   const horizontalCandidates = selectAxisCandidates(profiles.horizontal, dimensions.rows + 1, maxPitch);
-  const refinedCandidates = refineGridCandidates(selectGridCandidates(verticalCandidates, horizontalCandidates), profiles, image, dimensions)
+  const allRefinedCandidates = refineGridCandidates(selectGridCandidates(verticalCandidates, horizontalCandidates), profiles, image, dimensions);
+  const phaseCandidates = allRefinedCandidates
     .filter((candidate) => hasConsistentInteriorBoundaryPhase(
       candidate.verticalBoundaries,
       candidate.candidate.vertical.origin,
@@ -609,44 +718,37 @@ export function detectGrid(image: PixelImage, dimensions: GridDimensions): GridG
       candidate.horizontalBoundaries,
       candidate.candidate.horizontal.origin,
       candidate.candidate.horizontal.pitch,
-    ))
-    .filter((candidate) => candidate.intersectionSupportRatio >= MIN_INTERSECTION_SUPPORT_RATIO)
-    .filter((candidate) => candidate.leadingIntersectionSupportRatio >= MIN_LEADING_INTERSECTION_SUPPORT_RATIO);
-  const candidates = selectDistinctGridCandidates(filterWeakOverlappingExtents(refinedCandidates));
+    ));
+  const supportCandidates = phaseCandidates
+    .filter((candidate) => candidate.intersectionSupportRatio >= MIN_INTERSECTION_SUPPORT_RATIO);
+  const candidates = selectDistinctGridCandidates(filterWeakOverlappingExtents(supportCandidates));
   if (!hasSeparatedScore(candidates)) return null;
 
   const best = candidates[0]!;
-  const [firstVerticalBoundary, finalVerticalBoundary] = refinePhaseCompatibleOuterBoundaries(
+  const [firstVerticalBoundary, finalVerticalBoundary] = canonicalEndpointPair(
     profiles.vertical,
     best.candidate.vertical.origin,
     best.candidate.vertical.pitch,
-    best.verticalBoundaries,
+    best.canonicalVerticalBoundaries,
+    VERTICAL_CANONICAL_LEADING_RADIUS,
+    false,
+    false,
   );
-  const [firstHorizontalBoundary, finalHorizontalBoundary] = refinePhaseCompatibleOuterBoundaries(
+  const [firstHorizontalBoundary, finalHorizontalBoundary] = canonicalEndpointPair(
     profiles.horizontal,
     best.candidate.horizontal.origin,
     best.candidate.horizontal.pitch,
-    best.horizontalBoundaries,
+    best.canonicalHorizontalBoundaries,
+    0,
+    true,
+    true,
   );
-  const left = Math.max(0, firstVerticalBoundary - Math.floor(best.candidate.vertical.pitch * OUTER_EDGE_X_START_OFFSET_RATIO));
-  const width = finalVerticalBoundary - firstVerticalBoundary;
-  const height = finalHorizontalBoundary - firstHorizontalBoundary;
-  const hasFlatLeadingEdge = best.intersectionSupportRatio >= MIN_FLAT_GRID_INTERSECTION_SUPPORT_RATIO
-    && best.leadingIntersectionSupportRatio === FULL_INTERSECTION_SUPPORT_RATIO
-    && firstHorizontalBoundary <= best.candidate.horizontal.origin;
-  const refinementPhaseOffset = Math.max(
-    -EDGE_PHASE_COMPATIBILITY_RADIUS,
-    Math.min(EDGE_PHASE_COMPATIBILITY_RADIUS, firstHorizontalBoundary - best.candidate.horizontal.origin),
-  );
-  const yOuterOffset = hasFlatLeadingEdge
-    ? -(ROW_SMOOTHING_SPAN - 1)
-    : Math.max(
-      0,
-      Math.floor(best.candidate.horizontal.pitch * OUTER_EDGE_Y_START_OFFSET_RATIO)
-        - ROW_SMOOTHING_SPAN
-        + refinementPhaseOffset,
-    );
-  const top = Math.max(0, firstHorizontalBoundary - yOuterOffset);
+  const left = firstVerticalBoundary;
+  const right = finalVerticalBoundary;
+  const top = firstHorizontalBoundary;
+  const bottom = finalHorizontalBoundary;
+  const width = right - left;
+  const height = bottom - top;
   const pitchX = width / dimensions.columns;
   const pitchY = height / dimensions.rows;
   if (pitchX <= 0 || pitchY <= 0) return null;
@@ -658,7 +760,7 @@ export function detectGrid(image: PixelImage, dimensions: GridDimensions): GridG
     rows: dimensions.rows,
     pitchX,
     pitchY,
-    score: best.score,
+    score: best.rangeScore,
   };
 }
 
