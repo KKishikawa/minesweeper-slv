@@ -33,12 +33,19 @@ const SERIALIZED_KEYS = [
   "sha256",
 ] as const;
 const BASE64_PATTERN = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+const BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const SHA256_PATTERN = /^[0-9a-f]{64}$/;
 const FLOAT32_BYTES = 4;
 const MAX_PROTOTYPES_PER_LABEL = 12;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
+}
+
+function hasCanonicalBase64PaddingBits(value: string): boolean {
+  if (value.endsWith("==")) return (BASE64_ALPHABET.indexOf(value[value.length - 3]!) & 0b1111) === 0;
+  if (value.endsWith("=")) return (BASE64_ALPHABET.indexOf(value[value.length - 2]!) & 0b11) === 0;
+  return true;
 }
 
 function assertSerializedShape(value: unknown): asserts value is SerializedPrototypeBank {
@@ -50,7 +57,13 @@ function assertSerializedShape(value: unknown): asserts value is SerializedProto
   if (value.formatVersion !== 1) throw new RangeError("Unsupported serialized prototype bank format version.");
   if (value.featureVersion !== "features-v1") throw new RangeError("Unsupported serialized feature version.");
   if (value.featureLength !== FEATURE_LENGTH) throw new RangeError("Serialized feature length is unsupported.");
-  if (!isRecord(value.thresholds)
+  if (!isRecord(value.thresholds)) {
+    throw new RangeError("Serialized prototype bank thresholds have an unexpected shape.");
+  }
+  const thresholdKeys = Object.keys(value.thresholds);
+  if (thresholdKeys.length !== 2
+    || !thresholdKeys.includes("relativeMargin")
+    || !thresholdKeys.includes("absoluteDistance")
     || typeof value.thresholds.relativeMargin !== "number"
     || typeof value.thresholds.absoluteDistance !== "number") {
     throw new RangeError("Serialized prototype bank thresholds have an unexpected shape.");
@@ -78,7 +91,7 @@ function assertSerializedShape(value: unknown): asserts value is SerializedProto
 }
 
 function decodeBase64Float32(value: unknown, expectedValues: number, description: string): Float64Array {
-  if (typeof value !== "string" || !BASE64_PATTERN.test(value)) {
+  if (typeof value !== "string" || !BASE64_PATTERN.test(value) || !hasCanonicalBase64PaddingBits(value)) {
     throw new RangeError(`${description} must be canonical base64.`);
   }
 

@@ -32,6 +32,19 @@ function replaceFloat32(base64: string, index: number, value: number): string {
   return bytes.toString("base64");
 }
 
+const BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+function setNonCanonicalPaddingBits(base64: string, padding: "=" | "=="): string {
+  if (!base64.endsWith(padding) || (padding === "=" && base64.endsWith("=="))) {
+    throw new Error(`Expected base64 ending in exactly ${padding}`);
+  }
+  const characterIndex = base64.length - padding.length - 1;
+  const alphabetIndex = BASE64_ALPHABET.indexOf(base64[characterIndex]!);
+  const unusedBitMask = padding === "==" ? 0b1111 : 0b11;
+  if ((alphabetIndex & unusedBitMask) !== 0) throw new Error("Input base64 is already noncanonical");
+  return `${base64.slice(0, characterIndex)}${BASE64_ALPHABET[alphabetIndex + 1]}${padding}`;
+}
+
 describe("prototype bank codec", () => {
   it("round-trips the exact serialized Float32 bank with two distinct labels", () => {
     const bank = syntheticPrototypeBank();
@@ -86,6 +99,15 @@ describe("prototype bank codec", () => {
     expect(() => decodePrototypeBank({ ...serialized, ...override } as never)).toThrow(RangeError);
   });
 
+  it.each([
+    ["missing own key", () => ({ relativeMargin: 0.25 })],
+    ["extra own key", () => ({ relativeMargin: 0.25, absoluteDistance: 8.5, extra: true })],
+    ["inherited required keys", () => Object.create({ relativeMargin: 0.25, absoluteDistance: 8.5 })],
+  ])("rejects thresholds with %s", (_description, thresholds) => {
+    const serialized = encodePrototypeBank(syntheticPrototypeBank());
+    expect(() => decodePrototypeBank({ ...serialized, thresholds: thresholds() } as never)).toThrow(RangeError);
+  });
+
   it("rejects non-finite decoded center, scale, and prototype values", () => {
     const serialized = encodePrototypeBank(syntheticPrototypeBank());
     for (const override of [
@@ -97,9 +119,33 @@ describe("prototype bank codec", () => {
     }
   });
 
+  it("rejects noncanonical unused bits before double base64 padding", () => {
+    const serialized = encodePrototypeBank(syntheticPrototypeBank());
+    const noncanonical = setNonCanonicalPaddingBits(serialized.centerBase64, "==");
+    expect(atob(noncanonical)).toBe(atob(serialized.centerBase64));
+    expect(() => decodePrototypeBank({ ...serialized, centerBase64: noncanonical })).toThrow(RangeError);
+  });
+
+  it("rejects noncanonical unused bits before single base64 padding", () => {
+    const bank = syntheticPrototypeBank();
+    const serialized = encodePrototypeBank({ ...bank, prototypes: bank.prototypes.slice(0, 2) });
+    const noncanonical = setNonCanonicalPaddingBits(serialized.prototypeBase64, "=");
+    expect(atob(noncanonical)).toBe(atob(serialized.prototypeBase64));
+    expect(() => decodePrototypeBank({ ...serialized, prototypeBase64: noncanonical })).toThrow(RangeError);
+  });
+
   it("rejects finite Float64 values that overflow during Float32 serialization", () => {
     const bank = syntheticPrototypeBank();
     bank.scaler.center[0] = Number.MAX_VALUE;
     expect(() => encodePrototypeBank(bank)).toThrow(RangeError);
   });
+
+  it.each([1e-50, Number.MIN_VALUE])(
+    "rejects a positive scale that quantizes to Float32 zero: %s",
+    (scale) => {
+      const bank = syntheticPrototypeBank();
+      bank.scaler.scale[0] = scale;
+      expect(() => encodePrototypeBank(bank)).toThrow(RangeError);
+    },
+  );
 });

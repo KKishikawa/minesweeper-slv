@@ -11,12 +11,12 @@ import type { CellLabel } from "../../src/recognition/types.js";
 
 type SerializedPrototypeBankContent = Omit<SerializedPrototypeBank, "sha256">;
 
-function encodeFloat32(values: ArrayLike<number>, description: string): string {
+function encodeFloat32(values: ArrayLike<number>, description: string, requirePositive = false): string {
   const bytes = Buffer.alloc(values.length * Float32Array.BYTES_PER_ELEMENT);
   for (let index = 0; index < values.length; index += 1) {
     const float32 = Math.fround(values[index]!);
-    if (!Number.isFinite(float32)) {
-      throw new RangeError(`${description} cannot be represented as finite Float32 values.`);
+    if (!Number.isFinite(float32) || (requirePositive && float32 <= 0)) {
+      throw new RangeError(`${description} cannot be represented as valid Float32 values.`);
     }
     bytes.writeFloatLE(float32, index * Float32Array.BYTES_PER_ELEMENT);
   }
@@ -48,7 +48,7 @@ export function encodePrototypeBank(bank: PrototypeBank): SerializedPrototypeBan
     labels,
     prototypeCounts,
     centerBase64: encodeFloat32(bank.scaler.center, "Scaler center"),
-    scaleBase64: encodeFloat32(bank.scaler.scale, "Scaler scale"),
+    scaleBase64: encodeFloat32(bank.scaler.scale, "Scaler scale", true),
     prototypeBase64: encodeFloat32(prototypeValues, "Prototype vectors"),
   };
   const sha256 = createHash("sha256").update(JSON.stringify(content)).digest("hex");
