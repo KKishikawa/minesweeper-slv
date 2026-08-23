@@ -29,7 +29,7 @@ export interface CellCandidate {
 
 export interface RecognizedCell {
   readonly index: number;
-  readonly label: CellLabel;
+  readonly label: CellLabel | null;
   readonly confidence: number;
   readonly candidates: readonly CellCandidate[];
 }
