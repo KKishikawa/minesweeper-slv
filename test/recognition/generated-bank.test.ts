@@ -105,6 +105,24 @@ describe("final prototype bank generation", () => {
         && evaluationCase.uncertainCells === 480
         && Number.isFinite(evaluationCase.elapsedMs)
         && evaluationCase.elapsedMs >= 0)).toBe(true);
+      expect(error.candidate.evaluationCases.every((evaluationCase) => (
+        evaluationCase.browserVersion === error.candidate.chromiumVersion
+        && evaluationCase.derivative.browserVersion === error.candidate.chromiumVersion
+        && evaluationCase.derivative.width > 0
+        && evaluationCase.derivative.height > 0
+        && /^[0-9a-f]{64}$/.test(evaluationCase.derivative.rgbaSha256)
+      ))).toBe(true);
+      const sourceEvidence = error.candidate.evaluationCases.find((evaluationCase) => evaluationCase.id === "0:source");
+      expect(sourceEvidence?.geometry).not.toBeNull();
+      expect(sourceEvidence?.cells).toHaveLength(480);
+      expect(sourceEvidence?.cells[0]).toEqual(expect.objectContaining({
+        index: 0,
+        expectedLabel: expect.anything(),
+        confidence: expect.any(Number),
+        candidates: expect.any(Array),
+        uncertain: true,
+        correct: expect.any(Boolean),
+      }));
       await expect(access(firstOutputPath)).rejects.toMatchObject({ code: "ENOENT" });
       await expect(access(secondOutputPath)).rejects.toMatchObject({ code: "ENOENT" });
       return;

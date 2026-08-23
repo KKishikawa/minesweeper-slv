@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -15,6 +16,8 @@ import { decodePrototypeBank } from "../../src/recognition/prototype-bank-codec.
 import type { SerializedPrototypeBank } from "../../src/recognition/prototype-bank-codec.js";
 import type { PrototypeBank, PrototypeGeometry } from "../../src/recognition/prototype-bank.js";
 import { recognizeBoardWithBank } from "../../src/recognition/multi-recognize.js";
+import type { RecognitionResult } from "../../src/recognition/multi-recognize.js";
+import type { CellCandidate, CellLabel, GridGeometry } from "../../src/recognition/types.js";
 import { deriveBrowserImages, type BrowserDerivedImage } from "../../test/recognition/browser-derive.js";
 import { loadFixtureCases, type FixtureCase } from "../../test/recognition/fixture-manifest.js";
 import { buildFixtureSamples } from "../../test/recognition/samples.js";
@@ -27,6 +30,25 @@ export interface FinalCaseEvaluation {
   readonly wrongCertainCells: number;
   readonly uncertainCells: number;
   readonly elapsedMs: number;
+  readonly browserVersion: string;
+  readonly derivative: {
+    readonly scale: number;
+    readonly encoding: BrowserDerivedImage["encoding"];
+    readonly width: number;
+    readonly height: number;
+    readonly rgbaSha256: string;
+    readonly browserVersion: string;
+  };
+  readonly geometry: GridGeometry | null;
+  readonly cells: readonly {
+    readonly index: number;
+    readonly label: CellLabel | null;
+    readonly expectedLabel: CellLabel;
+    readonly confidence: number;
+    readonly candidates: readonly CellCandidate[];
+    readonly uncertain: boolean;
+    readonly correct: boolean;
+  }[];
 }
 
 export interface FinalBankCandidate {
@@ -53,7 +75,9 @@ interface BuiltFinalBankEvaluation {
 
 interface CollectedFormalCase {
   readonly calibration: CalibrationCase | null;
-  readonly evaluation: FinalCaseEvaluation;
+  readonly fixture: FixtureCase;
+  readonly derived: BrowserDerivedImage;
+  readonly recognition: RecognitionResult;
 }
 
 const PERMISSIVE_THRESHOLDS: ThresholdPair = {
@@ -82,15 +106,9 @@ function buildCalibrationCase(
   if (recognition.status === "grid-not-found" || recognition.cells.length !== fixture.expectedCells.length) {
     return {
       calibration: null,
-      evaluation: {
-        id: caseId(fixture, derived),
-        kind: caseKind(derived),
-        gridFound: false,
-        correctCells: 0,
-        wrongCertainCells: 0,
-        uncertainCells: fixture.expectedCells.length,
-        elapsedMs: recognition.elapsedMs,
-      },
+      fixture,
+      derived,
+      recognition,
     };
   }
 
@@ -100,15 +118,9 @@ function buildCalibrationCase(
     if (bestDistance === undefined || !Number.isFinite(bestDistance)) {
       return {
         calibration: null,
-        evaluation: {
-          id: caseId(fixture, derived),
-          kind: caseKind(derived),
-          gridFound: true,
-          correctCells: 0,
-          wrongCertainCells: 0,
-          uncertainCells: fixture.expectedCells.length,
-          elapsedMs: recognition.elapsedMs,
-        },
+        fixture,
+        derived,
+        recognition,
       };
     }
     cells.push({
@@ -120,34 +132,61 @@ function buildCalibrationCase(
   const calibration = { id: caseId(fixture, derived), kind: caseKind(derived), cells };
   return {
     calibration,
-    evaluation: evaluateCase(calibration, null, recognition.elapsedMs),
+    fixture,
+    derived,
+    recognition,
   };
 }
 
 function evaluateCase(
-  calibrationCase: CalibrationCase,
+  formalCase: CollectedFormalCase,
   thresholds: ThresholdPair | null,
-  elapsedMs: number,
 ): FinalCaseEvaluation {
+  const { fixture, derived, recognition, calibration } = formalCase;
   let correctCells = 0;
   let wrongCertainCells = 0;
   let uncertainCells = 0;
-  for (const cell of calibrationCase.cells) {
-    const certain = thresholds !== null
-      && cell.relativeMargin >= thresholds.relativeMargin
-      && cell.bestDistance <= thresholds.absoluteDistance;
+  const cells = recognition.cells.map((recognizedCell, index) => {
+    const calibrationCell = calibration?.cells[index];
+    const certain = thresholds !== null && calibrationCell !== undefined
+      && calibrationCell.relativeMargin >= thresholds.relativeMargin
+      && calibrationCell.bestDistance <= thresholds.absoluteDistance;
+    const correct = recognizedCell.label === fixture.expectedCells[recognizedCell.index];
     if (!certain) uncertainCells += 1;
-    else if (cell.correct) correctCells += 1;
+    else if (correct) correctCells += 1;
     else wrongCertainCells += 1;
-  }
+    return {
+      index: recognizedCell.index,
+      label: recognizedCell.label,
+      expectedLabel: fixture.expectedCells[recognizedCell.index]!,
+      confidence: recognizedCell.confidence,
+      candidates: recognizedCell.candidates,
+      uncertain: !certain,
+      correct,
+    };
+  });
+  const gridFound = recognition.status !== "grid-not-found"
+    && recognition.cells.length === fixture.expectedCells.length;
+  if (!gridFound) uncertainCells = fixture.expectedCells.length;
   return {
-    id: calibrationCase.id,
-    kind: calibrationCase.kind,
-    gridFound: true,
+    id: caseId(fixture, derived),
+    kind: caseKind(derived),
+    gridFound,
     correctCells,
     wrongCertainCells,
     uncertainCells,
-    elapsedMs,
+    elapsedMs: recognition.elapsedMs,
+    browserVersion: derived.browserVersion,
+    derivative: {
+      scale: derived.scale,
+      encoding: derived.encoding,
+      width: derived.image.width,
+      height: derived.image.height,
+      rgbaSha256: createHash("sha256").update(derived.image.data).digest("hex"),
+      browserVersion: derived.browserVersion,
+    },
+    geometry: recognition.geometry,
+    cells,
   };
 }
 
@@ -190,9 +229,7 @@ async function buildFinalBankEvaluation(): Promise<BuiltFinalBankEvaluation> {
   const selectedThresholds = selectThresholdPair(calibrationCases);
   const thresholds = calibrationCases.length === formalCases.length ? selectedThresholds : null;
   const bank = thresholds === null ? null : { ...geometry, thresholds };
-  const evaluationCases = formalCases.map((formalCase) => formalCase.calibration === null
-    ? formalCase.evaluation
-    : evaluateCase(formalCase.calibration, thresholds, formalCase.evaluation.elapsedMs));
+  const evaluationCases = formalCases.map((formalCase) => evaluateCase(formalCase, thresholds));
   return {
     candidate: {
       geometry,

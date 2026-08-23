@@ -68,6 +68,7 @@ interface ElapsedSummary {
 export interface CandidateEvidence {
   readonly bank: PrototypeBank | null;
   readonly serializedBank: SerializedPrototypeBank | null;
+  readonly prototypeLabels: readonly CellLabel[];
   readonly prototypeCounts: readonly number[];
   readonly thresholds: PrototypeBank["thresholds"] | null;
   readonly calibration: readonly { readonly passes: boolean }[];
@@ -101,6 +102,7 @@ export interface SpikeSummary {
   readonly candidate: {
     readonly status: "rejected" | "thresholded";
     readonly bankHash: string | null;
+    readonly prototypeLabels: readonly CellLabel[];
     readonly prototypeCounts: readonly number[];
     readonly thresholds: PrototypeBank["thresholds"] | null;
     readonly calibration: {
@@ -122,6 +124,9 @@ export interface SpikeSummary {
   readonly compatibility: Readonly<Record<EngineSummary["engine"], CompatibilityEvidence>>;
   readonly performance: {
     readonly caseElapsedMs: ElapsedSummary;
+    readonly candidateCaseElapsedMs: ElapsedSummary;
+    readonly foldCaseElapsedMs: ElapsedSummary;
+    readonly engineCaseElapsedMs: ElapsedSummary;
     readonly totalElapsedMs: number;
   };
   readonly coverage: {
@@ -180,16 +185,31 @@ export function summarizeAdoption(
   hasBank: boolean,
   chromiumCases: readonly EngineCaseMeasurement[],
   foldPasses: readonly boolean[],
+  expectedChromiumCaseIds: readonly string[],
 ): AdoptionSummary {
-  const caseIds = chromiumCases.map((measurement) => measurement.id);
   const formalPassed = hasBank
     && chromiumCases.length === 16
-    && summarizeEngine("chromium", chromiumCases, caseIds).formalPassed
+    && summarizeEngine("chromium", chromiumCases, expectedChromiumCaseIds).formalPassed
     && foldPasses.length === 4
     && foldPasses.every(Boolean);
   return {
     decision: formalPassed ? "multi-prototype-adopted" : "multi-prototype-rejected",
     formalPassed,
+  };
+}
+
+export function summarizeInterruptedEngine(
+  engine: EngineSummary["engine"],
+  cases: readonly EngineCaseMeasurement[],
+  expectedCaseIds: readonly string[],
+  versions: readonly string[],
+  error: string,
+): EvaluatedEngine {
+  return {
+    summary: summarizeEngine(engine, cases, expectedCaseIds),
+    cases,
+    versions,
+    error,
   };
 }
 
@@ -375,16 +395,7 @@ async function evaluateEngine(
     return { summary: summarizeEngine(engine, cases, expectedIds), cases, versions: [...versions].sort() };
   } catch (error) {
     const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
-    return {
-      summary: {
-        engine,
-        formalPassed: false,
-        compatibility: "limited",
-      },
-      cases,
-      versions: [...versions].sort(),
-      error: message,
-    };
+    return summarizeInterruptedEngine(engine, cases, expectedIds, [...versions].sort(), message);
   }
 }
 
@@ -410,6 +421,7 @@ function candidateArtifact(candidate: CandidateEvidence): unknown {
   return {
     status: candidate.bank === null ? "rejected" : "thresholded",
     bankHash: candidate.serializedBank?.sha256 ?? null,
+    prototypeLabels: candidate.prototypeLabels,
     prototypeCounts: candidate.prototypeCounts,
     thresholds: candidate.thresholds,
     calibration: candidate.calibration,
@@ -485,6 +497,7 @@ export async function runSpike(
     candidate: {
       status: candidate.bank === null ? "rejected" : "thresholded",
       bankHash: candidate.serializedBank?.sha256 ?? null,
+      prototypeLabels: candidate.prototypeLabels,
       prototypeCounts: candidate.prototypeCounts,
       thresholds: candidate.thresholds,
       calibration: {
@@ -506,6 +519,9 @@ export async function runSpike(
     compatibility,
     performance: {
       caseElapsedMs: elapsedSummary(measuredElapsed),
+      candidateCaseElapsedMs: elapsedSummary(candidate.evaluationCases.map((item) => item.elapsedMs)),
+      foldCaseElapsedMs: elapsedSummary(foldElapsedValues(folds)),
+      engineCaseElapsedMs: elapsedSummary(measuredEngineElapsed),
       totalElapsedMs: dependencies.now() - startedAt,
     },
     coverage: {
@@ -517,6 +533,10 @@ export async function runSpike(
   dependencies.progress("artifacts:start");
   if (candidate.serializedBank !== null) {
     await dependencies.writeArtifact("prototype-bank.json", candidate.serializedBank);
+  }
+  for (const candidateCase of candidate.evaluationCases) {
+    const safeId = candidateCase.id.replaceAll(/[^a-zA-Z0-9._-]/g, "-");
+    await dependencies.writeArtifact(`candidate/cases/${safeId}.json`, candidateCase);
   }
   await dependencies.writeArtifact("candidate.json", candidateArtifact(candidate));
   await dependencies.writeArtifact("folds.json", folds);
@@ -535,6 +555,9 @@ function formatValue(value: number | null): string {
 }
 
 export function renderSpikeReport(summary: SpikeSummary): string {
+  const prototypeCounts = summary.candidate.prototypeLabels.map((label, index) => (
+    `${String(label)}:${summary.candidate.prototypeCounts[index] ?? 0}`
+  )).join(", ");
   const failedCandidateCases = summary.chromiumFormal.candidateCases
     .filter((measurement) => !measurement.gridFound)
     .map((measurement) => `- \`${measurement.id}\``)
@@ -564,7 +587,7 @@ ${summary.decision}
 
 ## Prototype Bank
 
-Prototype counts: \`${JSON.stringify(summary.candidate.prototypeCounts)}\`. Thresholds: \`${JSON.stringify(summary.candidate.thresholds)}\`. Bank SHA-256: \`${summary.candidate.bankHash ?? "null"}\`.
+Prototype counts by label: \`${prototypeCounts}\`. Thresholds: \`${JSON.stringify(summary.candidate.thresholds)}\`. Bank SHA-256: \`${summary.candidate.bankHash ?? "null"}\`. Calibration evaluated ${summary.candidate.calibration.evaluatedThresholdPairs} threshold pairs; ${summary.candidate.calibration.passingThresholdPairs} passed the available complete cases, but the full matrix remained incomplete.
 
 ## Chromium Formal Results
 
@@ -596,17 +619,20 @@ ${summary.candidate.status === "rejected"
 
 ## Performance
 
-Case elapsed min/median/max: ${formatValue(summary.performance.caseElapsedMs.min)} / ${formatValue(summary.performance.caseElapsedMs.median)} / ${formatValue(summary.performance.caseElapsedMs.max)}. Total runner elapsed: ${summary.performance.totalElapsedMs.toFixed(3)} ms.
+Candidate build elapsed: ${summary.candidate.elapsedMs.toFixed(3)} ms. Fold evaluation elapsed: ${summary.wholeScreenHoldout.elapsedMs.toFixed(3)} ms. Total runner elapsed: ${summary.performance.totalElapsedMs.toFixed(3)} ms.
+
+Candidate-case min/median/max: ${formatValue(summary.performance.candidateCaseElapsedMs.min)} / ${formatValue(summary.performance.candidateCaseElapsedMs.median)} / ${formatValue(summary.performance.candidateCaseElapsedMs.max)}. Fold-case min/median/max: ${formatValue(summary.performance.foldCaseElapsedMs.min)} / ${formatValue(summary.performance.foldCaseElapsedMs.median)} / ${formatValue(summary.performance.foldCaseElapsedMs.max)}. Evaluated-engine min/median/max: ${formatValue(summary.performance.engineCaseElapsedMs.min)} / ${formatValue(summary.performance.engineCaseElapsedMs.median)} / ${formatValue(summary.performance.engineCaseElapsedMs.max)}.
 
 ## Coverage Limits
 
 - Digits 7 and 8 remain unsupported and unverified.
 - Firefox, Playwright WebKit, and Sharp compatibility never override Chromium adoption.
 - User-entered columns, rows, and total mines remain authoritative.
+${summary.candidate.status === "rejected" ? "- Passing-bank overlays were unavailable, so their required visual inspection is deferred." : ""}
 
 ## Follow-up
 
-Improve grid detection for the rejected Chromium derivatives and rerun the same formal gate.
+Improve grid detection for the five rejected Chromium derivatives.
 `;
 }
 
@@ -658,6 +684,7 @@ export async function createProductionDependencies(options: {
       return {
         bank: candidate.bank,
         serializedBank: candidate.bank === null ? null : encodePrototypeBank(candidate.bank),
+        prototypeLabels: serializedGeometry.labels,
         prototypeCounts: serializedGeometry.prototypeCounts,
         thresholds: candidate.thresholds,
         calibration: candidate.calibration,

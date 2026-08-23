@@ -14,6 +14,7 @@ import {
   serializeCaseCells,
   summarizeAdoption,
   summarizeEngine,
+  summarizeInterruptedEngine,
   type CandidateEvidence,
   type EngineCaseMeasurement,
   type EvaluatedEngine,
@@ -47,7 +48,10 @@ function fold(index: number, passes: boolean): FoldResult {
   };
 }
 
-function candidate(bank: PrototypeBank | null): CandidateEvidence {
+function candidate(
+  bank: PrototypeBank | null,
+  evaluationCases: CandidateEvidence["evaluationCases"] = [],
+): CandidateEvidence {
   return {
     bank,
     serializedBank: bank === null ? null : {
@@ -62,10 +66,11 @@ function candidate(bank: PrototypeBank | null): CandidateEvidence {
       prototypeBase64: "",
       sha256: "a".repeat(64),
     },
+    prototypeLabels: ["closed"],
     prototypeCounts: [1],
     thresholds: bank === null ? null : { relativeMargin: 0.5, absoluteDistance: 1 },
     calibration: [],
-    evaluationCases: [],
+    evaluationCases,
     chromiumVersion: "123.0.0.0",
     elapsedMs: 20,
   };
@@ -148,6 +153,24 @@ describe("multi-prototype spike summary", () => {
     ).compatibility).toBe("limited");
   });
 
+  it("preserves a hard failure when an engine is interrupted later", () => {
+    const expected = ["fixture/source", "fixture/transformed"];
+    expect(summarizeInterruptedEngine(
+      "firefox",
+      [measurement({ gridFound: false })],
+      expected,
+      [],
+      "browser closed",
+    ).summary.compatibility).toBe("not-guaranteed");
+    expect(summarizeInterruptedEngine(
+      "firefox",
+      [measurement()],
+      expected,
+      [],
+      "browser closed",
+    ).summary.compatibility).toBe("limited");
+  });
+
   it("serializes complete per-cell and derivative diagnostics", () => {
     expect(serializeCaseCells([
       { index: 0, label: 1, confidence: 0.75, candidates: [{ label: 1, distance: 0.5 }] },
@@ -177,28 +200,39 @@ describe("multi-prototype spike summary", () => {
   it("rejects when the candidate bank or any fold is missing", () => {
     const chromiumCases = [measurement()];
 
-    expect(summarizeAdoption(false, chromiumCases, [true, true, true, true])).toEqual({
+    expect(summarizeAdoption(false, chromiumCases, [true, true, true, true], ["fixture/source"])).toEqual({
       decision: "multi-prototype-rejected",
       formalPassed: false,
     });
-    expect(summarizeAdoption(true, chromiumCases, [true, true, false, true])).toEqual({
+    expect(summarizeAdoption(true, chromiumCases, [true, true, false, true], ["fixture/source"])).toEqual({
       decision: "multi-prototype-rejected",
       formalPassed: false,
     });
   });
 
   it("requires the complete sixteen-case Chromium matrix", () => {
-    expect(summarizeAdoption(true, [measurement()], [true, true, true, true])).toEqual({
+    expect(summarizeAdoption(true, [measurement()], [true, true, true, true], ["fixture/source"])).toEqual({
       decision: "multi-prototype-rejected",
       formalPassed: false,
     });
+    const completeCases = Array.from({ length: 16 }, (_, index) => measurement({ id: `case-${index}` }));
     expect(summarizeAdoption(
       true,
-      Array.from({ length: 16 }, (_, index) => measurement({ id: `case-${index}` })),
+      completeCases,
       [true, true, true, true],
+      completeCases.map((item) => item.id),
     )).toEqual({
       decision: "multi-prototype-adopted",
       formalPassed: true,
+    });
+    expect(summarizeAdoption(
+      true,
+      completeCases,
+      [true, true, true, true],
+      completeCases.map((_, index) => `expected-${index}`),
+    )).toEqual({
+      decision: "multi-prototype-rejected",
+      formalPassed: false,
     });
   });
 
@@ -206,8 +240,36 @@ describe("multi-prototype spike summary", () => {
     const artifacts = new Map<string, unknown>();
     let engineEvaluations = 0;
     let report: SpikeSummary | null = null;
+    const candidateCase = {
+      id: "fixture:source",
+      kind: "source",
+      gridFound: true,
+      correctCells: 0,
+      wrongCertainCells: 0,
+      uncertainCells: 1,
+      elapsedMs: 10,
+      browserVersion: "123.0.0.0",
+      derivative: {
+        scale: 1,
+        encoding: "source",
+        width: 1,
+        height: 1,
+        rgbaSha256: "b".repeat(64),
+        browserVersion: "123.0.0.0",
+      },
+      geometry: null,
+      cells: [{
+        index: 0,
+        label: 1,
+        expectedLabel: 2,
+        confidence: 0.5,
+        candidates: [{ label: 1, distance: 0.25 }],
+        uncertain: true,
+        correct: false,
+      }],
+    } as CandidateEvidence["evaluationCases"][number];
     const result = await runSpike({
-      buildCandidate: async () => candidate(null),
+      buildCandidate: async () => candidate(null, [candidateCase]),
       evaluateFolds: async () => [0, 1, 2, 3].map((index) => fold(index, false)),
       evaluateEngines: async () => {
         engineEvaluations += 1;
@@ -247,12 +309,14 @@ describe("multi-prototype spike summary", () => {
     expect([...artifacts.keys()]).toEqual([
       "checkpoints/candidate.json",
       "checkpoints/folds.json",
+      "candidate/cases/fixture-source.json",
       "candidate.json",
       "folds.json",
       "engines.json",
       "summary.json",
     ]);
     expect(report).toEqual(result.summary);
+    expect(artifacts.get("candidate/cases/fixture-source.json")).toEqual(candidateCase);
     expect(renderSpikeReport(result.summary).match(/multi-prototype-rejected/g)).toHaveLength(1);
   });
 

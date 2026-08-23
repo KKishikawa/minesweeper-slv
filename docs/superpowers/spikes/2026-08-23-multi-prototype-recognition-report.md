@@ -14,7 +14,7 @@ multi-prototype-rejected
 
 ## Prototype Bank
 
-Prototype counts: `[12,12,12,12,12,12,12,2,2]`. Thresholds: `null`. Bank SHA-256: `null`.
+Prototype counts by label: `closed:12, empty:12, flag:12, 1:12, 2:12, 3:12, 4:12, 5:2, 6:2`. Thresholds: `null`. Bank SHA-256: `null`. Calibration evaluated 238 threshold pairs; 144 passed the available complete cases, but the full matrix remained incomplete.
 
 ## Chromium Formal Results
 
@@ -54,14 +54,15 @@ Engine overlays were not generated because no thresholded bank existed.
 
 ## Performance
 
-Case elapsed min/median/max: 60.532 ms / 462.845 ms / 696.938 ms. Total runner elapsed: 48889.000 ms.
+The consistent fresh summary recorded candidate build elapsed 12,726 ms and total runner elapsed 48,889 ms. Its measured case elapsed min/median/max was 60.532 ms / 462.845 ms / 696.938 ms. The independently completed four-fold formal run took 54.48 seconds, and the production temp-path E2E took 71.55 seconds including candidate, folds, atomic evidence, assertions, and cleanup.
 
 ## Coverage Limits
 
 - Digits 7 and 8 remain unsupported and unverified.
 - Firefox, Playwright WebKit, and Sharp compatibility never override Chromium adoption.
 - User-entered columns, rows, and total mines remain authoritative.
+- Passing-bank overlays were unavailable, so their required visual inspection is deferred.
 
 ## Follow-up
 
-Improve grid detection for the rejected Chromium derivatives and rerun the same formal gate.
+Improve grid detection for the five rejected Chromium derivatives.
