@@ -51,12 +51,31 @@ export interface EvaluatedEngine {
   readonly error?: string;
 }
 
-interface DerivedEvaluationImage {
+export interface DerivedEvaluationImage {
   readonly name: string;
   readonly image: PixelImage;
   readonly version?: string;
   readonly scale: number;
   readonly encoding: string;
+}
+
+export interface MeasuredEngineCase {
+  readonly measurement: EngineCaseMeasurement;
+  readonly persist: () => Promise<void>;
+}
+
+export interface EvaluateEngineOverrides {
+  readonly deriveImages?: (
+    engine: EngineSummary["engine"],
+    fixture: FixtureCase,
+  ) => Promise<readonly DerivedEvaluationImage[]>;
+  readonly measureImage?: (
+    engine: EngineSummary["engine"],
+    fixture: FixtureCase,
+    derived: DerivedEvaluationImage,
+    bank: PrototypeBank,
+    artifactDirectory: string,
+  ) => Promise<MeasuredEngineCase>;
 }
 
 interface ElapsedSummary {
@@ -119,7 +138,7 @@ export interface SpikeSummary {
   readonly wholeScreenHoldout: {
     readonly passed: boolean;
     readonly folds: readonly FoldResult[];
-    readonly elapsedMs: number;
+    readonly elapsedMs: number | null;
   };
   readonly compatibility: Readonly<Record<EngineSummary["engine"], CompatibilityEvidence>>;
   readonly performance: {
@@ -302,13 +321,13 @@ export function describeDerivativeArtifact(derived: DerivedEvaluationImage): {
   };
 }
 
-async function evaluateImage(
+async function measureImage(
   engine: EngineSummary["engine"],
   fixture: FixtureCase,
   derived: DerivedEvaluationImage,
   bank: PrototypeBank,
   artifactDirectory: string,
-): Promise<EngineCaseMeasurement> {
+): Promise<MeasuredEngineCase> {
   const result = recognizeBoardWithBank({
     image: derived.image,
     columns: fixture.columns,
@@ -327,23 +346,27 @@ async function evaluateImage(
     uncertainCells: gridFound ? result.uncertainCellIndices.length : fixture.expectedCells.length,
     elapsedMs: result.elapsedMs,
   };
-  const stem = `${fixture.id}-${derived.name}`;
-  await writeJson(artifactDirectory, ["engines", engine, `${stem}.json`], {
-    ...measurement,
-    derivative: describeDerivativeArtifact(derived),
-    status: result.status,
-    geometry: result.geometry,
-    cells: serializeCaseCells(result.cells, fixture.expectedCells, result.uncertainCellIndices),
-  });
-  const overlayPath = artifactPath(artifactDirectory, "engines", engine, `${stem}.png`);
-  await mkdir(path.dirname(overlayPath), { recursive: true });
-  await renderOverlay(
-    derived.image,
-    result.geometry ?? fallbackGeometry(derived.image, fixture),
-    result.cells,
-    overlayPath,
-  );
-  return measurement;
+  return {
+    measurement,
+    persist: async () => {
+      const stem = `${fixture.id}-${derived.name}`;
+      await writeJson(artifactDirectory, ["engines", engine, `${stem}.json`], {
+        ...measurement,
+        derivative: describeDerivativeArtifact(derived),
+        status: result.status,
+        geometry: result.geometry,
+        cells: serializeCaseCells(result.cells, fixture.expectedCells, result.uncertainCellIndices),
+      });
+      const overlayPath = artifactPath(artifactDirectory, "engines", engine, `${stem}.png`);
+      await mkdir(path.dirname(overlayPath), { recursive: true });
+      await renderOverlay(
+        derived.image,
+        result.geometry ?? fallbackGeometry(derived.image, fixture),
+        result.cells,
+        overlayPath,
+      );
+    },
+  };
 }
 
 async function derivedImages(
@@ -376,20 +399,25 @@ function expectedCaseIds(engine: EngineSummary["engine"], fixtures: readonly Fix
   return fixtures.flatMap((fixture) => derivatives.map((derivative) => `${fixture.id}:${derivative}`));
 }
 
-async function evaluateEngine(
+export async function evaluateEngine(
   engine: EngineSummary["engine"],
   fixtures: readonly FixtureCase[],
   bank: PrototypeBank,
   artifactDirectory: string,
+  overrides: EvaluateEngineOverrides = {},
 ): Promise<EvaluatedEngine> {
   const cases: EngineCaseMeasurement[] = [];
   const versions = new Set<string>();
   const expectedIds = expectedCaseIds(engine, fixtures);
+  const derive = overrides.deriveImages ?? derivedImages;
+  const measure = overrides.measureImage ?? measureImage;
   try {
     for (const fixture of fixtures) {
-      for (const derived of await derivedImages(engine, fixture)) {
+      for (const derived of await derive(engine, fixture)) {
         if (derived.version !== undefined) versions.add(derived.version);
-        cases.push(await evaluateImage(engine, fixture, derived, bank, artifactDirectory));
+        const evaluated = await measure(engine, fixture, derived, bank, artifactDirectory);
+        cases.push(evaluated.measurement);
+        await evaluated.persist();
       }
     }
     return { summary: summarizeEngine(engine, cases, expectedIds), cases, versions: [...versions].sort() };
@@ -555,13 +583,29 @@ function formatValue(value: number | null): string {
 }
 
 export function renderSpikeReport(summary: SpikeSummary): string {
+  const gridFailureIds = summary.chromiumFormal.candidateCases
+    .filter((measurement) => !measurement.gridFound)
+    .map((measurement) => measurement.id);
   const prototypeCounts = summary.candidate.prototypeLabels.map((label, index) => (
     `${String(label)}:${summary.candidate.prototypeCounts[index] ?? 0}`
   )).join(", ");
-  const failedCandidateCases = summary.chromiumFormal.candidateCases
-    .filter((measurement) => !measurement.gridFound)
-    .map((measurement) => `- \`${measurement.id}\``)
+  const failedCandidateCases = gridFailureIds
+    .map((id) => `- \`${id}\``)
     .join("\n") || "- none";
+  const calibrationOutcome = summary.decision === "multi-prototype-adopted"
+    ? "The complete formal matrix passed with the selected shared thresholds."
+    : gridFailureIds.length > 0
+      ? `The full matrix remained incomplete because ${gridFailureIds.length} required cases had no grid.`
+      : summary.candidate.thresholds === null
+        ? "The complete measured matrix produced no passing shared threshold pair."
+        : "The candidate thresholds passed the complete measured matrix, but another formal gate failed.";
+  const followUp = summary.decision === "multi-prototype-adopted"
+    ? "Proceed with product integration planning."
+    : gridFailureIds.length > 0
+      ? `Improve grid detection for the ${gridFailureIds.length} rejected Chromium derivatives.`
+      : !summary.wholeScreenHoldout.passed
+        ? "Improve held-out-screen generalization."
+        : "Revisit shared-threshold calibration.";
   const foldRows = summary.wholeScreenHoldout.folds.map((fold) => (
     `| \`${fold.heldOutFixtureId}\` | \`${JSON.stringify(fold.prototypeCounts)}\` | `
       + `\`${fold.absentTrainingLabels.join(",") || "none"}\` | `
@@ -587,7 +631,7 @@ ${summary.decision}
 
 ## Prototype Bank
 
-Prototype counts by label: \`${prototypeCounts}\`. Thresholds: \`${JSON.stringify(summary.candidate.thresholds)}\`. Bank SHA-256: \`${summary.candidate.bankHash ?? "null"}\`. Calibration evaluated ${summary.candidate.calibration.evaluatedThresholdPairs} threshold pairs; ${summary.candidate.calibration.passingThresholdPairs} passed the available complete cases, but the full matrix remained incomplete.
+Prototype counts by label: \`${prototypeCounts}\`. Thresholds: \`${JSON.stringify(summary.candidate.thresholds)}\`. Bank SHA-256: \`${summary.candidate.bankHash ?? "null"}\`. Calibration evaluated ${summary.candidate.calibration.evaluatedThresholdPairs} threshold pairs; ${summary.candidate.calibration.passingThresholdPairs} passed the available complete cases. ${calibrationOutcome}
 
 ## Chromium Formal Results
 
@@ -614,14 +658,14 @@ Playwright WebKit is not Safari and does not provide a Safari compatibility guar
 ## Visual Inspection
 
 ${summary.candidate.status === "rejected"
-    ? "Engine overlays were not generated because no thresholded bank existed."
+    ? "Engine overlays were not generated because no thresholded bank existed. Passing-bank overlay inspection is deferred."
     : "Engine case JSON and PNG overlays were generated under the ignored recognition artifact directory."}
 
 ## Performance
 
-Candidate build elapsed: ${summary.candidate.elapsedMs.toFixed(3)} ms. Fold evaluation elapsed: ${summary.wholeScreenHoldout.elapsedMs.toFixed(3)} ms. Total runner elapsed: ${summary.performance.totalElapsedMs.toFixed(3)} ms.
+Candidate build elapsed: ${formatValue(summary.candidate.elapsedMs)}. Fold evaluation elapsed: ${formatValue(summary.wholeScreenHoldout.elapsedMs)}. Total runner elapsed: ${formatValue(summary.performance.totalElapsedMs)}.
 
-Candidate-case min/median/max: ${formatValue(summary.performance.candidateCaseElapsedMs.min)} / ${formatValue(summary.performance.candidateCaseElapsedMs.median)} / ${formatValue(summary.performance.candidateCaseElapsedMs.max)}. Fold-case min/median/max: ${formatValue(summary.performance.foldCaseElapsedMs.min)} / ${formatValue(summary.performance.foldCaseElapsedMs.median)} / ${formatValue(summary.performance.foldCaseElapsedMs.max)}. Evaluated-engine min/median/max: ${formatValue(summary.performance.engineCaseElapsedMs.min)} / ${formatValue(summary.performance.engineCaseElapsedMs.median)} / ${formatValue(summary.performance.engineCaseElapsedMs.max)}.
+Recorded case min/median/max: ${formatValue(summary.performance.caseElapsedMs.min)} / ${formatValue(summary.performance.caseElapsedMs.median)} / ${formatValue(summary.performance.caseElapsedMs.max)}. Candidate-case min/median/max: ${formatValue(summary.performance.candidateCaseElapsedMs.min)} / ${formatValue(summary.performance.candidateCaseElapsedMs.median)} / ${formatValue(summary.performance.candidateCaseElapsedMs.max)}. Fold-case min/median/max: ${formatValue(summary.performance.foldCaseElapsedMs.min)} / ${formatValue(summary.performance.foldCaseElapsedMs.median)} / ${formatValue(summary.performance.foldCaseElapsedMs.max)}. Evaluated-engine min/median/max: ${formatValue(summary.performance.engineCaseElapsedMs.min)} / ${formatValue(summary.performance.engineCaseElapsedMs.median)} / ${formatValue(summary.performance.engineCaseElapsedMs.max)}.
 
 ## Coverage Limits
 
@@ -632,7 +676,7 @@ ${summary.candidate.status === "rejected" ? "- Passing-bank overlays were unavai
 
 ## Follow-up
 
-Improve grid detection for the five rejected Chromium derivatives.
+${followUp}
 `;
 }
 

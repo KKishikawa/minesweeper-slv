@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import {
   createAtomicArtifactWriter,
   describeDerivativeArtifact,
+  evaluateEngine,
   reportProgress,
   renderSpikeReport,
   resolveDependencyVersions,
@@ -22,6 +23,7 @@ import {
 } from "../../scripts/run-multi-prototype-spike.js";
 import type { FoldResult } from "../../scripts/recognition/evaluate-folds.js";
 import type { PrototypeBank } from "../../src/recognition/prototype-bank.js";
+import type { FixtureCase } from "./fixture-manifest.js";
 
 function measurement(overrides: Partial<EngineCaseMeasurement> = {}): EngineCaseMeasurement {
   return {
@@ -171,6 +173,40 @@ describe("multi-prototype spike summary", () => {
     ).summary.compatibility).toBe("limited");
   });
 
+  it("retains a measured hard failure when case persistence is interrupted", async () => {
+    const fixture: FixtureCase = {
+      id: "0",
+      imagePath: "unused.png",
+      columns: 30,
+      rows: 16,
+      totalMines: 99,
+      expectedRemainingMines: 0,
+      expectedBoardBounds: { x: 0, y: 0, width: 30, height: 16 },
+      expectedCells: Array.from({ length: 480 }, () => "closed"),
+    };
+    const derived = {
+      name: "source",
+      scale: 1,
+      encoding: "source",
+      version: "test",
+      image: { width: 1, height: 1, data: new Uint8ClampedArray(4) },
+    } as const;
+
+    const result = await evaluateEngine("firefox", [fixture], {} as PrototypeBank, "unused", {
+      deriveImages: async () => [derived],
+      measureImage: async () => ({
+        measurement: measurement({ id: "0:source", gridFound: false }),
+        persist: async () => {
+          throw new Error("overlay write failed");
+        },
+      }),
+    });
+
+    expect(result.cases).toHaveLength(1);
+    expect(result.summary.compatibility).toBe("not-guaranteed");
+    expect(result.error).toContain("overlay write failed");
+  });
+
   it("serializes complete per-cell and derivative diagnostics", () => {
     expect(serializeCaseCells([
       { index: 0, label: 1, confidence: 0.75, candidates: [{ label: 1, distance: 0.5 }] },
@@ -318,6 +354,27 @@ describe("multi-prototype spike summary", () => {
     expect(report).toEqual(result.summary);
     expect(artifacts.get("candidate/cases/fixture-source.json")).toEqual(candidateCase);
     expect(renderSpikeReport(result.summary).match(/multi-prototype-rejected/g)).toHaveLength(1);
+
+    const coherentLegacySummary = {
+      ...result.summary,
+      candidate: { ...result.summary.candidate, elapsedMs: 12_726 },
+      wholeScreenHoldout: { ...result.summary.wholeScreenHoldout, elapsedMs: null },
+      performance: {
+        caseElapsedMs: { min: 60.531917, median: 462.845375, max: 696.938375 },
+        candidateCaseElapsedMs: { min: null, median: null, max: null },
+        foldCaseElapsedMs: { min: null, median: null, max: null },
+        engineCaseElapsedMs: { min: null, median: null, max: null },
+        totalElapsedMs: 48_889,
+      },
+    } as unknown as SpikeSummary;
+    const coherentReport = renderSpikeReport(coherentLegacySummary);
+    expect(coherentReport).toContain("Candidate build elapsed: 12726.000 ms");
+    expect(coherentReport).toContain("Fold evaluation elapsed: not measured");
+    expect(coherentReport).toContain("Total runner elapsed: 48889.000 ms");
+    expect(coherentReport).toContain(
+      "Recorded case min/median/max: 60.532 ms / 462.845 ms / 696.938 ms",
+    );
+    expect(coherentReport.match(/^## Follow-up$/gm)).toHaveLength(1);
   });
 
   it("does not reject a passing Chromium bank for compatibility-only failures", async () => {
@@ -360,5 +417,23 @@ describe("multi-prototype spike summary", () => {
     expect(result.summary.decision).toBe("multi-prototype-adopted");
     expect(result.summary.compatibility.firefox.compatibility).toBe("limited");
     expect(artifacts.get("prototype-bank.json")).toMatchObject({ sha256: "a".repeat(64) });
+    const adoptedReport = renderSpikeReport(result.summary);
+    expect(adoptedReport).not.toContain("matrix remained incomplete");
+    expect(adoptedReport).not.toContain("Improve grid detection");
+    expect(adoptedReport).toContain("Proceed with product integration planning.");
+
+    const foldOnlySummary: SpikeSummary = {
+      ...result.summary,
+      decision: "multi-prototype-rejected",
+      chromiumFormal: { ...result.summary.chromiumFormal, passed: false },
+      wholeScreenHoldout: {
+        ...result.summary.wholeScreenHoldout,
+        passed: false,
+        folds: result.summary.wholeScreenHoldout.folds.map((item) => ({ ...item, passes: false })),
+      },
+    };
+    const foldOnlyReport = renderSpikeReport(foldOnlySummary);
+    expect(foldOnlyReport).not.toContain("Improve grid detection");
+    expect(foldOnlyReport).toContain("Improve held-out-screen generalization.");
   });
 });
