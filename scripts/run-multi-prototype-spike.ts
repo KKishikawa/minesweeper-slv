@@ -1,15 +1,16 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { buildFinalBankCandidate } from "./recognition/generate-prototype-bank.js";
+import { buildFinalBankCandidate, type FinalCaseEvaluation } from "./recognition/generate-prototype-bank.js";
 import { encodePrototypeBank } from "./recognition/encode-prototype-bank.js";
 import { evaluateLeaveOneScreenOut, type FoldResult } from "./recognition/evaluate-folds.js";
 import { recreateArtifactDirectory } from "./artifact-directory.js";
 import { recognizeBoardWithBank } from "../src/recognition/multi-recognize.js";
 import type { PrototypeBank } from "../src/recognition/prototype-bank.js";
-import type { GridGeometry, PixelImage } from "../src/recognition/types.js";
+import type { SerializedPrototypeBank } from "../src/recognition/prototype-bank-codec.js";
+import type { CellLabel, GridGeometry, PixelImage, RecognizedCell } from "../src/recognition/types.js";
 import { deriveBrowserImages } from "../test/recognition/browser-derive.js";
 import { deriveImages } from "../test/recognition/derive.js";
 import { loadFixtureCases, type FixtureCase } from "../test/recognition/fixture-manifest.js";
@@ -43,7 +44,7 @@ export type SpikeProgressStage =
   | "artifacts:start"
   | "artifacts:complete";
 
-interface EvaluatedEngine {
+export interface EvaluatedEngine {
   readonly summary: EngineSummary;
   readonly cases: readonly EngineCaseMeasurement[];
   readonly versions: readonly string[];
@@ -54,12 +55,90 @@ interface DerivedEvaluationImage {
   readonly name: string;
   readonly image: PixelImage;
   readonly version?: string;
+  readonly scale: number;
+  readonly encoding: string;
 }
 
 interface ElapsedSummary {
   readonly min: number | null;
   readonly median: number | null;
   readonly max: number | null;
+}
+
+export interface CandidateEvidence {
+  readonly bank: PrototypeBank | null;
+  readonly serializedBank: SerializedPrototypeBank | null;
+  readonly prototypeCounts: readonly number[];
+  readonly thresholds: PrototypeBank["thresholds"] | null;
+  readonly calibration: readonly { readonly passes: boolean }[];
+  readonly evaluationCases: readonly FinalCaseEvaluation[];
+  readonly chromiumVersion: string;
+  readonly elapsedMs: number;
+}
+
+export interface SpikeEnvironment {
+  readonly node: string;
+  readonly platform: string;
+  readonly architecture: string;
+  readonly dependencyVersions: {
+    readonly playwright: string | null;
+    readonly sharp: string | null;
+  };
+}
+
+type CompatibilityEvidence = EngineSummary & {
+  readonly cases: readonly EngineCaseMeasurement[];
+  readonly versions: readonly string[];
+  readonly error?: string;
+};
+
+export interface SpikeSummary {
+  readonly decision: AdoptionSummary["decision"];
+  readonly environment: SpikeEnvironment & {
+    readonly chromiumVersion: string;
+    readonly engineVersions: Readonly<Record<EngineSummary["engine"], readonly string[]>>;
+  };
+  readonly candidate: {
+    readonly status: "rejected" | "thresholded";
+    readonly bankHash: string | null;
+    readonly prototypeCounts: readonly number[];
+    readonly thresholds: PrototypeBank["thresholds"] | null;
+    readonly calibration: {
+      readonly evaluatedThresholdPairs: number;
+      readonly passingThresholdPairs: number;
+    };
+    readonly elapsedMs: number;
+  };
+  readonly chromiumFormal: {
+    readonly passed: boolean;
+    readonly candidateCases: readonly FinalCaseEvaluation[];
+    readonly evaluatedCases: readonly EngineCaseMeasurement[];
+  };
+  readonly wholeScreenHoldout: {
+    readonly passed: boolean;
+    readonly folds: readonly FoldResult[];
+    readonly elapsedMs: number;
+  };
+  readonly compatibility: Readonly<Record<EngineSummary["engine"], CompatibilityEvidence>>;
+  readonly performance: {
+    readonly caseElapsedMs: ElapsedSummary;
+    readonly totalElapsedMs: number;
+  };
+  readonly coverage: {
+    readonly digits7And8: "unsupported";
+    readonly playwrightWebKit: "compatibility proxy; not Safari";
+  };
+}
+
+export interface SpikeRunDependencies {
+  readonly buildCandidate: () => Promise<CandidateEvidence>;
+  readonly evaluateFolds: () => Promise<readonly FoldResult[]>;
+  readonly evaluateEngines: (bank: PrototypeBank) => Promise<readonly EvaluatedEngine[]>;
+  readonly environment: SpikeEnvironment;
+  readonly writeArtifact: (relativePath: string, value: unknown) => Promise<void>;
+  readonly writeReport: (summary: SpikeSummary) => Promise<void>;
+  readonly progress: (stage: SpikeProgressStage) => void;
+  readonly now: () => number;
 }
 
 const repositoryRoot = path.resolve(fileURLToPath(new URL("../", import.meta.url)));
@@ -76,21 +155,24 @@ function caseWithinFormalBudget(measurement: EngineCaseMeasurement): boolean {
 export function summarizeEngine(
   engine: EngineSummary["engine"],
   cases: readonly EngineCaseMeasurement[],
+  expectedCaseIds: readonly string[],
 ): EngineSummary {
-  if (cases.length === 0) {
-    return { engine, formalPassed: false, compatibility: "not-run" };
-  }
-
   const hasHardFailure = cases.some((measurement) => (
     !measurement.gridFound || measurement.wrongCertainCells !== 0
   ));
+  const actualIds = new Set(cases.map((measurement) => measurement.id));
+  const expectedIds = new Set(expectedCaseIds);
+  const complete = actualIds.size === cases.length
+    && expectedIds.size === expectedCaseIds.length
+    && cases.length === expectedCaseIds.length
+    && expectedCaseIds.every((id) => actualIds.has(id));
   const withinBudget = cases.every(caseWithinFormalBudget);
   return {
     engine,
-    formalPassed: engine === "chromium" && withinBudget,
+    formalPassed: engine === "chromium" && complete && withinBudget,
     compatibility: hasHardFailure
       ? "not-guaranteed"
-      : withinBudget ? "guaranteed" : "limited",
+      : complete && withinBudget ? "guaranteed" : "limited",
   };
 }
 
@@ -99,9 +181,10 @@ export function summarizeAdoption(
   chromiumCases: readonly EngineCaseMeasurement[],
   foldPasses: readonly boolean[],
 ): AdoptionSummary {
+  const caseIds = chromiumCases.map((measurement) => measurement.id);
   const formalPassed = hasBank
     && chromiumCases.length === 16
-    && summarizeEngine("chromium", chromiumCases).formalPassed
+    && summarizeEngine("chromium", chromiumCases, caseIds).formalPassed
     && foldPasses.length === 4
     && foldPasses.every(Boolean);
   return {
@@ -139,7 +222,17 @@ function artifactPath(artifactDirectory: string, ...parts: readonly string[]): s
 async function writeJson(artifactDirectory: string, parts: readonly string[], value: unknown): Promise<void> {
   const outputPath = artifactPath(artifactDirectory, ...parts);
   await mkdir(path.dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  const temporaryPath = `${outputPath}.tmp-${process.pid}`;
+  await writeFile(temporaryPath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  await rename(temporaryPath, outputPath);
+}
+
+export function createAtomicArtifactWriter(
+  artifactDirectory: string,
+): SpikeRunDependencies["writeArtifact"] {
+  return async (relativePath, value) => {
+    await writeJson(artifactDirectory, relativePath.split("/"), value);
+  };
 }
 
 function fallbackGeometry(image: PixelImage, fixture: FixtureCase): GridGeometry {
@@ -150,6 +243,42 @@ function fallbackGeometry(image: PixelImage, fixture: FixtureCase): GridGeometry
     pitchX: image.width / fixture.columns,
     pitchY: image.height / fixture.rows,
     score: 0,
+  };
+}
+
+export function serializeCaseCells(
+  cells: readonly RecognizedCell[],
+  expectedLabels: readonly CellLabel[],
+  uncertainCellIndices: readonly number[],
+): readonly unknown[] {
+  const uncertain = new Set(uncertainCellIndices);
+  return cells.map((cell) => {
+    const expectedLabel = expectedLabels[cell.index] ?? null;
+    return {
+      index: cell.index,
+      label: cell.label,
+      expectedLabel,
+      confidence: cell.confidence,
+      candidates: cell.candidates,
+      uncertain: uncertain.has(cell.index),
+      correct: cell.label === expectedLabel,
+    };
+  });
+}
+
+export function describeDerivativeArtifact(derived: DerivedEvaluationImage): {
+  readonly scale: number;
+  readonly encoding: string;
+  readonly width: number;
+  readonly height: number;
+  readonly rgbaSha256: string;
+} {
+  return {
+    scale: derived.scale,
+    encoding: derived.encoding,
+    width: derived.image.width,
+    height: derived.image.height,
+    rgbaSha256: createHash("sha256").update(derived.image.data).digest("hex"),
   };
 }
 
@@ -181,11 +310,10 @@ async function evaluateImage(
   const stem = `${fixture.id}-${derived.name}`;
   await writeJson(artifactDirectory, ["engines", engine, `${stem}.json`], {
     ...measurement,
+    derivative: describeDerivativeArtifact(derived),
     status: result.status,
     geometry: result.geometry,
-    labels: result.cells.map((cell) => cell.label),
-    uncertainCellIndices: result.uncertainCellIndices,
-    expectedLabels: fixture.expectedCells,
+    cells: serializeCaseCells(result.cells, fixture.expectedCells, result.uncertainCellIndices),
   });
   const overlayPath = artifactPath(artifactDirectory, "engines", engine, `${stem}.png`);
   await mkdir(path.dirname(overlayPath), { recursive: true });
@@ -206,13 +334,26 @@ async function derivedImages(
     return (await deriveImages(fixture.imagePath)).map((derived) => ({
       name: derived.name,
       image: derived.image,
+      scale: derived.scale,
+      encoding: derived.name === "source"
+        ? "sharp-source"
+        : derived.name === "jpeg-q75" ? "sharp-jpeg-075" : "sharp-lanczos3",
     }));
   }
   return (await deriveBrowserImages(engine, fixture.imagePath)).map((derived) => ({
     name: derived.name,
     image: derived.image,
     version: derived.browserVersion,
+    scale: derived.scale,
+    encoding: derived.encoding,
   }));
+}
+
+function expectedCaseIds(engine: EngineSummary["engine"], fixtures: readonly FixtureCase[]): readonly string[] {
+  const derivatives = engine === "sharp"
+    ? ["source", "scale-075", "scale-125", "jpeg-q75"]
+    : ["source", "canvas-scale-075", "canvas-scale-125", "canvas-jpeg-q75"];
+  return fixtures.flatMap((fixture) => derivatives.map((derivative) => `${fixture.id}:${derivative}`));
 }
 
 async function evaluateEngine(
@@ -223,6 +364,7 @@ async function evaluateEngine(
 ): Promise<EvaluatedEngine> {
   const cases: EngineCaseMeasurement[] = [];
   const versions = new Set<string>();
+  const expectedIds = expectedCaseIds(engine, fixtures);
   try {
     for (const fixture of fixtures) {
       for (const derived of await derivedImages(engine, fixture)) {
@@ -230,20 +372,16 @@ async function evaluateEngine(
         cases.push(await evaluateImage(engine, fixture, derived, bank, artifactDirectory));
       }
     }
-    return { summary: summarizeEngine(engine, cases), cases, versions: [...versions].sort() };
+    return { summary: summarizeEngine(engine, cases, expectedIds), cases, versions: [...versions].sort() };
   } catch (error) {
     const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
-    const failureCase: EngineCaseMeasurement = {
-      id: `${engine}:evaluation-error`,
-      kind: "source",
-      gridFound: false,
-      wrongCertainCells: 0,
-      uncertainCells: 480,
-      elapsedMs: 0,
-    };
     return {
-      summary: summarizeEngine(engine, [...cases, failureCase]),
-      cases: [...cases, failureCase],
+      summary: {
+        engine,
+        formalPassed: false,
+        compatibility: "limited",
+      },
+      cases,
       versions: [...versions].sort(),
       error: message,
     };
@@ -251,7 +389,11 @@ async function evaluateEngine(
 }
 
 function notRunEngine(engine: EngineSummary["engine"]): EvaluatedEngine {
-  return { summary: summarizeEngine(engine, []), cases: [], versions: [] };
+  return {
+    summary: { engine, formalPassed: false, compatibility: "not-run" },
+    cases: [],
+    versions: [],
+  };
 }
 
 function foldElapsedValues(folds: readonly FoldResult[]): readonly number[] {
@@ -262,70 +404,94 @@ function hashSummary(summary: unknown): string {
   return createHash("sha256").update(JSON.stringify(summary)).digest("hex");
 }
 
-export async function main(): Promise<number> {
-  const startedAt = Date.now();
-  const artifactDirectory = await recreateArtifactDirectory(repositoryRoot, artifactParts);
-  const packageJson = JSON.parse(await readFile(path.join(repositoryRoot, "package.json"), "utf8")) as {
-    readonly devDependencies?: Readonly<Record<string, string>>;
+const engineNames = ["chromium", "firefox", "webkit", "sharp"] as const;
+
+function candidateArtifact(candidate: CandidateEvidence): unknown {
+  return {
+    status: candidate.bank === null ? "rejected" : "thresholded",
+    bankHash: candidate.serializedBank?.sha256 ?? null,
+    prototypeCounts: candidate.prototypeCounts,
+    thresholds: candidate.thresholds,
+    calibration: candidate.calibration,
+    evaluationCases: candidate.evaluationCases,
+    chromiumVersion: candidate.chromiumVersion,
+    elapsedMs: candidate.elapsedMs,
   };
-  const fixtures = await loadFixtureCases();
+}
 
-  reportProgress("candidate:start");
-  const candidateStartedAt = Date.now();
-  const candidate = await buildFinalBankCandidate();
-  const candidateElapsedMs = Date.now() - candidateStartedAt;
-  reportProgress("candidate:complete");
-  const serializedGeometry = encodePrototypeBank({
-    ...candidate.geometry,
-    thresholds: { relativeMargin: 0, absoluteDistance: Number.MAX_VALUE },
-  });
+function compatibilityRecord(engines: readonly EvaluatedEngine[]): SpikeSummary["compatibility"] {
+  const byName = new Map(engines.map((engine) => [engine.summary.engine, engine]));
+  return Object.fromEntries(engineNames.map((engineName) => {
+    const evaluated = byName.get(engineName) ?? {
+      summary: { engine: engineName, formalPassed: false, compatibility: "limited" as const },
+      cases: [],
+      versions: [],
+      error: "Engine evaluation did not return a result.",
+    };
+    return [engineName, {
+      ...evaluated.summary,
+      cases: evaluated.cases,
+      versions: evaluated.versions,
+      ...(evaluated.error === undefined ? {} : { error: evaluated.error }),
+    }];
+  })) as unknown as SpikeSummary["compatibility"];
+}
 
-  reportProgress("folds:start");
-  const foldsStartedAt = Date.now();
-  const folds = await evaluateLeaveOneScreenOut(fixtures, "chromium");
-  const foldsElapsedMs = Date.now() - foldsStartedAt;
-  reportProgress("folds:complete");
+export async function runSpike(
+  dependencies: SpikeRunDependencies,
+): Promise<{ readonly exitCode: 0 | 1; readonly summary: SpikeSummary }> {
+  const startedAt = dependencies.now();
+  dependencies.progress("candidate:start");
+  const candidate = await dependencies.buildCandidate();
+  dependencies.progress("candidate:complete");
+  await dependencies.writeArtifact("checkpoints/candidate.json", candidateArtifact(candidate));
 
-  const engineNames = ["chromium", "firefox", "webkit", "sharp"] as const;
-  const engines: EvaluatedEngine[] = [];
-  if (candidate.bank === null) {
-    engines.push(...engineNames.map(notRunEngine));
-  } else {
-    for (const engine of engineNames) {
-      engines.push(await evaluateEngine(engine, fixtures, candidate.bank, artifactDirectory));
-    }
-  }
+  dependencies.progress("folds:start");
+  const foldsStartedAt = dependencies.now();
+  const folds = await dependencies.evaluateFolds();
+  const foldsElapsedMs = dependencies.now() - foldsStartedAt;
+  dependencies.progress("folds:complete");
+  await dependencies.writeArtifact("checkpoints/folds.json", folds);
 
-  const chromiumCases = engines.find((engine) => engine.summary.engine === "chromium")?.cases ?? [];
-  const adoption = summarizeAdoption(
-    candidate.bank !== null,
-    chromiumCases,
-    folds.map((fold) => fold.passes),
-  );
-  const allMeasuredElapsed = engines.flatMap((engine) => engine.cases.map((measurement) => measurement.elapsedMs));
-  const measuredElapsed = allMeasuredElapsed.length === 0 ? foldElapsedValues(folds) : allMeasuredElapsed;
-  const summary = {
+  const evaluatedEngines = candidate.bank === null
+    ? engineNames.map(notRunEngine)
+    : await dependencies.evaluateEngines(candidate.bank);
+  const compatibility = compatibilityRecord(evaluatedEngines);
+  const chromiumCases = compatibility.chromium.cases;
+  const foldsPassed = folds.length === 4 && folds.every((fold) => fold.passes);
+  const formalPassed = candidate.bank !== null
+    && compatibility.chromium.formalPassed
+    && foldsPassed;
+  const adoption: AdoptionSummary = {
+    decision: formalPassed ? "multi-prototype-adopted" : "multi-prototype-rejected",
+    formalPassed,
+  };
+  const measuredEngineElapsed = evaluatedEngines.flatMap((engine) => (
+    engine.cases.map((measurement) => measurement.elapsedMs)
+  ));
+  const measuredElapsed = measuredEngineElapsed.length === 0
+    ? foldElapsedValues(folds)
+    : measuredEngineElapsed;
+  const summary: SpikeSummary = {
     decision: adoption.decision,
     environment: {
-      node: process.version,
-      platform: process.platform,
-      architecture: process.arch,
-      dependencyRanges: {
-        playwright: packageJson.devDependencies?.playwright ?? null,
-        sharp: packageJson.devDependencies?.sharp ?? null,
-      },
-      engineVersions: Object.fromEntries(engines.map((engine) => [engine.summary.engine, engine.versions])),
+      ...dependencies.environment,
+      chromiumVersion: candidate.chromiumVersion,
+      engineVersions: Object.fromEntries(engineNames.map((engineName) => [
+        engineName,
+        compatibility[engineName].versions,
+      ])) as SpikeSummary["environment"]["engineVersions"],
     },
     candidate: {
       status: candidate.bank === null ? "rejected" : "thresholded",
-      bankHash: candidate.bank === null ? null : encodePrototypeBank(candidate.bank).sha256,
-      prototypeCounts: serializedGeometry.prototypeCounts,
+      bankHash: candidate.serializedBank?.sha256 ?? null,
+      prototypeCounts: candidate.prototypeCounts,
       thresholds: candidate.thresholds,
       calibration: {
         evaluatedThresholdPairs: candidate.calibration.length,
         passingThresholdPairs: candidate.calibration.filter((evaluation) => evaluation.passes).length,
       },
-      elapsedMs: candidateElapsedMs,
+      elapsedMs: candidate.elapsedMs,
     },
     chromiumFormal: {
       passed: adoption.formalPassed,
@@ -333,53 +499,225 @@ export async function main(): Promise<number> {
       evaluatedCases: chromiumCases,
     },
     wholeScreenHoldout: {
-      passed: folds.length === 4 && folds.every((fold) => fold.passes),
+      passed: foldsPassed,
       folds,
       elapsedMs: foldsElapsedMs,
     },
-    compatibility: Object.fromEntries(engines.map((engine) => [engine.summary.engine, {
-      ...engine.summary,
-      cases: engine.cases,
-      versions: engine.versions,
-      ...(engine.error === undefined ? {} : { error: engine.error }),
-    }])),
+    compatibility,
     performance: {
       caseElapsedMs: elapsedSummary(measuredElapsed),
-      totalElapsedMs: Date.now() - startedAt,
+      totalElapsedMs: dependencies.now() - startedAt,
     },
     coverage: {
       digits7And8: "unsupported",
       playwrightWebKit: "compatibility proxy; not Safari",
     },
   };
-  reportProgress("artifacts:start");
-  await writeJson(artifactDirectory, ["candidate.json"], {
-    status: summary.candidate.status,
-    prototypeCounts: summary.candidate.prototypeCounts,
-    thresholds: summary.candidate.thresholds,
-    calibration: candidate.calibration,
-    evaluationCases: candidate.evaluationCases,
-  });
-  await writeJson(artifactDirectory, ["folds.json"], folds);
-  await writeJson(artifactDirectory, ["engines.json"], summary.compatibility);
-  await writeJson(artifactDirectory, ["summary.json"], {
+
+  dependencies.progress("artifacts:start");
+  if (candidate.serializedBank !== null) {
+    await dependencies.writeArtifact("prototype-bank.json", candidate.serializedBank);
+  }
+  await dependencies.writeArtifact("candidate.json", candidateArtifact(candidate));
+  await dependencies.writeArtifact("folds.json", folds);
+  await dependencies.writeArtifact("engines.json", summary.compatibility);
+  await dependencies.writeArtifact("summary.json", {
     ...summary,
     evidenceHash: hashSummary(summary),
   });
-  reportProgress("artifacts:complete");
+  await dependencies.writeReport(summary);
+  dependencies.progress("artifacts:complete");
+  return { exitCode: formalPassed ? 0 : 1, summary };
+}
+
+function formatValue(value: number | null): string {
+  return value === null ? "not measured" : `${value.toFixed(3)} ms`;
+}
+
+export function renderSpikeReport(summary: SpikeSummary): string {
+  const failedCandidateCases = summary.chromiumFormal.candidateCases
+    .filter((measurement) => !measurement.gridFound)
+    .map((measurement) => `- \`${measurement.id}\``)
+    .join("\n") || "- none";
+  const foldRows = summary.wholeScreenHoldout.folds.map((fold) => (
+    `| \`${fold.heldOutFixtureId}\` | \`${JSON.stringify(fold.prototypeCounts)}\` | `
+      + `\`${fold.absentTrainingLabels.join(",") || "none"}\` | `
+      + `\`${fold.thresholds === null ? "null" : JSON.stringify(fold.thresholds)}\` | ${fold.passes} |`
+  )).join("\n");
+  const compatibilityRows = engineNames.map((engine) => {
+    const evidence = summary.compatibility[engine];
+    return `| ${engine} | ${engine === "chromium" ? "formal" : "informational"} | \`${evidence.compatibility}\` |`;
+  }).join("\n");
+  return `# Multi-Prototype Recognition Spike Report
+
+## Decision
+
+${summary.decision}
+
+## Environment
+
+- Platform: ${summary.environment.platform} ${summary.environment.architecture}
+- Node.js: ${summary.environment.node}
+- Playwright: ${summary.environment.dependencyVersions.playwright ?? "unknown"}
+- Sharp: ${summary.environment.dependencyVersions.sharp ?? "unknown"}
+- Chromium: ${summary.environment.chromiumVersion}
+
+## Prototype Bank
+
+Prototype counts: \`${JSON.stringify(summary.candidate.prototypeCounts)}\`. Thresholds: \`${JSON.stringify(summary.candidate.thresholds)}\`. Bank SHA-256: \`${summary.candidate.bankHash ?? "null"}\`.
+
+## Chromium Formal Results
+
+\`formalPassed: ${summary.chromiumFormal.passed}\`. Candidate grid failures:
+
+${failedCandidateCases}
+
+All ${summary.chromiumFormal.candidateCases.length} final-candidate cases include measured \`elapsedMs\` values in the generated summary.
+
+## Whole-Screen Holdout Results
+
+| Held out | Prototype counts | Absent labels | Threshold | Pass |
+| --- | --- | --- | --- | --- |
+${foldRows}
+
+## Compatibility Matrix
+
+| Engine | Role | Result |
+| --- | --- | --- |
+${compatibilityRows}
+
+Playwright WebKit is not Safari and does not provide a Safari compatibility guarantee.
+
+## Visual Inspection
+
+${summary.candidate.status === "rejected"
+    ? "Engine overlays were not generated because no thresholded bank existed."
+    : "Engine case JSON and PNG overlays were generated under the ignored recognition artifact directory."}
+
+## Performance
+
+Case elapsed min/median/max: ${formatValue(summary.performance.caseElapsedMs.min)} / ${formatValue(summary.performance.caseElapsedMs.median)} / ${formatValue(summary.performance.caseElapsedMs.max)}. Total runner elapsed: ${summary.performance.totalElapsedMs.toFixed(3)} ms.
+
+## Coverage Limits
+
+- Digits 7 and 8 remain unsupported and unverified.
+- Firefox, Playwright WebKit, and Sharp compatibility never override Chromium adoption.
+- User-entered columns, rows, and total mines remain authoritative.
+
+## Follow-up
+
+Improve grid detection for the rejected Chromium derivatives and rerun the same formal gate.
+`;
+}
+
+async function writeTextAtomically(outputPath: string, value: string): Promise<void> {
+  await mkdir(path.dirname(outputPath), { recursive: true });
+  const temporaryPath = `${outputPath}.tmp-${process.pid}`;
+  await writeFile(temporaryPath, value, "utf8");
+  await rename(temporaryPath, outputPath);
+}
+
+interface PackageLockVersions {
+  readonly packages?: Readonly<Record<string, { readonly version?: string }>>;
+}
+
+export function resolveDependencyVersions(
+  packageLock: PackageLockVersions,
+): SpikeEnvironment["dependencyVersions"] {
+  return {
+    playwright: packageLock.packages?.["node_modules/playwright"]?.version ?? null,
+    sharp: packageLock.packages?.["node_modules/sharp"]?.version ?? null,
+  };
+}
+
+async function resolvedEnvironment(): Promise<SpikeEnvironment> {
+  const packageLock = JSON.parse(
+    await readFile(path.join(repositoryRoot, "package-lock.json"), "utf8"),
+  ) as PackageLockVersions;
+  return {
+    node: process.version,
+    platform: process.platform,
+    architecture: process.arch,
+    dependencyVersions: resolveDependencyVersions(packageLock),
+  };
+}
+
+export async function createProductionDependencies(options: {
+  readonly artifactDirectory: string;
+  readonly reportPath: string;
+}): Promise<SpikeRunDependencies> {
+  const fixtures = await loadFixtureCases();
+  return {
+    buildCandidate: async () => {
+      const startedAt = Date.now();
+      const candidate = await buildFinalBankCandidate();
+      const serializedGeometry = encodePrototypeBank({
+        ...candidate.geometry,
+        thresholds: { relativeMargin: 0, absoluteDistance: Number.MAX_VALUE },
+      });
+      return {
+        bank: candidate.bank,
+        serializedBank: candidate.bank === null ? null : encodePrototypeBank(candidate.bank),
+        prototypeCounts: serializedGeometry.prototypeCounts,
+        thresholds: candidate.thresholds,
+        calibration: candidate.calibration,
+        evaluationCases: candidate.evaluationCases,
+        chromiumVersion: candidate.chromiumVersion,
+        elapsedMs: Date.now() - startedAt,
+      };
+    },
+    evaluateFolds: async () => evaluateLeaveOneScreenOut(fixtures, "chromium"),
+    evaluateEngines: async (bank) => {
+      const engines: EvaluatedEngine[] = [];
+      for (const engine of engineNames) {
+        engines.push(await evaluateEngine(engine, fixtures, bank, options.artifactDirectory));
+      }
+      return engines;
+    },
+    environment: await resolvedEnvironment(),
+    writeArtifact: createAtomicArtifactWriter(options.artifactDirectory),
+    writeReport: async (summary) => {
+      await writeTextAtomically(options.reportPath, renderSpikeReport(summary));
+    },
+    progress: reportProgress,
+    now: Date.now,
+  };
+}
+
+export async function main(): Promise<number> {
+  const artifactDirectory = await recreateArtifactDirectory(repositoryRoot, artifactParts);
+  const dependencies = await createProductionDependencies({
+    artifactDirectory,
+    reportPath: path.join(
+      repositoryRoot,
+      "docs",
+      "superpowers",
+      "spikes",
+      "2026-08-23-multi-prototype-recognition-report.md",
+    ),
+  });
+  const result = await runSpike(dependencies);
   console.log(JSON.stringify({
-    decision: adoption.decision,
+    decision: result.summary.decision,
     summaryPath: artifactPath(artifactDirectory, "summary.json"),
   }, null, 2));
-  return adoption.formalPassed ? 0 : 1;
+  return result.exitCode;
+}
+
+export async function runCliAndExit(
+  run: () => Promise<number> = main,
+  exit: (exitCode: number) => void = (exitCode) => process.exit(exitCode),
+): Promise<void> {
+  try {
+    const exitCode = await run();
+    exit(exitCode);
+  } catch (error) {
+    console.error(error instanceof Error ? `${error.name}: ${error.message}` : error);
+    exit(1);
+  }
 }
 
 const currentModulePath = process.argv[1];
 if (currentModulePath !== undefined && import.meta.url === pathToFileURL(path.resolve(currentModulePath)).href) {
-  main().then((exitCode) => {
-    process.exitCode = exitCode;
-  }).catch((error: unknown) => {
-    console.error(error instanceof Error ? `${error.name}: ${error.message}` : error);
-    process.exitCode = 1;
-  });
+  void runCliAndExit();
 }

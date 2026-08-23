@@ -85,6 +85,7 @@ describe("final prototype bank generation", () => {
 
       expect(error.candidate.thresholds).toBeNull();
       expect(error.candidate.bank).toBeNull();
+      expect(error.candidate.chromiumVersion).not.toBe("");
       expect(error.candidate.calibration).toHaveLength(238);
       expect(error.candidate.evaluationCases.map((evaluationCase) => evaluationCase.id)).toEqual([
         "0:source", "0:canvas-scale-075", "0:canvas-scale-125", "0:canvas-jpeg-q75",
@@ -101,7 +102,9 @@ describe("final prototype bank generation", () => {
       ]);
       expect(error.candidate.evaluationCases.every((evaluationCase) => evaluationCase.correctCells === 0
         && evaluationCase.wrongCertainCells === 0
-        && evaluationCase.uncertainCells === 480)).toBe(true);
+        && evaluationCase.uncertainCells === 480
+        && Number.isFinite(evaluationCase.elapsedMs)
+        && evaluationCase.elapsedMs >= 0)).toBe(true);
       await expect(access(firstOutputPath)).rejects.toMatchObject({ code: "ENOENT" });
       await expect(access(secondOutputPath)).rejects.toMatchObject({ code: "ENOENT" });
       return;

@@ -26,6 +26,7 @@ export interface FinalCaseEvaluation {
   readonly correctCells: number;
   readonly wrongCertainCells: number;
   readonly uncertainCells: number;
+  readonly elapsedMs: number;
 }
 
 export interface FinalBankCandidate {
@@ -34,6 +35,7 @@ export interface FinalBankCandidate {
   readonly evaluationCases: readonly FinalCaseEvaluation[];
   readonly thresholds: ThresholdPair | null;
   readonly bank: PrototypeBank | null;
+  readonly chromiumVersion: string;
 }
 
 export class NoPassingThresholdError extends Error {
@@ -87,6 +89,7 @@ function buildCalibrationCase(
         correctCells: 0,
         wrongCertainCells: 0,
         uncertainCells: fixture.expectedCells.length,
+        elapsedMs: recognition.elapsedMs,
       },
     };
   }
@@ -104,6 +107,7 @@ function buildCalibrationCase(
           correctCells: 0,
           wrongCertainCells: 0,
           uncertainCells: fixture.expectedCells.length,
+          elapsedMs: recognition.elapsedMs,
         },
       };
     }
@@ -116,11 +120,15 @@ function buildCalibrationCase(
   const calibration = { id: caseId(fixture, derived), kind: caseKind(derived), cells };
   return {
     calibration,
-    evaluation: evaluateCase(calibration, null),
+    evaluation: evaluateCase(calibration, null, recognition.elapsedMs),
   };
 }
 
-function evaluateCase(calibrationCase: CalibrationCase, thresholds: ThresholdPair | null): FinalCaseEvaluation {
+function evaluateCase(
+  calibrationCase: CalibrationCase,
+  thresholds: ThresholdPair | null,
+  elapsedMs: number,
+): FinalCaseEvaluation {
   let correctCells = 0;
   let wrongCertainCells = 0;
   let uncertainCells = 0;
@@ -139,6 +147,7 @@ function evaluateCase(calibrationCase: CalibrationCase, thresholds: ThresholdPai
     correctCells,
     wrongCertainCells,
     uncertainCells,
+    elapsedMs,
   };
 }
 
@@ -162,9 +171,11 @@ async function buildFinalBankEvaluation(): Promise<BuiltFinalBankEvaluation> {
   const geometry = geometryFromBank(roundTrippedBank);
 
   const formalCases: CollectedFormalCase[] = [];
+  const chromiumVersions = new Set<string>();
   for (const fixture of fixtures) {
     const derivedImages = await deriveBrowserImages("chromium", fixture.imagePath);
     for (const derived of derivedImages) {
+      chromiumVersions.add(derived.browserVersion);
       formalCases.push(buildCalibrationCase(fixture, derived, roundTrippedBank));
     }
   }
@@ -181,7 +192,7 @@ async function buildFinalBankEvaluation(): Promise<BuiltFinalBankEvaluation> {
   const bank = thresholds === null ? null : { ...geometry, thresholds };
   const evaluationCases = formalCases.map((formalCase) => formalCase.calibration === null
     ? formalCase.evaluation
-    : evaluateCase(formalCase.calibration, thresholds));
+    : evaluateCase(formalCase.calibration, thresholds, formalCase.evaluation.elapsedMs));
   return {
     candidate: {
       geometry,
@@ -189,6 +200,7 @@ async function buildFinalBankEvaluation(): Promise<BuiltFinalBankEvaluation> {
       evaluationCases,
       thresholds,
       bank,
+      chromiumVersion: [...chromiumVersions].sort().join(","),
     },
     evaluationCases,
   };
