@@ -133,16 +133,20 @@ function initialCenters(samples: readonly ScaledSample[], count: number): Float6
   return centers.map((center) => new Float64Array(center));
 }
 
-function refineCenters(samples: readonly ScaledSample[], centers: Float64Array[], iterations: number): Float64Array[] {
-  let current = centers;
+export function refinePrototypeCenters(
+  samples: readonly Float64Array[],
+  centers: readonly Float64Array[],
+  iterations: number,
+): Float64Array[] {
+  let current = centers.map((center) => new Float64Array(center));
   for (let round = 0; round < iterations; round += 1) {
     const sums = current.map(() => new Float64Array(FEATURE_LENGTH));
     const counts = current.map(() => 0);
-    for (const sample of samples) {
+    for (const vector of samples) {
       let nearestIndex = 0;
-      let nearestDistance = squaredDistance(sample.vector, current[0]!);
+      let nearestDistance = squaredDistance(vector, current[0]!);
       for (let index = 1; index < current.length; index += 1) {
-        const distance = squaredDistance(sample.vector, current[index]!);
+        const distance = squaredDistance(vector, current[index]!);
         if (distance < nearestDistance) {
           nearestDistance = distance;
           nearestIndex = index;
@@ -150,7 +154,7 @@ function refineCenters(samples: readonly ScaledSample[], centers: Float64Array[]
       }
       counts[nearestIndex] = counts[nearestIndex]! + 1;
       for (let index = 0; index < FEATURE_LENGTH; index += 1) {
-        sums[nearestIndex]![index] = sums[nearestIndex]![index]! + sample.vector[index]!;
+        sums[nearestIndex]![index] = sums[nearestIndex]![index]! + vector[index]!;
       }
     }
     current = current.map((center, cluster) => {
@@ -184,8 +188,8 @@ export function buildPrototypeGeometry(
   for (const label of CELL_LABEL_ORDER) {
     const samplesForLabel = scaled.filter((sample) => sample.label === label);
     if (samplesForLabel.length === 0) continue;
-    const centers = refineCenters(
-      samplesForLabel,
+    const centers = refinePrototypeCenters(
+      samplesForLabel.map((sample) => sample.vector),
       initialCenters(samplesForLabel, Math.min(options.maxPrototypesPerLabel, samplesForLabel.length)),
       options.iterations,
     );
