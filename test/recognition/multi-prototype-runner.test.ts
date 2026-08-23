@@ -23,6 +23,7 @@ import {
 } from "../../scripts/run-multi-prototype-spike.js";
 import type { FoldResult } from "../../scripts/recognition/evaluate-folds.js";
 import type { PrototypeBank } from "../../src/recognition/prototype-bank.js";
+import { createFormalEvidenceDirectory } from "./formal-evidence-directory.js";
 import type { FixtureCase } from "./fixture-manifest.js";
 
 function measurement(overrides: Partial<EngineCaseMeasurement> = {}): EngineCaseMeasurement {
@@ -79,6 +80,19 @@ function candidate(
 }
 
 describe("multi-prototype spike summary", () => {
+  it("creates an explicit formal evidence directory once and preserves it", async () => {
+    const parent = await mkdtemp(path.join(tmpdir(), "formal-evidence-option-"));
+    const requested = path.join(parent, "persisted");
+    try {
+      const selected = await createFormalEvidenceDirectory(requested);
+
+      expect(selected).toEqual({ directory: requested, cleanup: false });
+      await expect(createFormalEvidenceDirectory(requested)).rejects.toMatchObject({ code: "EEXIST" });
+    } finally {
+      await rm(parent, { recursive: true, force: true });
+    }
+  });
+
   it("reports resolved dependency versions instead of manifest ranges", () => {
     expect(resolveDependencyVersions({
       packages: {
@@ -353,28 +367,15 @@ describe("multi-prototype spike summary", () => {
     ]);
     expect(report).toEqual(result.summary);
     expect(artifacts.get("candidate/cases/fixture-source.json")).toEqual(candidateCase);
-    expect(renderSpikeReport(result.summary).match(/multi-prototype-rejected/g)).toHaveLength(1);
-
-    const coherentLegacySummary = {
-      ...result.summary,
-      candidate: { ...result.summary.candidate, elapsedMs: 12_726 },
-      wholeScreenHoldout: { ...result.summary.wholeScreenHoldout, elapsedMs: null },
-      performance: {
-        caseElapsedMs: { min: 60.531917, median: 462.845375, max: 696.938375 },
-        candidateCaseElapsedMs: { min: null, median: null, max: null },
-        foldCaseElapsedMs: { min: null, median: null, max: null },
-        engineCaseElapsedMs: { min: null, median: null, max: null },
-        totalElapsedMs: 48_889,
-      },
-    } as unknown as SpikeSummary;
-    const coherentReport = renderSpikeReport(coherentLegacySummary);
-    expect(coherentReport).toContain("Candidate build elapsed: 12726.000 ms");
-    expect(coherentReport).toContain("Fold evaluation elapsed: not measured");
-    expect(coherentReport).toContain("Total runner elapsed: 48889.000 ms");
-    expect(coherentReport).toContain(
-      "Recorded case min/median/max: 60.532 ms / 462.845 ms / 696.938 ms",
+    const renderedReport = renderSpikeReport(result.summary);
+    expect(renderedReport.match(/multi-prototype-rejected/g)).toHaveLength(1);
+    expect(renderedReport).toContain(`Candidate build elapsed: ${result.summary.candidate.elapsedMs.toFixed(3)} ms`);
+    expect(renderedReport).toContain(
+      `Fold evaluation elapsed: ${result.summary.wholeScreenHoldout.elapsedMs?.toFixed(3)} ms`,
     );
-    expect(coherentReport.match(/^## Follow-up$/gm)).toHaveLength(1);
+    expect(renderedReport).toContain(
+      `Total runner elapsed: ${result.summary.performance.totalElapsedMs.toFixed(3)} ms`,
+    );
   });
 
   it("does not reject a passing Chromium bank for compatibility-only failures", async () => {
@@ -435,5 +436,45 @@ describe("multi-prototype spike summary", () => {
     const foldOnlyReport = renderSpikeReport(foldOnlySummary);
     expect(foldOnlyReport).not.toContain("Improve grid detection");
     expect(foldOnlyReport).toContain("Improve held-out-screen generalization.");
+
+    const engineGridFailureSummary: SpikeSummary = {
+      ...result.summary,
+      decision: "multi-prototype-rejected",
+      chromiumFormal: {
+        ...result.summary.chromiumFormal,
+        passed: false,
+        evaluatedCases: [measurement({ id: "engine:grid-failure", gridFound: false })],
+      },
+      compatibility: {
+        ...result.summary.compatibility,
+        chromium: {
+          ...result.summary.compatibility.chromium,
+          formalPassed: false,
+          compatibility: "not-guaranteed",
+          cases: [measurement({ id: "engine:grid-failure", gridFound: false })],
+        },
+      },
+    };
+    const engineGridFailureReport = renderSpikeReport(engineGridFailureSummary);
+    expect(engineGridFailureReport).toContain("`engine:grid-failure`");
+    expect(engineGridFailureReport).toContain("Improve grid detection for the 1 rejected Chromium derivatives.");
+
+    const interruptedSummary: SpikeSummary = {
+      ...result.summary,
+      decision: "multi-prototype-rejected",
+      chromiumFormal: { ...result.summary.chromiumFormal, passed: false },
+      compatibility: {
+        ...result.summary.compatibility,
+        chromium: {
+          ...result.summary.compatibility.chromium,
+          formalPassed: false,
+          compatibility: "limited",
+          error: "browser closed",
+        },
+      },
+    };
+    const interruptedReport = renderSpikeReport(interruptedSummary);
+    expect(interruptedReport).toContain("Resolve the Chromium evaluation error before rerunning the matrix.");
+    expect(interruptedReport.match(/^## Follow-up$/gm)).toHaveLength(1);
   });
 });

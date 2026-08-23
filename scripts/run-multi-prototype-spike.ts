@@ -583,29 +583,39 @@ function formatValue(value: number | null): string {
 }
 
 export function renderSpikeReport(summary: SpikeSummary): string {
-  const gridFailureIds = summary.chromiumFormal.candidateCases
-    .filter((measurement) => !measurement.gridFound)
-    .map((measurement) => measurement.id);
+  const gridFailureIds = [...new Set([
+    ...summary.chromiumFormal.candidateCases,
+    ...summary.chromiumFormal.evaluatedCases,
+  ].filter((measurement) => !measurement.gridFound).map((measurement) => measurement.id))];
+  const chromiumError = summary.compatibility.chromium.error;
+  const chromiumEvaluationFailed = chromiumError !== undefined
+    || summary.compatibility.chromium.compatibility === "not-guaranteed";
   const prototypeCounts = summary.candidate.prototypeLabels.map((label, index) => (
     `${String(label)}:${summary.candidate.prototypeCounts[index] ?? 0}`
   )).join(", ");
-  const failedCandidateCases = gridFailureIds
+  const gridFailureCases = gridFailureIds
     .map((id) => `- \`${id}\``)
     .join("\n") || "- none";
   const calibrationOutcome = summary.decision === "multi-prototype-adopted"
     ? "The complete formal matrix passed with the selected shared thresholds."
     : gridFailureIds.length > 0
       ? `The full matrix remained incomplete because ${gridFailureIds.length} required cases had no grid.`
-      : summary.candidate.thresholds === null
-        ? "The complete measured matrix produced no passing shared threshold pair."
-        : "The candidate thresholds passed the complete measured matrix, but another formal gate failed.";
+      : chromiumEvaluationFailed
+        ? "The Chromium engine evaluation did not complete its formal matrix."
+        : summary.candidate.thresholds === null
+          ? "The complete measured matrix produced no passing shared threshold pair."
+          : "The candidate thresholds passed the complete measured matrix, but another formal gate failed.";
   const followUp = summary.decision === "multi-prototype-adopted"
     ? "Proceed with product integration planning."
     : gridFailureIds.length > 0
       ? `Improve grid detection for the ${gridFailureIds.length} rejected Chromium derivatives.`
-      : !summary.wholeScreenHoldout.passed
-        ? "Improve held-out-screen generalization."
-        : "Revisit shared-threshold calibration.";
+      : chromiumError !== undefined
+        ? "Resolve the Chromium evaluation error before rerunning the matrix."
+        : chromiumEvaluationFailed
+          ? "Investigate the Chromium formal evaluation failure."
+          : !summary.wholeScreenHoldout.passed
+            ? "Improve held-out-screen generalization."
+            : "Revisit shared-threshold calibration.";
   const foldRows = summary.wholeScreenHoldout.folds.map((fold) => (
     `| \`${fold.heldOutFixtureId}\` | \`${JSON.stringify(fold.prototypeCounts)}\` | `
       + `\`${fold.absentTrainingLabels.join(",") || "none"}\` | `
@@ -635,9 +645,9 @@ Prototype counts by label: \`${prototypeCounts}\`. Thresholds: \`${JSON.stringif
 
 ## Chromium Formal Results
 
-\`formalPassed: ${summary.chromiumFormal.passed}\`. Candidate grid failures:
+\`formalPassed: ${summary.chromiumFormal.passed}\`. Chromium grid failures:
 
-${failedCandidateCases}
+${gridFailureCases}
 
 All ${summary.chromiumFormal.candidateCases.length} final-candidate cases include measured \`elapsedMs\` values in the generated summary.
 

@@ -1,5 +1,4 @@
-import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { readFile, readdir, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { expect, it } from "vitest";
@@ -8,9 +7,11 @@ import {
   createProductionDependencies,
   runSpike,
 } from "../../scripts/run-multi-prototype-spike.js";
+import { createFormalEvidenceDirectory } from "./formal-evidence-directory.js";
 
 it("writes fresh rejected formal evidence through the production evaluators", async () => {
-  const directory = await mkdtemp(path.join(tmpdir(), "formal-recognition-runner-"));
+  const selectedDirectory = await createFormalEvidenceDirectory(process.env.FORMAL_RUNNER_EVIDENCE_DIR);
+  const directory = selectedDirectory.directory;
   const artifactDirectory = path.join(directory, "artifacts");
   const reportPath = path.join(directory, "report.md");
   try {
@@ -71,6 +72,6 @@ it("writes fresh rejected formal evidence through the production evaluators", as
     expect(report).toContain(`Chromium: ${result.summary.environment.chromiumVersion}`);
     expect(report).toContain(`Calibration evaluated ${result.summary.candidate.calibration.evaluatedThresholdPairs}`);
   } finally {
-    await rm(directory, { recursive: true, force: true });
+    if (selectedDirectory.cleanup) await rm(directory, { recursive: true, force: true });
   }
 }, 180_000);

@@ -18,7 +18,7 @@ Prototype counts by label: `closed:12, empty:12, flag:12, 1:12, 2:12, 3:12, 4:12
 
 ## Chromium Formal Results
 
-`formalPassed: false`. Candidate grid failures:
+`formalPassed: false`. Chromium grid failures:
 
 - `1:canvas-scale-075`
 - `1:canvas-scale-125`
@@ -54,9 +54,9 @@ Engine overlays were not generated because no thresholded bank existed. Passing-
 
 ## Performance
 
-Candidate build elapsed: 12726.000 ms. Fold evaluation elapsed: not measured. Total runner elapsed: 48889.000 ms.
+Candidate build elapsed: 18308.000 ms. Fold evaluation elapsed: 52811.000 ms. Total runner elapsed: 71137.000 ms.
 
-Recorded case min/median/max: 60.532 ms / 462.845 ms / 696.938 ms. Candidate-case min/median/max: not measured / not measured / not measured. Fold-case min/median/max: not measured / not measured / not measured. Evaluated-engine min/median/max: not measured / not measured / not measured.
+Recorded case min/median/max: 86.990 ms / 705.114 ms / 971.264 ms. Candidate-case min/median/max: 89.086 ms / 770.621 ms / 981.907 ms. Fold-case min/median/max: 86.990 ms / 705.114 ms / 971.264 ms. Evaluated-engine min/median/max: not measured / not measured / not measured.
 
 ## Coverage Limits
 
