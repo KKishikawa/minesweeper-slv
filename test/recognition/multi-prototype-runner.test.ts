@@ -221,6 +221,76 @@ describe("multi-prototype spike summary", () => {
     expect(result.error).toContain("overlay write failed");
   });
 
+  it("rejects a complete Chromium matrix when the final case cannot be persisted", async () => {
+    const fixtures: FixtureCase[] = Array.from({ length: 4 }, (_, index) => ({
+      id: String(index) as FixtureCase["id"],
+      imagePath: "unused.png",
+      columns: 30,
+      rows: 16,
+      totalMines: 99,
+      expectedRemainingMines: 0,
+      expectedBoardBounds: { x: 0, y: 0, width: 30, height: 16 },
+      expectedCells: Array.from({ length: 480 }, () => "closed"),
+    }));
+    const derivativeNames = [
+      "source",
+      "canvas-scale-075",
+      "canvas-scale-125",
+      "canvas-jpeg-q75",
+    ] as const;
+    let persistenceCount = 0;
+    const chromium = await evaluateEngine("chromium", fixtures, {} as PrototypeBank, "unused", {
+      deriveImages: async (_engine, fixture) => derivativeNames.map((name) => ({
+        name,
+        scale: 1,
+        encoding: name,
+        version: "test",
+        image: { width: 1, height: 1, data: new Uint8ClampedArray(4) },
+      })),
+      measureImage: async (_engine, fixture, derived) => ({
+        measurement: measurement({
+          id: `${fixture.id}:${derived.name}`,
+          kind: derived.name === "source" ? "source" : "transformed",
+        }),
+        persist: async () => {
+          persistenceCount += 1;
+          if (persistenceCount === 16) throw new Error("final overlay write failed");
+        },
+      }),
+    });
+
+    expect(chromium.cases).toHaveLength(16);
+    expect(chromium.error).toContain("final overlay write failed");
+    expect(chromium.summary).toMatchObject({
+      formalPassed: false,
+      compatibility: "limited",
+    });
+
+    const result = await runSpike({
+      buildCandidate: async () => candidate({} as PrototypeBank),
+      evaluateFolds: async () => [0, 1, 2, 3].map((index) => fold(index, true)),
+      evaluateEngines: async () => [chromium],
+      environment: {
+        node: "v-test",
+        platform: "test",
+        architecture: "test",
+        dependencyVersions: { playwright: "1.0.0", sharp: "1.0.0" },
+      },
+      writeArtifact: async () => undefined,
+      writeReport: async () => undefined,
+      progress: () => undefined,
+      now: () => 100,
+    });
+
+    expect(result).toMatchObject({
+      exitCode: 1,
+      summary: {
+        decision: "multi-prototype-rejected",
+        chromiumFormal: { passed: false },
+      },
+    });
+  });
+
   it("serializes complete per-cell and derivative diagnostics", () => {
     expect(serializeCaseCells([
       { index: 0, label: 1, confidence: 0.75, candidates: [{ label: 1, distance: 0.5 }] },

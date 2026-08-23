@@ -3,14 +3,25 @@ import { extractFeatures } from "./features.js";
 import { cellRect, detectGrid } from "./grid.js";
 import { normalizeCell } from "./normalize.js";
 import { cropImage } from "./pixels.js";
-import type { PrototypeBank } from "./prototype-bank.js";
+import { validatePrototypeBank, type PrototypeBank } from "./prototype-bank.js";
 import type { RecognizedCell } from "./types.js";
+import type { PixelImage } from "./types.js";
 import type { RecognitionRequest, RecognitionResult } from "./recognize.js";
 
 export type { RecognitionRequest, RecognitionResult } from "./recognize.js";
 
 function isPositiveInteger(value: number): boolean {
   return Number.isInteger(value) && value > 0;
+}
+
+function validateImage(image: PixelImage): void {
+  if (!isPositiveInteger(image.width) || !isPositiveInteger(image.height)) {
+    throw new RangeError("Image dimensions must be positive integers.");
+  }
+  if (!(image.data instanceof Uint8ClampedArray)
+    || image.data.length !== image.width * image.height * 4) {
+    throw new RangeError("Image data must contain one RGBA pixel per image coordinate.");
+  }
 }
 
 export function recognizeBoardWithBank(
@@ -20,6 +31,8 @@ export function recognizeBoardWithBank(
   if (!isPositiveInteger(request.columns) || !isPositiveInteger(request.rows)) {
     throw new RangeError("Board dimensions must be positive integers.");
   }
+  validateImage(request.image);
+  validatePrototypeBank(bank);
 
   const startedAt = performance.now();
   const geometry = detectGrid(request.image, request);

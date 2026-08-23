@@ -65,4 +65,29 @@ describe("recognizeBoardWithBank", () => {
     expect(Number.isFinite(result.elapsedMs)).toBe(true);
     expect(result.elapsedMs).toBeGreaterThanOrEqual(0);
   });
+
+  it.each([
+    { name: "zero width", image: { width: 0, height: 16, data: new Uint8ClampedArray() } },
+    { name: "fractional height", image: { width: 16, height: 1.5, data: new Uint8ClampedArray(16 * 6) } },
+    { name: "non-RGBA data length", image: { width: 16, height: 16, data: new Uint8ClampedArray(16 * 16 * 3) } },
+  ])("rejects a gridless image with $name", ({ image }) => {
+    expect(() => recognizeBoardWithBank({
+      image,
+      columns: 1,
+      rows: 1,
+    }, bankWithAbsoluteGateFailure())).toThrow(RangeError);
+  });
+
+  it("rejects an unsupported bank before returning grid-not-found", () => {
+    const unsupportedBank = {
+      ...bankWithAbsoluteGateFailure(),
+      formatVersion: 2,
+    } as unknown as PrototypeBank;
+
+    expect(() => recognizeBoardWithBank({
+      image: blankImage,
+      columns: 1,
+      rows: 1,
+    }, unsupportedBank)).toThrow(RangeError);
+  });
 });

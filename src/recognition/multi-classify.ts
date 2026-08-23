@@ -44,6 +44,9 @@ function compareCandidates(first: CellCandidate, second: CellCandidate): number 
 
 export function classifyCellWithBank(features: Float64Array, bank: PrototypeBank): MultiClassificationResult {
   validatePrototypeBank(bank);
+  if (features.length !== FEATURE_LENGTH) {
+    throw new RangeError(`Feature vector must contain exactly ${FEATURE_LENGTH} values.`);
+  }
   if (!hasOnlyFiniteValues(features)) return emptyResult();
 
   const scaled = scaleFeatures(features, bank.scaler);

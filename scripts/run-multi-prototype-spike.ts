@@ -224,8 +224,13 @@ export function summarizeInterruptedEngine(
   versions: readonly string[],
   error: string,
 ): EvaluatedEngine {
+  const measured = summarizeEngine(engine, cases, expectedCaseIds);
   return {
-    summary: summarizeEngine(engine, cases, expectedCaseIds),
+    summary: {
+      ...measured,
+      formalPassed: false,
+      compatibility: measured.compatibility === "guaranteed" ? "limited" : measured.compatibility,
+    },
     cases,
     versions,
     error,

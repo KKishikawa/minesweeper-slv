@@ -59,6 +59,15 @@ describe("classifyCellWithBank", () => {
     expect(result.bestDistance).toBe(Infinity);
   });
 
+  it("rejects a wrong-length feature vector even when it contains a non-finite value", () => {
+    const features = new Float64Array(FEATURE_LENGTH - 1).fill(Number.NaN);
+
+    expect(() => classifyCellWithBank(features, syntheticBank({
+      prototypes: [prototype(1, 0), prototype(2, 1)],
+      thresholds: { relativeMargin: 0.25, absoluteDistance: 10 },
+    }))).toThrow(RangeError);
+  });
+
   it("orders equal-distance labels by the stable cell-label order", () => {
     const result = classifyCellWithBank(feature(1), syntheticBank({
       prototypes: [prototype(3, 0), prototype("flag", 2)],
