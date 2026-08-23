@@ -1,6 +1,9 @@
+import { spawn } from "node:child_process";
 import { access, mkdtemp, readFile, rm } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -12,6 +15,29 @@ import { encodePrototypeBank } from "../../scripts/recognition/encode-prototype-
 import { decodePrototypeBank } from "../../src/recognition/prototype-bank-codec.js";
 
 const temporaryDirectories: string[] = [];
+const require = createRequire(import.meta.url);
+const tsxCliPath = require.resolve("tsx/cli");
+const generatorPath = fileURLToPath(new URL("../../scripts/recognition/generate-prototype-bank.ts", import.meta.url));
+
+interface CliResult {
+  readonly exitCode: number | null;
+  readonly stdout: string;
+  readonly stderr: string;
+}
+
+function runGeneratorCli(cwd: string): Promise<CliResult> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [tsxCliPath, generatorPath], { cwd });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+    child.stdout.on("data", (chunk: string) => { stdout += chunk; });
+    child.stderr.on("data", (chunk: string) => { stderr += chunk; });
+    child.on("error", reject);
+    child.on("close", (exitCode) => resolve({ exitCode, stdout, stderr }));
+  });
+}
 
 async function temporaryOutputPath(): Promise<string> {
   const directory = await mkdtemp(join(tmpdir(), "prototype-bank-"));
@@ -27,6 +53,26 @@ afterEach(async () => {
 });
 
 describe("final prototype bank generation", () => {
+  it("rejects through the local tsx CLI without leaking transform helpers or output", async () => {
+    const workingDirectory = await mkdtemp(join(tmpdir(), "prototype-bank-cli-"));
+    temporaryDirectories.push(workingDirectory);
+    const defaultOutputPath = join(
+      workingDirectory,
+      "test",
+      "artifacts",
+      "recognition",
+      "final-prototype-bank.ts",
+    );
+
+    const result = await runGeneratorCli(workingDirectory);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain("NoPassingThresholdError");
+    expect(result.stderr).not.toContain("__name");
+    await expect(access(defaultOutputPath)).rejects.toMatchObject({ code: "ENOENT" });
+  }, 180_000);
+
   it("reproduces a passing candidate or records deterministic rejection without output", async () => {
     const firstOutputPath = await temporaryOutputPath();
     const secondOutputPath = await temporaryOutputPath();

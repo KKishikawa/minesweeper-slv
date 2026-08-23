@@ -34,6 +34,63 @@ interface BrowserDerivative {
   readonly image: BrowserPixelImage;
 }
 
+const DERIVE_BROWSER_IMAGES_EXPRESSION = String.raw`async (dataUrl) => {
+  async function canvasImage(width, height, drawable) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (context === null) throw new Error("2D Canvas context is unavailable");
+    context.drawImage(drawable, 0, 0, width, height);
+    const imageData = context.getImageData(0, 0, width, height);
+    const pixels = new Uint8ClampedArray(imageData.data);
+    const encodedDataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        if (typeof reader.result === "string") resolve(reader.result);
+        else reject(new Error("RGBA data URL encoding failed"));
+      });
+      reader.addEventListener("error", () => reject(reader.error ?? new Error("RGBA data URL encoding failed")));
+      reader.readAsDataURL(new Blob([pixels]));
+    });
+    return { width, height, dataUrl: encodedDataUrl };
+  }
+
+  const sourceBlob = await (await fetch(dataUrl)).blob();
+  const source = await createImageBitmap(sourceBlob);
+  try {
+    const sourceImage = await canvasImage(source.width, source.height, source);
+    const scaled075 = await canvasImage(Math.round(source.width * 0.75), Math.round(source.height * 0.75), source);
+    const scaled125 = await canvasImage(Math.round(source.width * 1.25), Math.round(source.height * 1.25), source);
+
+    const jpegCanvas = document.createElement("canvas");
+    jpegCanvas.width = source.width;
+    jpegCanvas.height = source.height;
+    const jpegContext = jpegCanvas.getContext("2d");
+    if (jpegContext === null) throw new Error("2D Canvas context is unavailable");
+    jpegContext.drawImage(source, 0, 0);
+    const jpegBlob = await new Promise((resolve, reject) => {
+      jpegCanvas.toBlob((blob) => {
+        if (blob === null) reject(new Error("Canvas JPEG encoding failed"));
+        else resolve(blob);
+      }, "image/jpeg", 0.75);
+    });
+    const jpeg = await createImageBitmap(jpegBlob);
+    try {
+      return [
+        { name: "source", scale: 1, encoding: "source", image: sourceImage },
+        { name: "canvas-scale-075", scale: 0.75, encoding: "canvas-rgba", image: scaled075 },
+        { name: "canvas-scale-125", scale: 1.25, encoding: "canvas-rgba", image: scaled125 },
+        { name: "canvas-jpeg-q75", scale: 1, encoding: "canvas-jpeg-075", image: await canvasImage(jpeg.width, jpeg.height, jpeg) },
+      ];
+    } finally {
+      jpeg.close();
+    }
+  } finally {
+    source.close();
+  }
+}`;
+
 function browserType(engine: BrowserEngine): typeof chromium | typeof firefox | typeof webkit {
   switch (engine) {
     case "chromium": return chromium;
@@ -70,62 +127,10 @@ export async function deriveBrowserImages(
 
   try {
     const page = await browser.newPage();
-    const derivatives = await page.evaluate(async (dataUrl): Promise<BrowserDerivative[]> => {
-      async function canvasImage(width: number, height: number, drawable: CanvasImageSource): Promise<BrowserPixelImage> {
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const context = canvas.getContext("2d");
-        if (context === null) throw new Error("2D Canvas context is unavailable");
-        context.drawImage(drawable, 0, 0, width, height);
-        const imageData = context.getImageData(0, 0, width, height);
-        const pixels = new Uint8ClampedArray(imageData.data);
-        const dataUrl = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.addEventListener("load", () => {
-            if (typeof reader.result === "string") resolve(reader.result);
-            else reject(new Error("RGBA data URL encoding failed"));
-          });
-          reader.addEventListener("error", () => reject(reader.error ?? new Error("RGBA data URL encoding failed")));
-          reader.readAsDataURL(new Blob([pixels]));
-        });
-        return { width, height, dataUrl };
-      }
-
-      const sourceBlob = await (await fetch(dataUrl)).blob();
-      const source = await createImageBitmap(sourceBlob);
-      try {
-        const sourceImage = await canvasImage(source.width, source.height, source);
-        const scaled075 = await canvasImage(Math.round(source.width * 0.75), Math.round(source.height * 0.75), source);
-        const scaled125 = await canvasImage(Math.round(source.width * 1.25), Math.round(source.height * 1.25), source);
-
-        const jpegCanvas = document.createElement("canvas");
-        jpegCanvas.width = source.width;
-        jpegCanvas.height = source.height;
-        const jpegContext = jpegCanvas.getContext("2d");
-        if (jpegContext === null) throw new Error("2D Canvas context is unavailable");
-        jpegContext.drawImage(source, 0, 0);
-        const jpegBlob = await new Promise<Blob>((resolve, reject) => {
-          jpegCanvas.toBlob((blob) => {
-            if (blob === null) reject(new Error("Canvas JPEG encoding failed"));
-            else resolve(blob);
-          }, "image/jpeg", 0.75);
-        });
-        const jpeg = await createImageBitmap(jpegBlob);
-        try {
-          return [
-            { name: "source", scale: 1, encoding: "source", image: sourceImage },
-            { name: "canvas-scale-075", scale: 0.75, encoding: "canvas-rgba", image: scaled075 },
-            { name: "canvas-scale-125", scale: 1.25, encoding: "canvas-rgba", image: scaled125 },
-            { name: "canvas-jpeg-q75", scale: 1, encoding: "canvas-jpeg-075", image: await canvasImage(jpeg.width, jpeg.height, jpeg) },
-          ];
-        } finally {
-          jpeg.close();
-        }
-      } finally {
-        source.close();
-      }
-    }, sourceDataUrl(sourcePath, sourceBytes));
+    const dataUrl = sourceDataUrl(sourcePath, sourceBytes);
+    const derivatives = await page.evaluate<BrowserDerivative[]>(
+      `(${DERIVE_BROWSER_IMAGES_EXPRESSION})(${JSON.stringify(dataUrl)})`,
+    );
 
     return derivatives.map((derivative) => ({
       engine,

@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 import {
@@ -225,31 +225,20 @@ export async function generatePrototypeBank(
 }
 
 async function main(): Promise<void> {
-  const outputPath = process.argv[2];
-  if (outputPath !== undefined) {
-    const serialized = await generatePrototypeBank({ outputPath: resolve(outputPath) });
-    console.log(JSON.stringify({ outputPath: resolve(outputPath), serialized }, null, 2));
-    return;
-  }
-
-  const result = await buildFinalBankEvaluation();
-  console.log(JSON.stringify({
-    thresholds: result.candidate.thresholds,
-    prototypeCounts: result.candidate.bank === null
-      ? encodePrototypeBank({ ...result.candidate.geometry, thresholds: PERMISSIVE_THRESHOLDS }).prototypeCounts
-      : encodePrototypeBank(result.candidate.bank).prototypeCounts,
-    calibration: {
-      evaluationCount: result.candidate.calibration.length,
-      passingEvaluationCount: result.candidate.calibration.filter((evaluation) => evaluation.passes).length,
-    },
-    evaluationCases: result.evaluationCases,
-  }, null, 2));
+  const outputPath = resolve(process.argv[2] ?? join(
+    "test",
+    "artifacts",
+    "recognition",
+    "final-prototype-bank.ts",
+  ));
+  const serialized = await generatePrototypeBank({ outputPath });
+  console.log(JSON.stringify({ outputPath, serialized }, null, 2));
 }
 
 const currentModulePath = process.argv[1];
 if (currentModulePath !== undefined && import.meta.url === pathToFileURL(resolve(currentModulePath)).href) {
   main().catch((error: unknown) => {
-    console.error(error);
+    console.error(error instanceof Error ? `${error.name}: ${error.message}` : error);
     process.exitCode = 1;
   });
 }
