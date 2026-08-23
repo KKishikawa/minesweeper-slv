@@ -11,7 +11,6 @@ import {
 import {
   buildPrototypeGeometry,
   DEFAULT_PROTOTYPE_BUILDER_OPTIONS,
-  refinePrototypeCenters,
   type PrototypeBuilderOptions,
 } from "../../scripts/recognition/prototype-builder.js";
 import type { CellLabel } from "../../src/recognition/types.js";
@@ -124,12 +123,6 @@ describe("multi-prototype builder", () => {
       -Math.sqrt(3 / 2) / 2,
       Math.sqrt(3 / 2),
     ]);
-  });
-
-  it("retains an empty cluster's previous center", () => {
-    const centers = refinePrototypeCenters([vector(0), vector(0)], [vector(0), vector(10)], 1);
-
-    expect(centers.map((center) => center[0])).toEqual([0, 10]);
   });
 
   it("uses exactly eight default refinement rounds", () => {

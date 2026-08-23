@@ -133,7 +133,7 @@ function initialCenters(samples: readonly ScaledSample[], count: number): Float6
   return centers.map((center) => new Float64Array(center));
 }
 
-export function refinePrototypeCenters(
+function refinePrototypeCenters(
   samples: readonly Float64Array[],
   centers: readonly Float64Array[],
   iterations: number,
