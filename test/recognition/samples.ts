@@ -6,8 +6,15 @@ import type { LabeledFeatureSample } from "../../src/recognition/prototypes.js";
 import type { FixtureCase } from "./fixture-manifest.js";
 import { decodeImage } from "./image-io.js";
 
-export async function buildFixtureSamples(fixtures: readonly FixtureCase[]): Promise<readonly LabeledFeatureSample[]> {
-  const samples: LabeledFeatureSample[] = [];
+export interface FixtureFeatureSample extends LabeledFeatureSample {
+  readonly fixtureId: FixtureCase["id"];
+  readonly cellIndex: number;
+}
+
+export async function buildFixtureSamples(
+  fixtures: readonly FixtureCase[],
+): Promise<readonly FixtureFeatureSample[]> {
+  const samples: FixtureFeatureSample[] = [];
   for (const fixture of fixtures) {
     if (fixture.expectedCells.length !== fixture.columns * fixture.rows) {
       throw new Error(`Fixture ${fixture.id} has an unexpected cell count.`);
@@ -22,6 +29,8 @@ export async function buildFixtureSamples(fixtures: readonly FixtureCase[]): Pro
       samples.push({
         label: fixture.expectedCells[index]!,
         features: extractFeatures(normalized),
+        fixtureId: fixture.id,
+        cellIndex: index,
       });
     }
   }

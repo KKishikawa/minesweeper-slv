@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 
 import { describe, expect, it } from "vitest";
 import { loadFixtureCases } from "./fixture-manifest.js";
+import { buildFixtureSamples } from "./samples.js";
 
 function pngAncillaryChunkTypes(data: Buffer): readonly string[] {
   const ancillary: string[] = [];
@@ -53,6 +54,19 @@ describe("recognition fixture manifest", () => {
     const fixtures = await loadFixtureCases();
     const labels = new Set(fixtures.flatMap((fixture) => fixture.expectedCells));
     expect(labels).toEqual(new Set(["closed", "empty", "flag", 1, 2, 3, 4, 5, 6]));
+  });
+
+  it("owns exactly 480 uniquely indexed feature samples per fixture", async () => {
+    const fixtures = await loadFixtureCases();
+    const samples = await buildFixtureSamples(fixtures);
+
+    for (const fixture of fixtures) {
+      const fixtureSamples = samples.filter((sample) => sample.fixtureId === fixture.id);
+      expect(fixtureSamples, fixture.id).toHaveLength(480);
+      expect(new Set(fixtureSamples.map((sample) => sample.cellIndex)).size, fixture.id).toBe(480);
+      expect(fixtureSamples.map((sample) => sample.cellIndex), fixture.id)
+        .toEqual(Array.from({ length: 480 }, (_value, index) => index));
+    }
   });
 
   it("contains no embedded ancillary metadata", async () => {
