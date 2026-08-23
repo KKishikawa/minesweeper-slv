@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed design for review. This document scopes the grid-detection follow-up to the rejected multi-prototype recognition spike. It does not authorize UI, solver, capture, clipboard, upload, classifier, or product-bank work.
+Approved for implementation planning, with the coarse-pitch evidence gate still pending. This document scopes the grid-detection follow-up to the rejected multi-prototype recognition spike. It does not authorize UI, solver, capture, clipboard, upload, classifier, or product-bank work.
 
 ## Problem
 
@@ -75,16 +75,19 @@ type StrictGridAttempt =
       readonly status: "found";
       readonly candidate: ValidatedGridCandidate;
       readonly geometry: GridGeometry;
+      readonly coarseEvidence: CoarsePitchEvidence;
+      readonly sourceContext: SourceGridValidationContext;
       readonly refinedPairCount: number;
     }
   | {
       readonly status: "rejected" | "ambiguous" | "budget-exhausted";
-      readonly coarseEvidence: CoarseAxisEvidence | null;
+      readonly coarseEvidence: CoarsePitchEvidence | null;
+      readonly sourceContext: SourceGridValidationContext | null;
       readonly refinedPairCount: number;
     };
 ```
 
-`ValidatedGridCandidate` retains the refined vertical and horizontal boundaries and the validation measurements needed for original-space revalidation. It remains internal and is not part of the browser-facing recognition contract.
+`ValidatedGridCandidate` retains the refined vertical and horizontal boundaries and the validation measurements needed for original-space revalidation. `SourceGridValidationContext` retains the original edge profiles and the already-refined competing candidates from the first strict attempt. The fallback reuses this context; it does not rebuild profiles or enumerate candidates again. Both types remain internal and are not part of the browser-facing recognition contract.
 
 The strict algorithm, thresholds, candidate ordering, and existing negative behavior do not change in this project except where refactoring is required to return evidence and account for work.
 
@@ -148,7 +151,7 @@ The maximum allowed disagreement between the mapped canonical pitch and the orig
 
 ### Original-Space Revalidation
 
-Original-space revalidation builds the existing edge profiles once for the mapped candidate. It does not enumerate alternative grids. It applies the strict safety evidence to the mapped boundaries:
+Original-space revalidation reuses the edge profiles and refined candidate evidence stored by the first strict attempt. It does not rebuild profiles or enumerate alternative grids. It applies the strict safety evidence to the mapped boundaries:
 
 - outer-boundary distinctiveness and balance;
 - minimum outer-boundary energy;
@@ -157,7 +160,7 @@ Original-space revalidation builds the existing edge profiles once for the mappe
 - interior boundary-phase consistency using the existing original-space rule;
 - competing-extent ambiguity rejection.
 
-The revalidator may search only within the existing boundary-refinement radius around each mapped boundary. It cannot change pitch family, origin by a full cell, board dimensions, or extent. Failure of any check returns `null`.
+The revalidator may search only within the existing boundary-refinement radius around each mapped boundary. It compares the mapped candidate with the already-refined original candidates to preserve competing-extent ambiguity rejection, but cannot add candidates, change pitch family, move the origin by a full cell, change board dimensions, or change extent. Failure of any check returns `null`.
 
 ## Work Budget
 
@@ -187,11 +190,13 @@ All return `null` from `detectGrid()`. Recognition continues to expose its exist
 
 Internal diagnostics distinguish direct success, hint rejection, normalization rejection, canonical rejection, source revalidation rejection, and budget exhaustion. These diagnostics are available to tests and offline spike tooling only; the public runtime result remains unchanged.
 
+The internal diagnostic entry point executes the same orchestration used by `detectGrid()` and returns the stage, direct and canonical refinement counts, and the normalized image when one was produced. The public wrapper only projects its `GridGeometry | null` result. Tests and measurement scripts must not duplicate the fallback control flow.
+
 ## Determinism and Compatibility
 
 The algorithm operates only on RGBA arrays and ECMAScript numeric operations. It does not branch on browser engine, operating system, elapsed time, fixture identity, expected result, or cell content.
 
-The same input pixels, dimensions, and budget must produce byte-identical normalized RGBA data and identical geometry in Chromium, Firefox, Playwright WebKit, and Node. Playwright WebKit remains a compatibility proxy and is not called Safari.
+The same input pixels, dimensions, and budget must produce byte-identical normalized RGBA data and identical geometry in Chromium and Node. Run the same checks in Firefox and Playwright WebKit to measure compatibility, and persist their equality status and exact mismatch diagnostics in the spike report, but do not use their result as the formal acceptance decision. Playwright WebKit remains a compatibility proxy and is not called Safari.
 
 ## Testing Strategy
 
@@ -234,7 +239,7 @@ Add fallback-specific negatives for:
 
 ### Performance
 
-Measure the same sixteen Chromium images with the same process and warm-up policy before and after the change.
+Measure the strict-only path and the complete direct-first fallback path in the same process, over the same already-decoded sixteen Chromium image buffers, with interleaved ordering and the same warm-up policy. The strict-only entry point is the extracted unchanged detector, so the comparison does not rely on timings saved by a previous process.
 
 - Median grid-detection time must be no more than 1.25 times baseline.
 - Worst-case time must be no more than two times baseline.
