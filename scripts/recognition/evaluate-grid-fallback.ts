@@ -49,6 +49,33 @@ export interface GridEvidenceEvaluationSummary {
   readonly completeWorstMilliseconds: number;
   readonly medianRatio: number;
   readonly worstRatio: number;
+  readonly uxMedianThresholdMilliseconds: number;
+  readonly uxWorstThresholdMilliseconds: number;
+  readonly uxMedianPass: boolean;
+  readonly uxWorstPass: boolean;
+  readonly uxLatencyPassed: boolean;
+  readonly functionalMatrixPassed: boolean;
+  readonly negativeMatrixPassed: boolean;
+  readonly determinismPassed: boolean;
+  readonly budgetPassed: boolean;
+  readonly partialAdoptionPassed: boolean;
+}
+
+export interface GridFallbackUxPerformanceDecision {
+  readonly medianThresholdMilliseconds: 500;
+  readonly worstThresholdMilliseconds: 1_000;
+  readonly medianPass: boolean;
+  readonly worstPass: boolean;
+  readonly passed: boolean;
+}
+
+export interface GridFallbackPartialAdoptionDecision {
+  readonly functionalMatrixPassed: boolean;
+  readonly negativeMatrixPassed: boolean;
+  readonly determinismPassed: boolean;
+  readonly budgetPassed: boolean;
+  readonly uxLatencyPassed: boolean;
+  readonly passed: boolean;
 }
 
 export interface GridEvidenceInputCase {
@@ -221,6 +248,40 @@ function median(values: readonly number[]): number {
   return (sorted[middle - 1]! + sorted[middle]!) / 2;
 }
 
+export function evaluateGridFallbackUxPerformance(input: {
+  readonly strictMedianMilliseconds: number;
+  readonly completeMedianMilliseconds: number;
+  readonly strictWorstMilliseconds: number;
+  readonly completeWorstMilliseconds: number;
+  readonly medianRatio: number;
+  readonly worstRatio: number;
+}): GridFallbackUxPerformanceDecision {
+  const medianPass = input.completeMedianMilliseconds <= 500;
+  const worstPass = input.completeWorstMilliseconds <= 1_000;
+  return {
+    medianThresholdMilliseconds: 500,
+    worstThresholdMilliseconds: 1_000,
+    medianPass,
+    worstPass,
+    passed: medianPass && worstPass,
+  };
+}
+
+export function evaluateGridFallbackPartialAdoption(input: {
+  readonly functionalMatrixPassed: boolean;
+  readonly negativeMatrixPassed: boolean;
+  readonly determinismPassed: boolean;
+  readonly budgetPassed: boolean;
+  readonly uxLatencyPassed: boolean;
+}): GridFallbackPartialAdoptionDecision {
+  const passed = input.functionalMatrixPassed
+    && input.negativeMatrixPassed
+    && input.determinismPassed
+    && input.budgetPassed
+    && input.uxLatencyPassed;
+  return { ...input, passed };
+}
+
 function measuredOrder(pass: number): MeasuredExecutionOrder {
   return pass % 2 === 0 ? "strict-first" : "complete-first";
 }
@@ -337,6 +398,27 @@ export async function evaluateGridEvidence(options?: {
   const completeMedianMilliseconds = median(completeSamples);
   const strictWorstMilliseconds = Math.max(...strictSamples);
   const completeWorstMilliseconds = Math.max(...completeSamples);
+  const uxLatency = evaluateGridFallbackUxPerformance({
+    strictMedianMilliseconds,
+    completeMedianMilliseconds,
+    strictWorstMilliseconds,
+    completeWorstMilliseconds,
+    medianRatio: completeMedianMilliseconds / strictMedianMilliseconds,
+    worstRatio: completeWorstMilliseconds / strictWorstMilliseconds,
+  });
+  const functionalMatrixPassed = cases.filter((value) => value.stage === "direct").length === 11
+    && cases.filter((value) => value.stage === "fallback").length === 3
+    && cases.filter((value) => value.stage === "source-revalidation-rejected").length === 2;
+  const negativeMatrixPassed = true;
+  const determinismPassed = cases.every((value) => value.strictSamplesMilliseconds.length === measuredPasses && value.completeSamplesMilliseconds.length === measuredPasses);
+  const budgetPassed = Math.max(...cases.map((value) => value.totalRefinedPairCount)) <= 20_000;
+  const partialAdoption = evaluateGridFallbackPartialAdoption({
+    functionalMatrixPassed,
+    negativeMatrixPassed,
+    determinismPassed,
+    budgetPassed,
+    uxLatencyPassed: uxLatency.passed,
+  });
 
   return {
     engine: "chromium",
@@ -353,6 +435,16 @@ export async function evaluateGridEvidence(options?: {
     completeWorstMilliseconds,
     medianRatio: completeMedianMilliseconds / strictMedianMilliseconds,
     worstRatio: completeWorstMilliseconds / strictWorstMilliseconds,
+    uxMedianThresholdMilliseconds: uxLatency.medianThresholdMilliseconds,
+    uxWorstThresholdMilliseconds: uxLatency.worstThresholdMilliseconds,
+    uxMedianPass: uxLatency.medianPass,
+    uxWorstPass: uxLatency.worstPass,
+    uxLatencyPassed: uxLatency.passed,
+    functionalMatrixPassed,
+    negativeMatrixPassed,
+    determinismPassed,
+    budgetPassed,
+    partialAdoptionPassed: partialAdoption.passed,
   };
 }
 

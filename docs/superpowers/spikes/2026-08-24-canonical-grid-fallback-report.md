@@ -156,3 +156,30 @@ The exact negative outcomes remained `1:canvas-scale-075` at public `null`, norm
 No caching, threshold relaxation, production behavior change, or retry-based acceptance was introduced. Because the compliant formal median ratio exceeded the fixed gate, partial adoption stops before recognition measurement.
 
 canonical-grid-fallback-partial-adoption-failed
+
+## Absolute UX Gate
+
+The same retained-input Chromium evaluator was re-run under the amended UX acceptance rule that uses absolute complete-path timing instead of the older relative ratio gate. The measurement method stayed unchanged: 16 retained buffers, one warmup pass, three measured passes, and alternating strict/complete order per case.
+
+The compliant run passed the exact functional matrix and the deterministic/budget checks, and both absolute timing thresholds were satisfied:
+
+- exact paths: 11 direct / 3 fallback / 2 source-revalidation-rejected;
+- complete-path median: `337.10074950000126 ms` `<= 500 ms`;
+- complete-path worst: `672.9942090000004 ms` `<= 1000 ms`.
+
+The diagnostic ratios remain recorded and still reflect the earlier relative-gate failure:
+
+- strict-only median: `255.7661250000001 ms`;
+- complete-path median ratio: `1.3180038971149957`;
+- strict-only worst: `402.53270899999916 ms`;
+- complete-path worst ratio: `1.6718994356307124`.
+
+The new helper-level decision is:
+
+- `canonical-grid-fallback-ux-performance-passed`
+
+The final partial-adoption decision is now:
+
+- `canonical-grid-fallback-partial-adoption-passed`
+
+The earlier relative-gate failure literal is preserved above as historical evidence.

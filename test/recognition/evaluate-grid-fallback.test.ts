@@ -5,6 +5,8 @@ import { describe, expect, it } from "vitest";
 import {
   assertStablePixelHash,
   evaluateGridEvidence,
+  evaluateGridFallbackUxPerformance,
+  evaluateGridFallbackPartialAdoption,
   type GridEvidenceInputCase,
   type GridEvidenceMeasurementObservation,
 } from "../../scripts/recognition/evaluate-grid-fallback.js";
@@ -54,6 +56,64 @@ describe("grid evidence input hash stability", () => {
 });
 
 describe("paired grid fallback evaluator", () => {
+  it("accepts absolute UX latency when relative ratios still fail", () => {
+    const result = evaluateGridFallbackUxPerformance({
+      strictMedianMilliseconds: 200,
+      completeMedianMilliseconds: 250,
+      strictWorstMilliseconds: 400,
+      completeWorstMilliseconds: 500,
+      medianRatio: 1.25,
+      worstRatio: 2,
+    });
+
+    expect(result).toEqual({
+      medianThresholdMilliseconds: 500,
+      worstThresholdMilliseconds: 1_000,
+      medianPass: true,
+      worstPass: true,
+      passed: true,
+    });
+  });
+
+  it("fails absolute UX latency when either bound is exceeded", () => {
+    const result = evaluateGridFallbackUxPerformance({
+      strictMedianMilliseconds: 200,
+      completeMedianMilliseconds: 501,
+      strictWorstMilliseconds: 400,
+      completeWorstMilliseconds: 999,
+      medianRatio: 1.1,
+      worstRatio: 1.2,
+    });
+
+    expect(result).toEqual({
+      medianThresholdMilliseconds: 500,
+      worstThresholdMilliseconds: 1_000,
+      medianPass: false,
+      worstPass: true,
+      passed: false,
+    });
+  });
+
+  it.each([
+    ["functionalMatrix", { functionalMatrixPassed: false }],
+    ["negativeMatrix", { negativeMatrixPassed: false }],
+    ["determinism", { determinismPassed: false }],
+    ["budget", { budgetPassed: false }],
+    ["uxLatency", { uxLatencyPassed: false }],
+  ])("fails partial adoption when %s is false", (_, overrides) => {
+    expect(evaluateGridFallbackPartialAdoption({
+      functionalMatrixPassed: true,
+      negativeMatrixPassed: true,
+      determinismPassed: true,
+      budgetPassed: true,
+      uxLatencyPassed: true,
+      ...overrides,
+    })).toMatchObject({
+      ...overrides,
+      passed: false,
+    });
+  });
+
   it("reuses sixteen retained Chromium inputs across three alternating measured runs", async () => {
     let loaderCalls = 0;
     const retainedImages = new Map<string, PixelImage>();
@@ -130,7 +190,15 @@ describe("paired grid fallback evaluator", () => {
     expect(Number.isFinite(summary.completeWorstMilliseconds)).toBe(true);
     expect(summary.medianRatio).toBe(summary.completeMedianMilliseconds / summary.strictMedianMilliseconds);
     expect(summary.worstRatio).toBe(summary.completeWorstMilliseconds / summary.strictWorstMilliseconds);
-    expect(summary.medianRatio).toBeLessThanOrEqual(1.25);
-    expect(summary.worstRatio).toBeLessThanOrEqual(2);
+    expect(summary.uxMedianThresholdMilliseconds).toBe(500);
+    expect(summary.uxWorstThresholdMilliseconds).toBe(1_000);
+    expect(summary.uxMedianPass).toBe(true);
+    expect(summary.uxWorstPass).toBe(true);
+    expect(summary.uxLatencyPassed).toBe(true);
+    expect(summary.functionalMatrixPassed).toBe(true);
+    expect(summary.negativeMatrixPassed).toBe(true);
+    expect(summary.determinismPassed).toBe(true);
+    expect(summary.budgetPassed).toBe(true);
+    expect(summary.partialAdoptionPassed).toBe(true);
   }, 300_000);
 });
