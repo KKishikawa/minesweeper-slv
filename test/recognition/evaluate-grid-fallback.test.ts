@@ -181,9 +181,28 @@ describe("paired grid fallback evaluator", () => {
       expect(caseValue.completeSamplesMilliseconds).toHaveLength(3);
     }
 
+    expect(summary.cases).toHaveLength(16);
     expect(summary.cases.filter((value) => value.stage === "direct")).toHaveLength(11);
     expect(summary.cases.filter((value) => value.stage === "fallback")).toHaveLength(3);
     expect(summary.cases.filter((value) => value.stage === "source-revalidation-rejected")).toHaveLength(2);
+    expect(summary.cases.map((value) => `${value.caseId}:${value.stage}`)).toEqual([
+      "0:source:direct",
+      "0:canvas-scale-075:direct",
+      "0:canvas-scale-125:direct",
+      "0:canvas-jpeg-q75:direct",
+      "1:source:direct",
+      "1:canvas-scale-075:source-revalidation-rejected",
+      "1:canvas-scale-125:fallback",
+      "1:canvas-jpeg-q75:direct",
+      "2:source:direct",
+      "2:canvas-scale-075:source-revalidation-rejected",
+      "2:canvas-scale-125:fallback",
+      "2:canvas-jpeg-q75:direct",
+      "3:source:direct",
+      "3:canvas-scale-075:fallback",
+      "3:canvas-scale-125:direct",
+      "3:canvas-jpeg-q75:direct",
+    ]);
     expect(Number.isFinite(summary.strictMedianMilliseconds)).toBe(true);
     expect(Number.isFinite(summary.completeMedianMilliseconds)).toBe(true);
     expect(Number.isFinite(summary.strictWorstMilliseconds)).toBe(true);
@@ -196,9 +215,9 @@ describe("paired grid fallback evaluator", () => {
     expect(summary.uxWorstPass).toBe(true);
     expect(summary.uxLatencyPassed).toBe(true);
     expect(summary.functionalMatrixPassed).toBe(true);
-    expect(summary.negativeMatrixPassed).toBe(true);
+    expect(summary.negativeMatrixPassed).toBeNull();
     expect(summary.determinismPassed).toBe(true);
     expect(summary.budgetPassed).toBe(true);
-    expect(summary.partialAdoptionPassed).toBe(true);
+    expect("partialAdoptionPassed" in summary).toBe(false);
   }, 300_000);
 });

@@ -55,10 +55,9 @@ export interface GridEvidenceEvaluationSummary {
   readonly uxWorstPass: boolean;
   readonly uxLatencyPassed: boolean;
   readonly functionalMatrixPassed: boolean;
-  readonly negativeMatrixPassed: boolean;
+  readonly negativeMatrixPassed: null;
   readonly determinismPassed: boolean;
   readonly budgetPassed: boolean;
-  readonly partialAdoptionPassed: boolean;
 }
 
 export interface GridFallbackUxPerformanceDecision {
@@ -241,6 +240,25 @@ const completeDeterministicFields: readonly (keyof CompleteMeasurement)[] = [
   "totalRefinedPairCount",
 ];
 
+const expectedCaseStages: Readonly<Record<string, GridDetectionDiagnosticResult["stage"]>> = {
+  "0:source": "direct",
+  "0:canvas-scale-075": "direct",
+  "0:canvas-scale-125": "direct",
+  "0:canvas-jpeg-q75": "direct",
+  "1:source": "direct",
+  "1:canvas-scale-075": "source-revalidation-rejected",
+  "1:canvas-scale-125": "fallback",
+  "1:canvas-jpeg-q75": "direct",
+  "2:source": "direct",
+  "2:canvas-scale-075": "source-revalidation-rejected",
+  "2:canvas-scale-125": "fallback",
+  "2:canvas-jpeg-q75": "direct",
+  "3:source": "direct",
+  "3:canvas-scale-075": "fallback",
+  "3:canvas-scale-125": "direct",
+  "3:canvas-jpeg-q75": "direct",
+};
+
 function median(values: readonly number[]): number {
   const sorted = [...values].sort((first, second) => first - second);
   const middle = Math.floor(sorted.length / 2);
@@ -406,19 +424,13 @@ export async function evaluateGridEvidence(options?: {
     medianRatio: completeMedianMilliseconds / strictMedianMilliseconds,
     worstRatio: completeWorstMilliseconds / strictWorstMilliseconds,
   });
-  const functionalMatrixPassed = cases.filter((value) => value.stage === "direct").length === 11
+  const functionalMatrixPassed = cases.length === 16
+    && cases.filter((value) => value.stage === "direct").length === 11
     && cases.filter((value) => value.stage === "fallback").length === 3
-    && cases.filter((value) => value.stage === "source-revalidation-rejected").length === 2;
-  const negativeMatrixPassed = true;
+    && cases.filter((value) => value.stage === "source-revalidation-rejected").length === 2
+    && cases.every((value) => expectedCaseStages[value.caseId] === value.stage);
   const determinismPassed = cases.every((value) => value.strictSamplesMilliseconds.length === measuredPasses && value.completeSamplesMilliseconds.length === measuredPasses);
   const budgetPassed = Math.max(...cases.map((value) => value.totalRefinedPairCount)) <= 20_000;
-  const partialAdoption = evaluateGridFallbackPartialAdoption({
-    functionalMatrixPassed,
-    negativeMatrixPassed,
-    determinismPassed,
-    budgetPassed,
-    uxLatencyPassed: uxLatency.passed,
-  });
 
   return {
     engine: "chromium",
@@ -441,10 +453,9 @@ export async function evaluateGridEvidence(options?: {
     uxWorstPass: uxLatency.worstPass,
     uxLatencyPassed: uxLatency.passed,
     functionalMatrixPassed,
-    negativeMatrixPassed,
+    negativeMatrixPassed: null,
     determinismPassed,
     budgetPassed,
-    partialAdoptionPassed: partialAdoption.passed,
   };
 }
 

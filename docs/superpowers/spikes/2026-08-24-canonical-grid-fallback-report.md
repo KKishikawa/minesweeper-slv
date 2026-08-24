@@ -161,6 +161,12 @@ canonical-grid-fallback-partial-adoption-failed
 
 The same retained-input Chromium evaluator was re-run under the amended UX acceptance rule that uses absolute complete-path timing instead of the older relative ratio gate. The measurement method stayed unchanged: 16 retained buffers, one warmup pass, three measured passes, and alternating strict/complete order per case.
 
+Fix Round 1 separated responsibilities more tightly:
+
+- the CLI summary now reports the exact 11 / 3 / 2 case-stage matrix and the absolute UX decision only;
+- `negativeMatrixPassed` is no longer self-asserted in the CLI summary and is treated as external evidence from the focused negative suite;
+- the pure adoption decision helper still accepts `negativeMatrixPassed` as an input for unit coverage.
+
 The compliant run passed the exact functional matrix and the deterministic/budget checks, and both absolute timing thresholds were satisfied:
 
 - exact paths: 11 direct / 3 fallback / 2 source-revalidation-rejected;
@@ -178,7 +184,7 @@ The new helper-level decision is:
 
 - `canonical-grid-fallback-ux-performance-passed`
 
-The final partial-adoption decision is now:
+The final partial-adoption decision remains:
 
 - `canonical-grid-fallback-partial-adoption-passed`
 
