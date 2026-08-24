@@ -1,12 +1,18 @@
-# Canonical grid fallback: Task 1 gate record
+# Canonical grid fallback: amended coarse-pitch gate record
 
-## Gate
+## Initial Gate
 
 The formal Chromium evidence gate failed on `3:canvas-scale-075`.
 
 The strict attempt was `ambiguous` with 397 compatible refined pairs. The fixed complete-link rule selected the `29–30` family: vertical pitch 30 had normalized score 1.0000000000, horizontal pitch 29 had normalized score 0.8661677576, and the family score was 0.8661677576. Its score-weighted pitch was 29.536, which is below the inclusive lower bound of 30, so `estimateCanonicalPitch()` returned `null`.
 
 Relevant alternatives were vertical 32 / horizontal 32 (family score 0.6623065724) and vertical 33 / horizontal 33 (family score 0.6635431172). The selected family exceeded the strongest alternate by 23.39%, so the failure was the fixed pitch-range decision rather than the five-percent score-separation decision.
+
+## Amended Gate
+
+The approved supported-boundary correction changed only the selected compatible `29/30` pair at the lower canonical boundary: its weighted estimate remains 29.536, but because one selected axis lands exactly on 30 and the pair remains within the existing five-percent compatibility rule, `estimateCanonicalPitch()` now quantizes that result to 30. The family construction, score threshold, score separation, compatibility ratio, and `[30, 50]` canonical range were not changed.
+
+The complete Chromium matrix now has 11 direct `found` cases and five direct failures with non-null pitch hints. In particular, `3:canvas-scale-075` remains direct `ambiguous` with 397 refined pairs, while its coarse pitch result changes exactly from `null` to `30` (`29/30 -> 30`). No second estimator amendment was made.
 
 ## Baseline Matrix
 
@@ -25,7 +31,7 @@ Relevant alternatives were vertical 32 / horizontal 32 (family score 0.662306572
 | 2:canvas-scale-125 | ambiguous | 50 | 1825 |
 | 2:canvas-jpeg-q75 | found | 40 | 3212 |
 | 3:source | found | 39.5338816569 | 750 |
-| 3:canvas-scale-075 | ambiguous | null | 397 |
+| 3:canvas-scale-075 | ambiguous | 30 | 397 |
 | 3:canvas-scale-125 | found | 49.5504617589 | 528 |
 | 3:canvas-jpeg-q75 | found | 39.5314707578 | 1057 |
 
@@ -37,12 +43,14 @@ The browser evidence test's ambiguous two-pitch synthetic image produced no pitc
 
 Before the browser gate, the moved-fixture grid suite passed with 20 tests. After the strict attempt extraction, the grid and pure evidence suites passed with 28 tests, and `npm run typecheck` exited zero. `detectGrid()` remains direct-only: it returns geometry only when `detectStrictGridAttempt()` returns `found`; no canonical fallback is connected.
 
-## Performance
+## Preliminary Strict-Only Timing
 
-No performance measurement was recorded. The formal gate failed before the planned warmed-pass diagnostic evaluator was created, and Task 5 remains responsible for paired same-process comparison.
+The Node-only evaluator decoded and retained all sixteen Chromium RGBA inputs before timing, then ran one warmup pass and three measured passes. It measured only `detectStrictGridAttempt()` plus `estimateCanonicalPitch()`. Across the 48 measured case samples, the median was `230.53743750000012 ms` and the worst sample was `339.6667500000003 ms`.
+
+These values are preliminary diagnostic context only. They are not the later paired same-process performance denominator; that comparison remains the responsibility of the later performance task.
 
 ## Decision
 
-coarse-pitch-gate-failed
+coarse-pitch-gate-passed
 
-The fixed `0.65`, `0.05`, `[30, 50]`, and complete-link rules were not tuned after this result. The task stops at design review with the strict refactor and failed-gate evidence committed.
+The initial failed-gate history above is retained. The fixed `0.65`, `0.05`, `[30, 50]`, and complete-link rules were not tuned; the only amendment was the approved supported-boundary quantization described above.
