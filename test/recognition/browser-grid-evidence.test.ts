@@ -48,22 +48,31 @@ function pitchHint(image: PixelImage): number | null {
 
 describe("Chromium coarse pitch evidence gate", () => {
   it("keeps direct successes strict while supplying only the five fixed fallback pitch hints", async () => {
+    const directStatusFailures: string[] = [];
+    const fallbackHintFailures: string[] = [];
+    let directSuccessAssertions = 0;
     for (const fixture of await loadFixtureCases()) {
       for (const derived of await deriveBrowserImages("chromium", fixture.imagePath)) {
         const caseId = `${fixture.id}:${derived.name}`;
         const attempt = detectStrictGridAttempt(derived.image, fixture);
         const expectedPitch = expectedFallbackPitch.get(caseId);
         if (expectedPitch === undefined) {
-          expect(attempt.status, caseId).toBe("found");
+          directSuccessAssertions += 1;
+          if (attempt.status !== "found") directStatusFailures.push(`${caseId}: ${attempt.status}`);
           continue;
         }
 
-        expect(attempt.status, caseId).not.toBe("found");
         const estimate = attempt.coarseEvidence === null ? null : estimateCanonicalPitch(attempt.coarseEvidence);
-        expect(estimate, caseId).not.toBeNull();
-        expect(Math.abs((estimate ?? 0) - expectedPitch) / expectedPitch, caseId).toBeLessThanOrEqual(0.05);
+        const relativeError = estimate === null ? null : Math.abs(estimate - expectedPitch) / expectedPitch;
+        if (attempt.status === "found" || relativeError === null || relativeError > 0.05) {
+          fallbackHintFailures.push(`${caseId}: status=${attempt.status}, hint=${estimate}`);
+        }
       }
     }
+
+    expect(directSuccessAssertions).toBe(11);
+    expect(directStatusFailures).toEqual([]);
+    expect(fallbackHintFailures).toEqual([]);
   }, 120_000);
 
   it("does not emit a pitch hint for ambiguous or noise evidence", () => {
