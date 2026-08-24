@@ -167,11 +167,20 @@ Fix Round 1 separated responsibilities more tightly:
 - `negativeMatrixPassed` is no longer self-asserted in the CLI summary and is treated as external evidence from the focused negative suite;
 - the pure adoption decision helper still accepts `negativeMatrixPassed` as an input for unit coverage.
 
+Fix Round 2 added explicit boundary coverage for the amended UX decision and a controller-evidence invocation of the pure partial-adoption helper. The helper is still not part of the CLI summary.
+
 The compliant run passed the exact functional matrix and the deterministic/budget checks, and both absolute timing thresholds were satisfied:
 
 - exact paths: 11 direct / 3 fallback / 2 source-revalidation-rejected;
 - complete-path median: `337.10074950000126 ms` `<= 500 ms`;
 - complete-path worst: `672.9942090000004 ms` `<= 1000 ms`.
+
+Boundary checks:
+
+- `completeMedianMilliseconds = 500` and `completeWorstMilliseconds = 1000` pass;
+- `completeMedianMilliseconds = 500.001` fails with the worst bound still passing;
+- `completeWorstMilliseconds = 1000.001` fails with the median bound still passing;
+- the old relative gate would still reject the exact boundary cases because the diagnostic ratios remain above the historical thresholds.
 
 The diagnostic ratios remain recorded and still reflect the earlier relative-gate failure:
 
@@ -189,3 +198,11 @@ The final partial-adoption decision remains:
 - `canonical-grid-fallback-partial-adoption-passed`
 
 The earlier relative-gate failure literal is preserved above as historical evidence.
+
+Controller evidence command:
+
+```text
+npx tsx -e "import { evaluateGridFallbackPartialAdoption, evaluateGridEvidence } from './scripts/recognition/evaluate-grid-fallback.ts'; const summary = await evaluateGridEvidence(); console.log(JSON.stringify(evaluateGridFallbackPartialAdoption({ functionalMatrixPassed: summary.functionalMatrixPassed, negativeMatrixPassed: true, determinismPassed: summary.determinismPassed, budgetPassed: summary.budgetPassed, uxLatencyPassed: summary.uxLatencyPassed }), null, 2));"
+```
+
+That controller invocation returned `passed: true` using the exact matrix, determinism, budget, absolute UX evidence from the CLI summary, and the externally verified negative-suite result.

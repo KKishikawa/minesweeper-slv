@@ -75,14 +75,33 @@ describe("paired grid fallback evaluator", () => {
     });
   });
 
-  it("fails absolute UX latency when either bound is exceeded", () => {
+  it("passes exact UX boundaries at 500 and 1000", () => {
     const result = evaluateGridFallbackUxPerformance({
       strictMedianMilliseconds: 200,
-      completeMedianMilliseconds: 501,
+      completeMedianMilliseconds: 500,
       strictWorstMilliseconds: 400,
-      completeWorstMilliseconds: 999,
-      medianRatio: 1.1,
-      worstRatio: 1.2,
+      completeWorstMilliseconds: 1_000,
+      medianRatio: 2.5,
+      worstRatio: 2.5,
+    });
+
+    expect(result).toEqual({
+      medianThresholdMilliseconds: 500,
+      worstThresholdMilliseconds: 1_000,
+      medianPass: true,
+      worstPass: true,
+      passed: true,
+    });
+  });
+
+  it("fails absolute UX latency when median exceeds 500 by a fraction", () => {
+    const result = evaluateGridFallbackUxPerformance({
+      strictMedianMilliseconds: 200,
+      completeMedianMilliseconds: 500.001,
+      strictWorstMilliseconds: 400,
+      completeWorstMilliseconds: 1_000,
+      medianRatio: 2.500005,
+      worstRatio: 2.5,
     });
 
     expect(result).toEqual({
@@ -90,6 +109,25 @@ describe("paired grid fallback evaluator", () => {
       worstThresholdMilliseconds: 1_000,
       medianPass: false,
       worstPass: true,
+      passed: false,
+    });
+  });
+
+  it("fails absolute UX latency when worst exceeds 1000 by a fraction", () => {
+    const result = evaluateGridFallbackUxPerformance({
+      strictMedianMilliseconds: 200,
+      completeMedianMilliseconds: 500,
+      strictWorstMilliseconds: 400,
+      completeWorstMilliseconds: 1_000.001,
+      medianRatio: 1.1,
+      worstRatio: 1.2,
+    });
+
+    expect(result).toEqual({
+      medianThresholdMilliseconds: 500,
+      worstThresholdMilliseconds: 1_000,
+      medianPass: true,
+      worstPass: false,
       passed: false,
     });
   });
