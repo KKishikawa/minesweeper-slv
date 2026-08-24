@@ -77,6 +77,14 @@ export interface GridFallbackPartialAdoptionDecision {
   readonly passed: boolean;
 }
 
+export interface GridFallbackCliDecision {
+  readonly functionalMatrixPassed: boolean;
+  readonly determinismPassed: boolean;
+  readonly budgetPassed: boolean;
+  readonly uxLatencyPassed: boolean;
+  readonly passed: boolean;
+}
+
 export interface GridEvidenceInputCase {
   readonly caseId: string;
   readonly fixture: FixtureCase;
@@ -300,6 +308,19 @@ export function evaluateGridFallbackPartialAdoption(input: {
   return { ...input, passed };
 }
 
+export function evaluateGridFallbackCliDecision(input: {
+  readonly functionalMatrixPassed: boolean;
+  readonly determinismPassed: boolean;
+  readonly budgetPassed: boolean;
+  readonly uxLatencyPassed: boolean;
+}): GridFallbackCliDecision {
+  const passed = input.functionalMatrixPassed
+    && input.determinismPassed
+    && input.budgetPassed
+    && input.uxLatencyPassed;
+  return { ...input, passed };
+}
+
 function measuredOrder(pass: number): MeasuredExecutionOrder {
   return pass % 2 === 0 ? "strict-first" : "complete-first";
 }
@@ -461,5 +482,13 @@ export async function evaluateGridEvidence(options?: {
 
 const invokedPath = process.argv[1];
 if (invokedPath !== undefined && fileURLToPath(import.meta.url) === path.resolve(invokedPath)) {
-  process.stdout.write(`${JSON.stringify(await evaluateGridEvidence(), null, 2)}\n`);
+  const summary = await evaluateGridEvidence();
+  process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
+  const cliDecision = evaluateGridFallbackCliDecision({
+    functionalMatrixPassed: summary.functionalMatrixPassed,
+    determinismPassed: summary.determinismPassed,
+    budgetPassed: summary.budgetPassed,
+    uxLatencyPassed: summary.uxLatencyPassed,
+  });
+  if (!cliDecision.passed) process.exitCode = 1;
 }

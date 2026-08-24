@@ -6,6 +6,7 @@ import {
   assertStablePixelHash,
   evaluateGridEvidence,
   evaluateGridFallbackUxPerformance,
+  evaluateGridFallbackCliDecision,
   evaluateGridFallbackPartialAdoption,
   type GridEvidenceInputCase,
   type GridEvidenceMeasurementObservation,
@@ -134,14 +135,13 @@ describe("paired grid fallback evaluator", () => {
 
   it.each([
     ["functionalMatrix", { functionalMatrixPassed: false }],
-    ["negativeMatrix", { negativeMatrixPassed: false }],
     ["determinism", { determinismPassed: false }],
     ["budget", { budgetPassed: false }],
     ["uxLatency", { uxLatencyPassed: false }],
   ])("fails partial adoption when %s is false", (_, overrides) => {
     expect(evaluateGridFallbackPartialAdoption({
       functionalMatrixPassed: true,
-      negativeMatrixPassed: true,
+      negativeMatrixPassed: false,
       determinismPassed: true,
       budgetPassed: true,
       uxLatencyPassed: true,
@@ -149,6 +149,39 @@ describe("paired grid fallback evaluator", () => {
     })).toMatchObject({
       ...overrides,
       passed: false,
+    });
+  });
+
+  it.each([
+    ["functionalMatrix", { functionalMatrixPassed: false }],
+    ["determinism", { determinismPassed: false }],
+    ["budget", { budgetPassed: false }],
+    ["uxLatency", { uxLatencyPassed: false }],
+  ])("fails CLI decision when %s is false", (_, overrides) => {
+    expect(evaluateGridFallbackCliDecision({
+      functionalMatrixPassed: true,
+      determinismPassed: true,
+      budgetPassed: true,
+      uxLatencyPassed: true,
+      ...overrides,
+    })).toMatchObject({
+      ...overrides,
+      passed: false,
+    });
+  });
+
+  it("passes CLI decision when all inputs are true", () => {
+    expect(evaluateGridFallbackCliDecision({
+      functionalMatrixPassed: true,
+      determinismPassed: true,
+      budgetPassed: true,
+      uxLatencyPassed: true,
+    })).toEqual({
+      passed: true,
+      functionalMatrixPassed: true,
+      determinismPassed: true,
+      budgetPassed: true,
+      uxLatencyPassed: true,
     });
   });
 

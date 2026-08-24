@@ -41,9 +41,11 @@ The browser evidence test's ambiguous two-pitch synthetic image produced no pitc
 
 ## Compatibility
 
-Before the browser gate, the moved-fixture grid suite passed with 20 tests. After the strict attempt extraction, the grid and pure evidence suites passed with 28 tests, and `npm run typecheck` exited zero. `detectGrid()` remains direct-only: it returns geometry only when `detectStrictGridAttempt()` returns `found`; no canonical fallback is connected.
+At that checkpoint, before the browser gate, the moved-fixture grid suite had passed with 20 tests. After the strict attempt extraction, the grid and pure evidence suites had passed with 28 tests, and `npm run typecheck` had exited zero. `detectGrid()` remained direct-only at that checkpoint: it returned geometry only when `detectStrictGridAttempt()` returned `found`; no canonical fallback was connected.
 
-### Task 2 canonical resampling (in progress)
+### Task 2 canonical resampling
+
+Task 2 was then in progress; completed evidence appears below.
 
 The pure canonical resampler passed its hand-authored byte, mapping, validation, allocation-cap, and three-run deterministic 30/50-pixel-pitch hash tests. Its current Node hashes are `baa44fda75b839c3ac0262d0ea8a9e909976a4876c73e6e6fd28d0e86c8f3862` (30px, 129 by 87) and `19888b0a715a288a8074eaba92bfb52426c041271313ee3c316be24d51848634` (50px, 126 by 84).
 
