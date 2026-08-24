@@ -96,9 +96,8 @@ describe("final prototype bank generation", () => {
       expect(error.candidate.evaluationCases
         .filter((evaluationCase) => !evaluationCase.gridFound)
         .map((evaluationCase) => evaluationCase.id)).toEqual([
-        "1:canvas-scale-075", "1:canvas-scale-125",
-        "2:canvas-scale-075", "2:canvas-scale-125",
-        "3:canvas-scale-075",
+        "1:canvas-scale-075",
+        "2:canvas-scale-075",
       ]);
       expect(error.candidate.evaluationCases.every((evaluationCase) => evaluationCase.correctCells === 0
         && evaluationCase.wrongCertainCells === 0

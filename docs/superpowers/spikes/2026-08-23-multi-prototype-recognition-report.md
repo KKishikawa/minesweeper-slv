@@ -14,17 +14,14 @@ multi-prototype-rejected
 
 ## Prototype Bank
 
-Prototype counts by label: `closed:12, empty:12, flag:12, 1:12, 2:12, 3:12, 4:12, 5:2, 6:2`. Thresholds: `null`. Bank SHA-256: `null`. Calibration evaluated 238 threshold pairs; 144 passed the available complete cases. The full matrix remained incomplete because 5 required cases had no grid.
+Prototype counts by label: `closed:12, empty:12, flag:12, 1:12, 2:12, 3:12, 4:12, 5:2, 6:2`. Thresholds: `null`. Bank SHA-256: `null`. Calibration evaluated 238 threshold pairs; 90 passed the available complete cases. The full matrix remained incomplete because 2 required cases had no grid.
 
 ## Chromium Formal Results
 
 `formalPassed: false`. Chromium grid failures:
 
 - `1:canvas-scale-075`
-- `1:canvas-scale-125`
 - `2:canvas-scale-075`
-- `2:canvas-scale-125`
-- `3:canvas-scale-075`
 
 All 16 final-candidate cases include measured `elapsedMs` values in the generated summary.
 
@@ -54,9 +51,9 @@ Engine overlays were not generated because no thresholded bank existed. Passing-
 
 ## Performance
 
-Candidate build elapsed: 18308.000 ms. Fold evaluation elapsed: 52811.000 ms. Total runner elapsed: 71137.000 ms.
+Candidate build elapsed: 15871.000 ms. Fold evaluation elapsed: 45990.000 ms. Total runner elapsed: 61887.000 ms.
 
-Recorded case min/median/max: 86.990 ms / 705.114 ms / 971.264 ms. Candidate-case min/median/max: 89.086 ms / 770.621 ms / 981.907 ms. Fold-case min/median/max: 86.990 ms / 705.114 ms / 971.264 ms. Evaluated-engine min/median/max: not measured / not measured / not measured.
+Recorded case min/median/max: 426.756 ms / 604.258 ms / 986.334 ms. Candidate-case min/median/max: 431.716 ms / 607.162 ms / 1177.092 ms. Fold-case min/median/max: 426.756 ms / 604.258 ms / 986.334 ms. Evaluated-engine min/median/max: not measured / not measured / not measured.
 
 ## Coverage Limits
 
@@ -67,4 +64,4 @@ Recorded case min/median/max: 86.990 ms / 705.114 ms / 971.264 ms. Candidate-cas
 
 ## Follow-up
 
-Improve grid detection for the 5 rejected Chromium derivatives.
+Improve grid detection for the 2 rejected Chromium derivatives.
