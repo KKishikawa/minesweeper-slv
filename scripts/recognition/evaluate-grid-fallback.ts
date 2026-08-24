@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { estimateCanonicalPitch } from "../../src/recognition/grid-evidence.js";
+import { GridRefinementBudget } from "../../src/recognition/grid-budget.js";
 import { detectStrictGridAttempt } from "../../src/recognition/grid-strict.js";
 import type { GridGeometry, PixelImage } from "../../src/recognition/types.js";
 import { deriveBrowserImages } from "../../test/recognition/browser-derive.js";
@@ -83,8 +84,9 @@ async function decodeEvaluationCases(): Promise<readonly DecodedEvaluationCase[]
 
 function measureStrictAttempt(caseValue: DecodedEvaluationCase): StrictMeasurement {
   assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.pixelHash);
+  const budget = new GridRefinementBudget(20_000);
   const startedAt = performance.now();
-  const attempt = detectStrictGridAttempt(caseValue.image, caseValue.fixture);
+  const attempt = detectStrictGridAttempt(caseValue.image, caseValue.fixture, budget);
   const pitchHint = attempt.coarseEvidence === null ? null : estimateCanonicalPitch(attempt.coarseEvidence);
   const elapsedMilliseconds = performance.now() - startedAt;
   const pixelHash = assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.pixelHash);

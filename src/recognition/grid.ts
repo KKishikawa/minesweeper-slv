@@ -1,4 +1,5 @@
 import { detectStrictGridAttempt } from "./grid-strict.js";
+import { GridRefinementBudget } from "./grid-budget.js";
 import type { GridGeometry, PixelImage, Rect } from "./types.js";
 
 export { buildEdgeProfiles, countCompatibleGridCandidatePairs } from "./grid-strict.js";
@@ -8,7 +9,7 @@ export function detectGrid(
   image: PixelImage,
   dimensions: { readonly columns: number; readonly rows: number },
 ): GridGeometry | null {
-  const attempt = detectStrictGridAttempt(image, dimensions);
+  const attempt = detectStrictGridAttempt(image, dimensions, new GridRefinementBudget(20_000));
   return attempt.status === "found" ? attempt.geometry : null;
 }
 

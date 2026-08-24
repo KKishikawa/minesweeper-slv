@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { estimateCanonicalPitch } from "../../src/recognition/grid-evidence.js";
+import { GridRefinementBudget } from "../../src/recognition/grid-budget.js";
 import { detectStrictGridAttempt } from "../../src/recognition/grid-strict.js";
 import type { PixelImage } from "../../src/recognition/types.js";
 import { deriveBrowserImages } from "./browser-derive.js";
@@ -42,7 +43,7 @@ function syntheticAmbiguousTwoPitchImage(): PixelImage {
 }
 
 function pitchHint(image: PixelImage): number | null {
-  const attempt = detectStrictGridAttempt(image, { columns: 4, rows: 4 });
+  const attempt = detectStrictGridAttempt(image, { columns: 4, rows: 4 }, new GridRefinementBudget(20_000));
   return attempt.coarseEvidence === null ? null : estimateCanonicalPitch(attempt.coarseEvidence);
 }
 
@@ -54,7 +55,7 @@ describe("Chromium coarse pitch evidence gate", () => {
     for (const fixture of await loadFixtureCases()) {
       for (const derived of await deriveBrowserImages("chromium", fixture.imagePath)) {
         const caseId = `${fixture.id}:${derived.name}`;
-        const attempt = detectStrictGridAttempt(derived.image, fixture);
+        const attempt = detectStrictGridAttempt(derived.image, fixture, new GridRefinementBudget(20_000));
         const expectedPitch = expectedFallbackPitch.get(caseId);
         if (expectedPitch === undefined) {
           directSuccessAssertions += 1;

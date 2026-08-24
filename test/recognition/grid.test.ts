@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { cellRect, countCompatibleGridCandidatePairs, detectGrid } from "../../src/recognition/grid.js";
+import { GridRefinementBudget } from "../../src/recognition/grid-budget.js";
 import { detectStrictGridAttempt } from "../../src/recognition/grid-strict.js";
 import type { GridGeometry, PixelImage, Rect } from "../../src/recognition/types.js";
 import { deriveImages } from "./derive.js";
@@ -22,6 +23,7 @@ describe("detectGrid", () => {
     const attempt = detectStrictGridAttempt(
       syntheticGridImage(140, 140, verticalBoundaries, horizontalBoundaries, false),
       { columns: 4, rows: 4 },
+      new GridRefinementBudget(20_000),
     );
 
     expect(attempt.status).toBe("found");
@@ -45,6 +47,23 @@ describe("detectGrid", () => {
 
     expect(countCompatibleGridCandidatePairs(verticalBuckets, horizontalBuckets, 30_000)).toBe(22_500);
     expect(countCompatibleGridCandidatePairs(verticalBuckets, horizontalBuckets, 20_000)).toBeNull();
+  });
+
+  it("stops a later attempt once the shared refinement budget is exhausted", () => {
+    const verticalBoundaries = Array.from({ length: 5 }, (_, index) => 20 + index * 20);
+    const horizontalBoundaries = Array.from({ length: 5 }, (_, index) => 20 + index * 20);
+    const image = syntheticGridImage(140, 140, verticalBoundaries, horizontalBoundaries, false);
+    const probe = detectStrictGridAttempt(image, { columns: 4, rows: 4 }, new GridRefinementBudget(20_000));
+    if (probe.status !== "found") throw new Error("probe grid was not found");
+    const budget = new GridRefinementBudget(probe.refinedPairCount);
+
+    const first = detectStrictGridAttempt(image, { columns: 4, rows: 4 }, budget);
+    const second = detectStrictGridAttempt(image, { columns: 4, rows: 4 }, budget);
+
+    expect(first.status).toBe("found");
+    expect(first.refinedPairCount).toBe(probe.refinedPairCount);
+    expect(second.status).toBe("budget-exhausted");
+    expect(budget.consumed).toBe(probe.refinedPairCount);
   });
 
   it("finds every source board without file-specific coordinates", async () => {

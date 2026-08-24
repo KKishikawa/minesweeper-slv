@@ -1,5 +1,6 @@
 import { luminance } from "./pixels.js";
 import type { CoarsePitchEvidence } from "./grid-evidence.js";
+import type { GridRefinementBudget } from "./grid-budget.js";
 import type { GridGeometry, PixelImage } from "./types.js";
 
 const MIN_CELL_PITCH = 8;
@@ -821,7 +822,11 @@ function selectDistinctGridCandidates(candidates: readonly RefinedGridCandidate[
   return [...distinct.values()].sort((a, b) => b.rangeScore - a.rangeScore);
 }
 
-export function detectStrictGridAttempt(image: PixelImage, dimensions: GridDimensions): StrictGridAttempt {
+export function detectStrictGridAttempt(
+  image: PixelImage,
+  dimensions: GridDimensions,
+  budget: GridRefinementBudget,
+): StrictGridAttempt {
   const rejected = (status: "rejected" | "ambiguous" | "budget-exhausted", coarseEvidence: CoarsePitchEvidence | null, sourceContext: SourceGridValidationContext | null, refinedPairCount: number): StrictGridAttempt => ({
     status,
     coarseEvidence,
@@ -847,8 +852,9 @@ export function detectStrictGridAttempt(image: PixelImage, dimensions: GridDimen
   const coarseEvidence = coarsePitchEvidence(verticalCandidates, horizontalCandidates);
   const verticalBuckets = bucketAxisCandidates(verticalCandidates);
   const horizontalBuckets = bucketAxisCandidates(horizontalCandidates);
-  const refinedPairCount = countCompatibleGridCandidatePairs(verticalBuckets, horizontalBuckets);
+  const refinedPairCount = countCompatibleGridCandidatePairs(verticalBuckets, horizontalBuckets, budget.remaining);
   if (refinedPairCount === null) return rejected("budget-exhausted", coarseEvidence, null, 0);
+  if (!budget.reserve(refinedPairCount)) return rejected("budget-exhausted", coarseEvidence, null, 0);
   const gridCandidates = selectGridCandidates(verticalCandidates, horizontalCandidates);
   if (gridCandidates === null) return rejected("budget-exhausted", coarseEvidence, null, 0);
   const allRefinedCandidates = refineGridCandidates(gridCandidates, profiles, image, dimensions);
