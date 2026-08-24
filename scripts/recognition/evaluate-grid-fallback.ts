@@ -37,7 +37,7 @@ export interface GridEvidenceEvaluationCase {
 export interface GridEvidenceEvaluationSummary {
   readonly engine: "chromium";
   readonly retainedInputCount: number;
-  readonly inputAcquisitionPasses: 1;
+  readonly inputAcquisitionPasses: number;
   readonly warmupPasses: number;
   readonly measuredPasses: number;
   readonly measuredExecutionOrder: readonly MeasuredExecutionOrder[];
@@ -51,11 +51,26 @@ export interface GridEvidenceEvaluationSummary {
   readonly worstRatio: number;
 }
 
-interface DecodedEvaluationCase {
+export interface GridEvidenceInputCase {
   readonly caseId: string;
   readonly fixture: FixtureCase;
   readonly image: PixelImage;
   readonly inputHash: string;
+}
+
+export interface GridEvidenceMeasurementObservation {
+  readonly caseId: string;
+  readonly image: PixelImage;
+  readonly phase: "warmup" | "measured";
+  readonly path: "strict" | "complete";
+  readonly pass: number;
+}
+
+export interface GridEvidenceEvaluationDependencies {
+  readonly acquireCases?: (
+    loadDefault: () => Promise<readonly GridEvidenceInputCase[]>,
+  ) => Promise<readonly GridEvidenceInputCase[]>;
+  readonly observeMeasurement?: (measurement: GridEvidenceMeasurementObservation) => void;
 }
 
 interface StrictMeasurement {
@@ -109,8 +124,8 @@ export function assertStablePixelHash(
   return actualHash;
 }
 
-async function decodeEvaluationCases(): Promise<readonly DecodedEvaluationCase[]> {
-  const cases: DecodedEvaluationCase[] = [];
+async function decodeEvaluationCases(): Promise<readonly GridEvidenceInputCase[]> {
+  const cases: GridEvidenceInputCase[] = [];
   for (const fixture of await loadFixtureCases()) {
     for (const derived of await deriveBrowserImages("chromium", fixture.imagePath)) {
       cases.push({
@@ -124,7 +139,7 @@ async function decodeEvaluationCases(): Promise<readonly DecodedEvaluationCase[]
   return cases;
 }
 
-function measureStrictAttempt(caseValue: DecodedEvaluationCase): StrictMeasurement {
+function measureStrictAttempt(caseValue: GridEvidenceInputCase): StrictMeasurement {
   assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.inputHash);
   const budget = new GridRefinementBudget(20_000);
   const startedAt = performance.now();
@@ -143,7 +158,7 @@ function measureStrictAttempt(caseValue: DecodedEvaluationCase): StrictMeasureme
   };
 }
 
-function measureCompleteAttempt(caseValue: DecodedEvaluationCase): CompleteMeasurement {
+function measureCompleteAttempt(caseValue: GridEvidenceInputCase): CompleteMeasurement {
   assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.inputHash);
   const startedAt = performance.now();
   const result = detectGridWithDiagnostics(caseValue.image, caseValue.fixture);
@@ -213,17 +228,40 @@ function measuredOrder(pass: number): MeasuredExecutionOrder {
 export async function evaluateGridEvidence(options?: {
   readonly warmupPasses?: number;
   readonly measuredPasses?: number;
-}): Promise<GridEvidenceEvaluationSummary> {
+}, dependencies?: GridEvidenceEvaluationDependencies): Promise<GridEvidenceEvaluationSummary> {
   const warmupPasses = options?.warmupPasses ?? 1;
   const measuredPasses = options?.measuredPasses ?? 3;
   nonNegativeSafeInteger(warmupPasses, "warmupPasses");
   nonNegativeSafeInteger(measuredPasses, "measuredPasses");
   if (measuredPasses < 1) throw new RangeError("measuredPasses must be at least 1.");
 
-  const decodedCases = await decodeEvaluationCases();
+  let inputAcquisitionPasses = 0;
+  const acquireCases = dependencies?.acquireCases ?? ((loadDefault) => loadDefault());
+  inputAcquisitionPasses += 1;
+  const decodedCases = await acquireCases(decodeEvaluationCases);
+  const observeMeasurement = (
+    caseValue: GridEvidenceInputCase,
+    phase: GridEvidenceMeasurementObservation["phase"],
+    pathValue: GridEvidenceMeasurementObservation["path"],
+    pass: number,
+  ): void => {
+    dependencies?.observeMeasurement?.({
+      caseId: caseValue.caseId,
+      image: caseValue.image,
+      phase,
+      path: pathValue,
+      pass,
+    });
+  };
   for (let pass = 0; pass < warmupPasses; pass += 1) {
-    for (const caseValue of decodedCases) measureStrictAttempt(caseValue);
-    for (const caseValue of decodedCases) measureCompleteAttempt(caseValue);
+    for (const caseValue of decodedCases) {
+      observeMeasurement(caseValue, "warmup", "strict", pass);
+      measureStrictAttempt(caseValue);
+    }
+    for (const caseValue of decodedCases) {
+      observeMeasurement(caseValue, "warmup", "complete", pass);
+      measureCompleteAttempt(caseValue);
+    }
   }
 
   const accumulated = new Map<string, AccumulatedMeasurements>(decodedCases.map((caseValue) => [
@@ -236,14 +274,16 @@ export async function evaluateGridEvidence(options?: {
     },
   ]));
 
-  const measureStrictCase = (caseValue: DecodedEvaluationCase): void => {
+  const measureStrictCase = (caseValue: GridEvidenceInputCase, pass: number): void => {
+    observeMeasurement(caseValue, "measured", "strict", pass);
     const next = measureStrictAttempt(caseValue);
     const values = accumulated.get(caseValue.caseId)!;
     if (values.strict === null) values.strict = next;
     else assertNoMeasuredDrift(caseValue.caseId, values.strict, next, strictDeterministicFields);
     values.strictSamplesMilliseconds.push(next.elapsedMilliseconds);
   };
-  const measureCompleteCase = (caseValue: DecodedEvaluationCase): void => {
+  const measureCompleteCase = (caseValue: GridEvidenceInputCase, pass: number): void => {
+    observeMeasurement(caseValue, "measured", "complete", pass);
     const next = measureCompleteAttempt(caseValue);
     const values = accumulated.get(caseValue.caseId)!;
     if (values.complete === null) values.complete = next;
@@ -253,18 +293,19 @@ export async function evaluateGridEvidence(options?: {
 
   const measuredExecutionOrder = Array.from({ length: measuredPasses }, (_, pass) => measuredOrder(pass));
   const measuredExecutionTrace: string[] = [];
-  for (const order of measuredExecutionOrder) {
+  for (let pass = 0; pass < measuredExecutionOrder.length; pass += 1) {
+    const order = measuredExecutionOrder[pass]!;
     for (const caseValue of decodedCases) {
       if (order === "strict-first") {
         measuredExecutionTrace.push(`strict:${caseValue.caseId}`);
-        measureStrictCase(caseValue);
+        measureStrictCase(caseValue, pass);
         measuredExecutionTrace.push(`complete:${caseValue.caseId}`);
-        measureCompleteCase(caseValue);
+        measureCompleteCase(caseValue, pass);
       } else {
         measuredExecutionTrace.push(`complete:${caseValue.caseId}`);
-        measureCompleteCase(caseValue);
+        measureCompleteCase(caseValue, pass);
         measuredExecutionTrace.push(`strict:${caseValue.caseId}`);
-        measureStrictCase(caseValue);
+        measureStrictCase(caseValue, pass);
       }
     }
   }
@@ -300,7 +341,7 @@ export async function evaluateGridEvidence(options?: {
   return {
     engine: "chromium",
     retainedInputCount: decodedCases.length,
-    inputAcquisitionPasses: 1,
+    inputAcquisitionPasses,
     warmupPasses,
     measuredPasses,
     measuredExecutionOrder,

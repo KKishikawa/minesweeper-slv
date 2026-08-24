@@ -5,7 +5,10 @@ import { describe, expect, it } from "vitest";
 import {
   assertStablePixelHash,
   evaluateGridEvidence,
+  type GridEvidenceInputCase,
+  type GridEvidenceMeasurementObservation,
 } from "../../scripts/recognition/evaluate-grid-fallback.js";
+import type { PixelImage } from "../../src/recognition/types.js";
 
 const expectedCases = new Map<string, {
   readonly stage: "direct" | "fallback" | "source-revalidation-rejected";
@@ -52,8 +55,25 @@ describe("grid evidence input hash stability", () => {
 
 describe("paired grid fallback evaluator", () => {
   it("reuses sixteen retained Chromium inputs across three alternating measured runs", async () => {
-    const summary = await evaluateGridEvidence();
+    let loaderCalls = 0;
+    const retainedImages = new Map<string, PixelImage>();
+    const observedMeasurements = new Map<string, { warmup: number; measured: number }>();
+    const summary = await evaluateGridEvidence(undefined, {
+      acquireCases: async (loadDefault: () => Promise<readonly GridEvidenceInputCase[]>) => {
+        loaderCalls += 1;
+        const cases = await loadDefault();
+        for (const caseValue of cases) retainedImages.set(caseValue.caseId, caseValue.image);
+        return cases;
+      },
+      observeMeasurement: (measurement: GridEvidenceMeasurementObservation) => {
+        expect(measurement.image, `${measurement.caseId} retained image`).toBe(retainedImages.get(measurement.caseId));
+        const counts = observedMeasurements.get(measurement.caseId) ?? { warmup: 0, measured: 0 };
+        counts[measurement.phase] += 1;
+        observedMeasurements.set(measurement.caseId, counts);
+      },
+    });
 
+    expect(loaderCalls).toBe(1);
     expect(summary.retainedInputCount).toBe(16);
     expect(summary.inputAcquisitionPasses).toBe(1);
     expect(summary.warmupPasses).toBe(1);
@@ -64,6 +84,9 @@ describe("paired grid fallback evaluator", () => {
       "strict-first",
     ]);
     expect(summary.cases.map((value) => value.caseId)).toEqual([...expectedCases.keys()]);
+    expect([...observedMeasurements.entries()]).toEqual(
+      [...expectedCases.keys()].map((caseId) => [caseId, { warmup: 2, measured: 6 }]),
+    );
     expect(summary.measuredExecutionTrace).toHaveLength(16 * 2 * 3);
     const expectedCaseIds = [...expectedCases.keys()];
     for (let run = 0; run < 3; run += 1) {
