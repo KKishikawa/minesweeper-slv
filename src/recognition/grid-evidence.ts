@@ -38,6 +38,36 @@ function isValidBucket(bucket: AxisPitchBucket): boolean {
     && bucket.candidateCount > 0;
 }
 
+function supportedPitchAfterBoundaryCorrection(
+  estimate: number,
+  verticalPitch: number,
+  horizontalPitch: number,
+): number | null {
+  if (estimate >= MIN_CANONICAL_PITCH && estimate <= MAX_CANONICAL_PITCH) return estimate;
+
+  const touchesLowerBoundary = (
+    (verticalPitch === MIN_CANONICAL_PITCH && horizontalPitch < MIN_CANONICAL_PITCH)
+    || (horizontalPitch === MIN_CANONICAL_PITCH && verticalPitch < MIN_CANONICAL_PITCH)
+  );
+  if (
+    estimate < MIN_CANONICAL_PITCH
+    && touchesLowerBoundary
+    && pitchesAreCompatible(verticalPitch, horizontalPitch)
+  ) return MIN_CANONICAL_PITCH;
+
+  const touchesUpperBoundary = (
+    (verticalPitch === MAX_CANONICAL_PITCH && horizontalPitch > MAX_CANONICAL_PITCH)
+    || (horizontalPitch === MAX_CANONICAL_PITCH && verticalPitch > MAX_CANONICAL_PITCH)
+  );
+  if (
+    estimate > MAX_CANONICAL_PITCH
+    && touchesUpperBoundary
+    && pitchesAreCompatible(verticalPitch, horizontalPitch)
+  ) return MAX_CANONICAL_PITCH;
+
+  return null;
+}
+
 function pitchFamilies(evidence: CoarsePitchEvidence): readonly PitchFamily[] {
   const pitches = [...new Set([...evidence.vertical, ...evidence.horizontal].map((bucket) => bucket.pitch))]
     .sort((first, second) => first - second);
@@ -102,8 +132,7 @@ export function estimateCanonicalPitch(evidence: CoarsePitchEvidence): number | 
 
   const estimate = (best.vertical.pitch * best.vertical.score + best.horizontal.pitch * best.horizontal.score)
     / (best.vertical.score + best.horizontal.score);
-  return estimate >= MIN_CANONICAL_PITCH && estimate <= MAX_CANONICAL_PITCH
-    && pitchesAreCompatible(best.vertical.pitch, best.horizontal.pitch)
-    ? estimate
+  return pitchesAreCompatible(best.vertical.pitch, best.horizontal.pitch)
+    ? supportedPitchAfterBoundaryCorrection(estimate, best.vertical.pitch, best.horizontal.pitch)
     : null;
 }

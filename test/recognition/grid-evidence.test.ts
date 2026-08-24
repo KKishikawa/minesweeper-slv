@@ -87,4 +87,39 @@ describe("estimateCanonicalPitch", () => {
     expect(estimateCanonicalPitch(evidence([], [{ pitch: 30, normalizedScore: 1, candidateCount: 1 }]))).toBeNull();
     expect(estimateCanonicalPitch(evidence([{ pitch: 30, normalizedScore: 1, candidateCount: 1 }], []))).toBeNull();
   });
+
+  it("corrects a selected 29/30 boundary family to 30", () => {
+    expect(estimateCanonicalPitch(evidence(
+      [{ pitch: 30, normalizedScore: 1, candidateCount: 3 }],
+      [{ pitch: 29, normalizedScore: 0.8661677576, candidateCount: 2 }],
+    ))).toBe(30);
+  });
+
+  it("corrects a selected 50/51 boundary family to 50", () => {
+    expect(estimateCanonicalPitch(evidence(
+      [{ pitch: 50, normalizedScore: 0.9, candidateCount: 2 }],
+      [{ pitch: 51, normalizedScore: 1, candidateCount: 2 }],
+    ))).toBe(50);
+  });
+
+  it("does not correct a family whose two buckets are below the supported range", () => {
+    expect(estimateCanonicalPitch(evidence(
+      [{ pitch: 29, normalizedScore: 1, candidateCount: 2 }],
+      [{ pitch: 29, normalizedScore: 1, candidateCount: 2 }],
+    ))).toBeNull();
+  });
+
+  it("does not correct a family whose two buckets are above the supported range", () => {
+    expect(estimateCanonicalPitch(evidence(
+      [{ pitch: 51, normalizedScore: 1, candidateCount: 2 }],
+      [{ pitch: 51, normalizedScore: 1, candidateCount: 2 }],
+    ))).toBeNull();
+  });
+
+  it("does not correct a boundary pair outside five-percent compatibility", () => {
+    expect(estimateCanonicalPitch(evidence(
+      [{ pitch: 30, normalizedScore: 1, candidateCount: 2 }],
+      [{ pitch: 28, normalizedScore: 1, candidateCount: 2 }],
+    ))).toBeNull();
+  });
 });
