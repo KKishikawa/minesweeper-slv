@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved for implementation planning, with the coarse-pitch evidence gate still pending. This document scopes the grid-detection follow-up to the rejected multi-prototype recognition spike. It does not authorize UI, solver, capture, clipboard, upload, classifier, or product-bank work.
+Approved design with a boundary-quantization amendment pending re-execution of the coarse-pitch evidence gate. This document scopes the grid-detection follow-up to the rejected multi-prototype recognition spike. It does not authorize UI, solver, capture, clipboard, upload, classifier, or product-bank work.
 
 ## Problem
 
@@ -104,13 +104,26 @@ A pitch estimate is usable only when:
 - the family score, defined as the lower of its best normalized X and Y scores, is at least 0.65;
 - `(bestFamilyScore - runnerUpFamilyScore) / bestFamilyScore` is at least `0.05`, or no competing family exists;
 - the score-weighted X/Y pitch estimate differs by at most five percent;
-- the combined estimate is between 30 and 50 pixels inclusive.
+- the combined estimate is between 30 and 50 pixels inclusive, or qualifies for the boundary-quantization correction below.
 
 If more than one family remains plausible, the estimator returns no hint. It never selects an origin, extent, or final grid.
 
-The estimated pitch is the score-weighted mean of the best X and Y pitch buckets in the unique family. Tests must pin the family construction, ambiguity handling, and boundary values before integration.
+The estimated pitch is normally the score-weighted mean of the best X and Y pitch buckets in the unique family. Tests must pin the family construction, ambiguity handling, and boundary values before integration.
 
-The five-percent family-separation rule has not yet been validated against the formal browser matrix. The first implementation-plan task is therefore an evidence gate, not production integration: expose the existing coarse evidence to offline tests and verify that this single fixed rule yields a hint for all five direct failures, does not alter the eleven direct successes, and yields no usable hint for ambiguous-pitch or noise negatives. Projected-line and displaced-grid negatives may contain a real dominant pitch; they are rejected later by strict canonical detection or original-space revalidation, not by inventing an extent decision in the pitch estimator. If the evidence gate fails, stop the plan and return to this design. Do not tune multiple thresholds while implementing the fallback; a different estimator requires a new reviewed design.
+#### Boundary-Quantization Correction
+
+Axis pitches are integer buckets, so a true pitch at a supported boundary can appear as adjacent buckets on the two axes. After the unique family has passed every score and ambiguity gate, apply one narrow correction:
+
+- return the weighted estimate unchanged when it is in `[30, 50]`;
+- when the estimate is below 30, return 30 only if one selected axis bucket is exactly 30, the other is below 30, and the two buckets differ by at most five percent;
+- when the estimate is above 50, return 50 only if one selected axis bucket is exactly 50, the other is above 50, and the two buckets differ by at most five percent;
+- otherwise return no hint.
+
+The correction cannot select a family, resolve ambiguity, or admit a pair whose two buckets are both outside the supported range. Thus `29/30` may produce 30 and `50/51` may produce 50, while `29/29` and `51/51` remain unsupported. The returned pitch remains in `[30, 50]`, preserving the canonical scale bound from 0.8 through 1.333 recurring.
+
+The first evidence-gate run preserved all eleven direct successes and produced hints for four of the five direct failures. The remaining case selected a strong `29/30` family whose weighted estimate was approximately 29.536, then rejected it solely because the weighted value fell below 30. This motivated the reviewed boundary-quantization correction; family construction, `0.65` minimum score, five-percent family separation, and the supported pitch range remain unchanged.
+
+Before production fallback integration, rerun the evidence gate with tests that require all eleven direct successes, all five fallback hints, and no hint for ambiguous-pitch or noise negatives. Projected-line and displaced-grid negatives may contain a real dominant pitch; they are rejected later by strict canonical detection or original-space revalidation, not by inventing an extent decision in the pitch estimator. If the amended evidence gate fails, stop again and return to design review. Do not add another correction or tune the existing thresholds in the same implementation plan.
 
 ### Deterministic Canonical Resampler
 
@@ -206,7 +219,9 @@ Implementation follows test-driven development.
 
 - pitch-family grouping and five-percent compatibility;
 - unique-family acceptance and ambiguous-family rejection;
-- inclusive 30 and 50 pixel boundaries and out-of-range rejection;
+- inclusive 30 and 50 pixel boundaries;
+- boundary quantization acceptance for `29/30` and `50/51` selected pairs;
+- rejection of `29/29`, `51/51`, and other out-of-range pairs that do not touch a supported boundary;
 - deterministic bilinear center sampling with fixed byte fixtures;
 - output-size, overflow, and pixel-count guards;
 - forward and inverse coordinate mapping;
