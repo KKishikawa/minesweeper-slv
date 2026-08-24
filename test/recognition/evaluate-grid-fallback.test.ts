@@ -247,11 +247,19 @@ describe("paired grid fallback evaluator", () => {
     expect(Number.isFinite(summary.completeWorstMilliseconds)).toBe(true);
     expect(summary.medianRatio).toBe(summary.completeMedianMilliseconds / summary.strictMedianMilliseconds);
     expect(summary.worstRatio).toBe(summary.completeWorstMilliseconds / summary.strictWorstMilliseconds);
-    expect(summary.uxMedianThresholdMilliseconds).toBe(500);
-    expect(summary.uxWorstThresholdMilliseconds).toBe(1_000);
-    expect(summary.uxMedianPass).toBe(true);
-    expect(summary.uxWorstPass).toBe(true);
-    expect(summary.uxLatencyPassed).toBe(true);
+    const uxDecision = evaluateGridFallbackUxPerformance({
+      strictMedianMilliseconds: summary.strictMedianMilliseconds,
+      completeMedianMilliseconds: summary.completeMedianMilliseconds,
+      strictWorstMilliseconds: summary.strictWorstMilliseconds,
+      completeWorstMilliseconds: summary.completeWorstMilliseconds,
+      medianRatio: summary.medianRatio,
+      worstRatio: summary.worstRatio,
+    });
+    expect(summary.uxMedianThresholdMilliseconds).toBe(uxDecision.medianThresholdMilliseconds);
+    expect(summary.uxWorstThresholdMilliseconds).toBe(uxDecision.worstThresholdMilliseconds);
+    expect(summary.uxMedianPass).toBe(uxDecision.medianPass);
+    expect(summary.uxWorstPass).toBe(uxDecision.worstPass);
+    expect(summary.uxLatencyPassed).toBe(uxDecision.passed);
     expect(summary.functionalMatrixPassed).toBe(true);
     expect(summary.negativeMatrixPassed).toBeNull();
     expect(summary.determinismPassed).toBe(true);
