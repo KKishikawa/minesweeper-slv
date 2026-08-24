@@ -7,8 +7,36 @@ import {
   evaluateGridEvidence,
 } from "../../scripts/recognition/evaluate-grid-fallback.js";
 
+const expectedCases = new Map<string, {
+  readonly stage: "direct" | "fallback" | "source-revalidation-rejected";
+  readonly geometry: "present" | "null";
+  readonly normalizedHash: "present" | "null";
+  readonly canonicalCandidateCount: number;
+  readonly sourceSurvivorCount: number;
+  readonly directRefinedPairCount: number;
+  readonly canonicalRefinedPairCount: number;
+  readonly totalRefinedPairCount: number;
+}>([
+  ["0:source", { stage: "direct", geometry: "present", normalizedHash: "null", canonicalCandidateCount: 0, sourceSurvivorCount: 0, directRefinedPairCount: 2_240, canonicalRefinedPairCount: 0, totalRefinedPairCount: 2_240 }],
+  ["0:canvas-scale-075", { stage: "direct", geometry: "present", normalizedHash: "null", canonicalCandidateCount: 0, sourceSurvivorCount: 0, directRefinedPairCount: 1_392, canonicalRefinedPairCount: 0, totalRefinedPairCount: 1_392 }],
+  ["0:canvas-scale-125", { stage: "direct", geometry: "present", normalizedHash: "null", canonicalCandidateCount: 0, sourceSurvivorCount: 0, directRefinedPairCount: 1_640, canonicalRefinedPairCount: 0, totalRefinedPairCount: 1_640 }],
+  ["0:canvas-jpeg-q75", { stage: "direct", geometry: "present", normalizedHash: "null", canonicalCandidateCount: 0, sourceSurvivorCount: 0, directRefinedPairCount: 2_325, canonicalRefinedPairCount: 0, totalRefinedPairCount: 2_325 }],
+  ["1:source", { stage: "direct", geometry: "present", normalizedHash: "null", canonicalCandidateCount: 0, sourceSurvivorCount: 0, directRefinedPairCount: 2_718, canonicalRefinedPairCount: 0, totalRefinedPairCount: 2_718 }],
+  ["1:canvas-scale-075", { stage: "source-revalidation-rejected", geometry: "null", normalizedHash: "present", canonicalCandidateCount: 3, sourceSurvivorCount: 3, directRefinedPairCount: 2_155, canonicalRefinedPairCount: 1_449, totalRefinedPairCount: 3_604 }],
+  ["1:canvas-scale-125", { stage: "fallback", geometry: "present", normalizedHash: "present", canonicalCandidateCount: 1, sourceSurvivorCount: 1, directRefinedPairCount: 1_296, canonicalRefinedPairCount: 1_632, totalRefinedPairCount: 2_928 }],
+  ["1:canvas-jpeg-q75", { stage: "direct", geometry: "present", normalizedHash: "null", canonicalCandidateCount: 0, sourceSurvivorCount: 0, directRefinedPairCount: 2_791, canonicalRefinedPairCount: 0, totalRefinedPairCount: 2_791 }],
+  ["2:source", { stage: "direct", geometry: "present", normalizedHash: "null", canonicalCandidateCount: 0, sourceSurvivorCount: 0, directRefinedPairCount: 3_251, canonicalRefinedPairCount: 0, totalRefinedPairCount: 3_251 }],
+  ["2:canvas-scale-075", { stage: "source-revalidation-rejected", geometry: "null", normalizedHash: "present", canonicalCandidateCount: 1, sourceSurvivorCount: 0, directRefinedPairCount: 2_207, canonicalRefinedPairCount: 1_753, totalRefinedPairCount: 3_960 }],
+  ["2:canvas-scale-125", { stage: "fallback", geometry: "present", normalizedHash: "present", canonicalCandidateCount: 1, sourceSurvivorCount: 1, directRefinedPairCount: 1_825, canonicalRefinedPairCount: 1_950, totalRefinedPairCount: 3_775 }],
+  ["2:canvas-jpeg-q75", { stage: "direct", geometry: "present", normalizedHash: "null", canonicalCandidateCount: 0, sourceSurvivorCount: 0, directRefinedPairCount: 3_212, canonicalRefinedPairCount: 0, totalRefinedPairCount: 3_212 }],
+  ["3:source", { stage: "direct", geometry: "present", normalizedHash: "null", canonicalCandidateCount: 0, sourceSurvivorCount: 0, directRefinedPairCount: 750, canonicalRefinedPairCount: 0, totalRefinedPairCount: 750 }],
+  ["3:canvas-scale-075", { stage: "fallback", geometry: "present", normalizedHash: "present", canonicalCandidateCount: 1, sourceSurvivorCount: 1, directRefinedPairCount: 397, canonicalRefinedPairCount: 1_012, totalRefinedPairCount: 1_409 }],
+  ["3:canvas-scale-125", { stage: "direct", geometry: "present", normalizedHash: "null", canonicalCandidateCount: 0, sourceSurvivorCount: 0, directRefinedPairCount: 528, canonicalRefinedPairCount: 0, totalRefinedPairCount: 528 }],
+  ["3:canvas-jpeg-q75", { stage: "direct", geometry: "present", normalizedHash: "null", canonicalCandidateCount: 0, sourceSurvivorCount: 0, directRefinedPairCount: 1_057, canonicalRefinedPairCount: 0, totalRefinedPairCount: 1_057 }],
+]);
+
 describe("grid evidence input hash stability", () => {
-  it("rejects an RGBA mutation with the case ID and pixel-hash field", () => {
+  it("rejects an RGBA mutation with the case ID and input-hash field", () => {
     const image = {
       width: 1,
       height: 1,
@@ -18,25 +46,68 @@ describe("grid evidence input hash stability", () => {
     image.data[0] = 1;
 
     expect(() => assertStablePixelHash("fixture:source", image, initialHash))
-      .toThrowError("Measured-pass drift for fixture:source field pixelHash.");
+      .toThrowError("Measured-pass drift for fixture:source field inputHash.");
   });
 });
 
-describe("strict-only grid evidence evaluator", () => {
-  it("evaluates the complete Chromium matrix in stable order", async () => {
-    const summary = await evaluateGridEvidence({ warmupPasses: 0, measuredPasses: 2 });
+describe("paired grid fallback evaluator", () => {
+  it("reuses sixteen retained Chromium inputs across three alternating measured runs", async () => {
+    const summary = await evaluateGridEvidence();
 
-    expect(summary.cases).toHaveLength(16);
-    expect(summary.cases.map((value) => value.caseId)).toEqual([
-      "0:source", "0:canvas-scale-075", "0:canvas-scale-125", "0:canvas-jpeg-q75",
-      "1:source", "1:canvas-scale-075", "1:canvas-scale-125", "1:canvas-jpeg-q75",
-      "2:source", "2:canvas-scale-075", "2:canvas-scale-125", "2:canvas-jpeg-q75",
-      "3:source", "3:canvas-scale-075", "3:canvas-scale-125", "3:canvas-jpeg-q75",
+    expect(summary.retainedInputCount).toBe(16);
+    expect(summary.inputAcquisitionPasses).toBe(1);
+    expect(summary.warmupPasses).toBe(1);
+    expect(summary.measuredPasses).toBe(3);
+    expect(summary.measuredExecutionOrder).toEqual([
+      "strict-first",
+      "complete-first",
+      "strict-first",
     ]);
-    expect(summary.cases.filter((value) => value.directStatus === "found")).toHaveLength(11);
-    expect(summary.cases.filter((value) => value.pitchHint !== null)).toHaveLength(16);
-    expect(summary.cases.every((value) => value.samplesMilliseconds.length === 2)).toBe(true);
-    expect(Number.isFinite(summary.medianMilliseconds)).toBe(true);
-    expect(Number.isFinite(summary.worstMilliseconds)).toBe(true);
-  }, 120_000);
+    expect(summary.cases.map((value) => value.caseId)).toEqual([...expectedCases.keys()]);
+    expect(summary.measuredExecutionTrace).toHaveLength(16 * 2 * 3);
+    const expectedCaseIds = [...expectedCases.keys()];
+    for (let run = 0; run < 3; run += 1) {
+      const runTrace = summary.measuredExecutionTrace.slice(run * 32, (run + 1) * 32);
+      const firstKind = run % 2 === 0 ? "strict" : "complete";
+      const secondKind = run % 2 === 0 ? "complete" : "strict";
+      expect(runTrace.filter((_, index) => index % 2 === 0)).toEqual(
+        expectedCaseIds.map((caseId) => `${firstKind}:${caseId}`),
+      );
+      expect(runTrace.filter((_, index) => index % 2 === 1)).toEqual(
+        expectedCaseIds.map((caseId) => `${secondKind}:${caseId}`),
+      );
+    }
+
+    for (const caseValue of summary.cases) {
+      const expected = expectedCases.get(caseValue.caseId);
+      expect(expected, caseValue.caseId).toBeDefined();
+      expect(caseValue.inputHash, `${caseValue.caseId} input hash`).toMatch(/^[0-9a-f]{64}$/);
+      expect(caseValue.geometry === null ? "null" : "present", `${caseValue.caseId} geometry`).toBe(expected!.geometry);
+      expect(caseValue.normalizedHash === null ? "null" : "present", `${caseValue.caseId} normalized hash`).toBe(expected!.normalizedHash);
+      if (caseValue.normalizedHash !== null) {
+        expect(caseValue.normalizedHash, `${caseValue.caseId} normalized hash`).toMatch(/^[0-9a-f]{64}$/);
+      }
+      expect(caseValue.stage, `${caseValue.caseId} stage`).toBe(expected!.stage);
+      expect(caseValue.canonicalCandidateCount, `${caseValue.caseId} canonical candidates`).toBe(expected!.canonicalCandidateCount);
+      expect(caseValue.sourceSurvivorCount, `${caseValue.caseId} source survivors`).toBe(expected!.sourceSurvivorCount);
+      expect(caseValue.directRefinedPairCount, `${caseValue.caseId} direct pairs`).toBe(expected!.directRefinedPairCount);
+      expect(caseValue.canonicalRefinedPairCount, `${caseValue.caseId} canonical pairs`).toBe(expected!.canonicalRefinedPairCount);
+      expect(caseValue.totalRefinedPairCount, `${caseValue.caseId} total pairs`).toBe(expected!.totalRefinedPairCount);
+      expect(caseValue.totalRefinedPairCount, `${caseValue.caseId} pair budget`).toBeLessThanOrEqual(20_000);
+      expect(caseValue.strictSamplesMilliseconds).toHaveLength(3);
+      expect(caseValue.completeSamplesMilliseconds).toHaveLength(3);
+    }
+
+    expect(summary.cases.filter((value) => value.stage === "direct")).toHaveLength(11);
+    expect(summary.cases.filter((value) => value.stage === "fallback")).toHaveLength(3);
+    expect(summary.cases.filter((value) => value.stage === "source-revalidation-rejected")).toHaveLength(2);
+    expect(Number.isFinite(summary.strictMedianMilliseconds)).toBe(true);
+    expect(Number.isFinite(summary.completeMedianMilliseconds)).toBe(true);
+    expect(Number.isFinite(summary.strictWorstMilliseconds)).toBe(true);
+    expect(Number.isFinite(summary.completeWorstMilliseconds)).toBe(true);
+    expect(summary.medianRatio).toBe(summary.completeMedianMilliseconds / summary.strictMedianMilliseconds);
+    expect(summary.worstRatio).toBe(summary.completeWorstMilliseconds / summary.strictWorstMilliseconds);
+    expect(summary.medianRatio).toBeLessThanOrEqual(1.25);
+    expect(summary.worstRatio).toBeLessThanOrEqual(2);
+  }, 300_000);
 });

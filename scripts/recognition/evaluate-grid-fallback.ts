@@ -3,46 +3,88 @@ import { performance } from "node:perf_hooks";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { estimateCanonicalPitch } from "../../src/recognition/grid-evidence.js";
 import { GridRefinementBudget } from "../../src/recognition/grid-budget.js";
+import { estimateCanonicalPitch } from "../../src/recognition/grid-evidence.js";
+import {
+  detectGridWithDiagnostics,
+  type GridDetectionDiagnosticResult,
+} from "../../src/recognition/grid-fallback.js";
 import { detectStrictGridAttempt } from "../../src/recognition/grid-strict.js";
 import type { GridGeometry, PixelImage } from "../../src/recognition/types.js";
 import { deriveBrowserImages } from "../../test/recognition/browser-derive.js";
 import { loadFixtureCases, type FixtureCase } from "../../test/recognition/fixture-manifest.js";
 
+type DirectStatus = "found" | "rejected" | "ambiguous" | "budget-exhausted";
+type MeasuredExecutionOrder = "strict-first" | "complete-first";
+
 export interface GridEvidenceEvaluationCase {
   readonly caseId: string;
-  readonly pixelHash: string;
-  readonly directStatus: "found" | "rejected" | "ambiguous" | "budget-exhausted";
+  readonly inputHash: string;
+  readonly normalizedHash: string | null;
+  readonly directStatus: DirectStatus;
   readonly pitchHint: number | null;
   readonly geometry: GridGeometry | null;
-  readonly refinedPairCount: number;
-  readonly samplesMilliseconds: readonly number[];
+  readonly stage: GridDetectionDiagnosticResult["stage"];
+  readonly canonicalCandidateCount: number;
+  readonly sourceSurvivorCount: number;
+  readonly directRefinedPairCount: number;
+  readonly canonicalRefinedPairCount: number;
+  readonly totalRefinedPairCount: number;
+  readonly strictSamplesMilliseconds: readonly number[];
+  readonly completeSamplesMilliseconds: readonly number[];
 }
 
 export interface GridEvidenceEvaluationSummary {
   readonly engine: "chromium";
+  readonly retainedInputCount: number;
+  readonly inputAcquisitionPasses: 1;
   readonly warmupPasses: number;
   readonly measuredPasses: number;
+  readonly measuredExecutionOrder: readonly MeasuredExecutionOrder[];
+  readonly measuredExecutionTrace: readonly string[];
   readonly cases: readonly GridEvidenceEvaluationCase[];
-  readonly medianMilliseconds: number;
-  readonly worstMilliseconds: number;
+  readonly strictMedianMilliseconds: number;
+  readonly completeMedianMilliseconds: number;
+  readonly strictWorstMilliseconds: number;
+  readonly completeWorstMilliseconds: number;
+  readonly medianRatio: number;
+  readonly worstRatio: number;
 }
 
 interface DecodedEvaluationCase {
   readonly caseId: string;
   readonly fixture: FixtureCase;
   readonly image: PixelImage;
-  readonly pixelHash: string;
+  readonly inputHash: string;
 }
 
 interface StrictMeasurement {
-  readonly directStatus: GridEvidenceEvaluationCase["directStatus"];
+  readonly directStatus: DirectStatus;
   readonly pitchHint: number | null;
   readonly geometry: GridGeometry | null;
   readonly refinedPairCount: number;
-  readonly pixelHash: string;
+  readonly inputHash: string;
   readonly elapsedMilliseconds: number;
+}
+
+interface CompleteMeasurement {
+  readonly inputHash: string;
+  readonly normalizedHash: string | null;
+  readonly geometry: GridGeometry | null;
+  readonly stage: GridDetectionDiagnosticResult["stage"];
+  readonly canonicalCandidateCount: number;
+  readonly sourceSurvivorCount: number;
+  readonly directRefinedPairCount: number;
+  readonly canonicalRefinedPairCount: number;
+  readonly totalRefinedPairCount: number;
+  readonly elapsedMilliseconds: number;
+}
+
+interface AccumulatedMeasurements {
+  strict: StrictMeasurement | null;
+  complete: CompleteMeasurement | null;
+  readonly strictSamplesMilliseconds: number[];
+  readonly completeSamplesMilliseconds: number[];
 }
 
 function nonNegativeSafeInteger(value: number, name: string): void {
@@ -62,7 +104,7 @@ export function assertStablePixelHash(
 ): string {
   const actualHash = hashRgbaPixels(image);
   if (actualHash !== expectedHash) {
-    throw new Error(`Measured-pass drift for ${caseId} field pixelHash.`);
+    throw new Error(`Measured-pass drift for ${caseId} field inputHash.`);
   }
   return actualHash;
 }
@@ -75,7 +117,7 @@ async function decodeEvaluationCases(): Promise<readonly DecodedEvaluationCase[]
         caseId: `${fixture.id}:${derived.name}`,
         fixture,
         image: derived.image,
-        pixelHash: hashRgbaPixels(derived.image),
+        inputHash: hashRgbaPixels(derived.image),
       });
     }
   }
@@ -83,48 +125,89 @@ async function decodeEvaluationCases(): Promise<readonly DecodedEvaluationCase[]
 }
 
 function measureStrictAttempt(caseValue: DecodedEvaluationCase): StrictMeasurement {
-  assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.pixelHash);
+  assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.inputHash);
   const budget = new GridRefinementBudget(20_000);
   const startedAt = performance.now();
   const attempt = detectStrictGridAttempt(caseValue.image, caseValue.fixture, budget);
   const pitchHint = attempt.coarseEvidence === null ? null : estimateCanonicalPitch(attempt.coarseEvidence);
   const elapsedMilliseconds = performance.now() - startedAt;
-  const pixelHash = assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.pixelHash);
+  const inputHash = assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.inputHash);
 
   return {
     directStatus: attempt.status,
     pitchHint,
     geometry: attempt.status === "found" ? attempt.geometry : null,
     refinedPairCount: attempt.refinedPairCount,
-    pixelHash,
+    inputHash,
     elapsedMilliseconds,
   };
 }
 
-function assertNoMeasuredDrift(
+function measureCompleteAttempt(caseValue: DecodedEvaluationCase): CompleteMeasurement {
+  assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.inputHash);
+  const startedAt = performance.now();
+  const result = detectGridWithDiagnostics(caseValue.image, caseValue.fixture);
+  const elapsedMilliseconds = performance.now() - startedAt;
+  const inputHash = assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.inputHash);
+  const normalizedHash = result.normalizedImage === null ? null : hashRgbaPixels(result.normalizedImage);
+  const totalRefinedPairCount = result.directRefinedPairCount + result.canonicalRefinedPairCount;
+
+  return {
+    inputHash,
+    normalizedHash,
+    geometry: result.geometry,
+    stage: result.stage,
+    canonicalCandidateCount: result.canonicalCandidateCount,
+    sourceSurvivorCount: result.sourceSurvivorCount,
+    directRefinedPairCount: result.directRefinedPairCount,
+    canonicalRefinedPairCount: result.canonicalRefinedPairCount,
+    totalRefinedPairCount,
+    elapsedMilliseconds,
+  };
+}
+
+function assertNoMeasuredDrift<T extends object>(
   caseId: string,
-  expected: StrictMeasurement,
-  actual: StrictMeasurement,
+  expected: T,
+  actual: T,
+  fields: readonly (keyof T)[],
 ): void {
-  const fields: readonly (keyof Omit<StrictMeasurement, "elapsedMilliseconds">)[] = [
-    "directStatus",
-    "geometry",
-    "pitchHint",
-    "refinedPairCount",
-    "pixelHash",
-  ];
   for (const field of fields) {
     if (JSON.stringify(expected[field]) !== JSON.stringify(actual[field])) {
-      throw new Error(`Measured-pass drift for ${caseId} field ${field}.`);
+      throw new Error(`Measured-pass drift for ${caseId} field ${String(field)}.`);
     }
   }
 }
+
+const strictDeterministicFields: readonly (keyof StrictMeasurement)[] = [
+  "directStatus",
+  "geometry",
+  "pitchHint",
+  "refinedPairCount",
+  "inputHash",
+];
+
+const completeDeterministicFields: readonly (keyof CompleteMeasurement)[] = [
+  "inputHash",
+  "normalizedHash",
+  "geometry",
+  "stage",
+  "canonicalCandidateCount",
+  "sourceSurvivorCount",
+  "directRefinedPairCount",
+  "canonicalRefinedPairCount",
+  "totalRefinedPairCount",
+];
 
 function median(values: readonly number[]): number {
   const sorted = [...values].sort((first, second) => first - second);
   const middle = Math.floor(sorted.length / 2);
   if (sorted.length % 2 === 1) return sorted[middle]!;
   return (sorted[middle - 1]! + sorted[middle]!) / 2;
+}
+
+function measuredOrder(pass: number): MeasuredExecutionOrder {
+  return pass % 2 === 0 ? "strict-first" : "complete-first";
 }
 
 export async function evaluateGridEvidence(options?: {
@@ -140,35 +223,95 @@ export async function evaluateGridEvidence(options?: {
   const decodedCases = await decodeEvaluationCases();
   for (let pass = 0; pass < warmupPasses; pass += 1) {
     for (const caseValue of decodedCases) measureStrictAttempt(caseValue);
+    for (const caseValue of decodedCases) measureCompleteAttempt(caseValue);
   }
 
-  const cases = decodedCases.map((caseValue) => {
-    const first = measureStrictAttempt(caseValue);
-    const samplesMilliseconds = [first.elapsedMilliseconds];
-    for (let pass = 1; pass < measuredPasses; pass += 1) {
-      const next = measureStrictAttempt(caseValue);
-      assertNoMeasuredDrift(caseValue.caseId, first, next);
-      samplesMilliseconds.push(next.elapsedMilliseconds);
+  const accumulated = new Map<string, AccumulatedMeasurements>(decodedCases.map((caseValue) => [
+    caseValue.caseId,
+    {
+      strict: null,
+      complete: null,
+      strictSamplesMilliseconds: [],
+      completeSamplesMilliseconds: [],
+    },
+  ]));
+
+  const measureStrictCase = (caseValue: DecodedEvaluationCase): void => {
+    const next = measureStrictAttempt(caseValue);
+    const values = accumulated.get(caseValue.caseId)!;
+    if (values.strict === null) values.strict = next;
+    else assertNoMeasuredDrift(caseValue.caseId, values.strict, next, strictDeterministicFields);
+    values.strictSamplesMilliseconds.push(next.elapsedMilliseconds);
+  };
+  const measureCompleteCase = (caseValue: DecodedEvaluationCase): void => {
+    const next = measureCompleteAttempt(caseValue);
+    const values = accumulated.get(caseValue.caseId)!;
+    if (values.complete === null) values.complete = next;
+    else assertNoMeasuredDrift(caseValue.caseId, values.complete, next, completeDeterministicFields);
+    values.completeSamplesMilliseconds.push(next.elapsedMilliseconds);
+  };
+
+  const measuredExecutionOrder = Array.from({ length: measuredPasses }, (_, pass) => measuredOrder(pass));
+  const measuredExecutionTrace: string[] = [];
+  for (const order of measuredExecutionOrder) {
+    for (const caseValue of decodedCases) {
+      if (order === "strict-first") {
+        measuredExecutionTrace.push(`strict:${caseValue.caseId}`);
+        measureStrictCase(caseValue);
+        measuredExecutionTrace.push(`complete:${caseValue.caseId}`);
+        measureCompleteCase(caseValue);
+      } else {
+        measuredExecutionTrace.push(`complete:${caseValue.caseId}`);
+        measureCompleteCase(caseValue);
+        measuredExecutionTrace.push(`strict:${caseValue.caseId}`);
+        measureStrictCase(caseValue);
+      }
     }
+  }
+
+  const cases = decodedCases.map((caseValue): GridEvidenceEvaluationCase => {
+    const values = accumulated.get(caseValue.caseId)!;
+    const strict = values.strict!;
+    const complete = values.complete!;
     return {
       caseId: caseValue.caseId,
-      pixelHash: first.pixelHash,
-      directStatus: first.directStatus,
-      pitchHint: first.pitchHint,
-      geometry: first.geometry,
-      refinedPairCount: first.refinedPairCount,
-      samplesMilliseconds,
+      inputHash: complete.inputHash,
+      normalizedHash: complete.normalizedHash,
+      directStatus: strict.directStatus,
+      pitchHint: strict.pitchHint,
+      geometry: complete.geometry,
+      stage: complete.stage,
+      canonicalCandidateCount: complete.canonicalCandidateCount,
+      sourceSurvivorCount: complete.sourceSurvivorCount,
+      directRefinedPairCount: complete.directRefinedPairCount,
+      canonicalRefinedPairCount: complete.canonicalRefinedPairCount,
+      totalRefinedPairCount: complete.totalRefinedPairCount,
+      strictSamplesMilliseconds: values.strictSamplesMilliseconds,
+      completeSamplesMilliseconds: values.completeSamplesMilliseconds,
     };
   });
-  const allSamples = cases.flatMap((caseValue) => caseValue.samplesMilliseconds);
+  const strictSamples = cases.flatMap((caseValue) => caseValue.strictSamplesMilliseconds);
+  const completeSamples = cases.flatMap((caseValue) => caseValue.completeSamplesMilliseconds);
+  const strictMedianMilliseconds = median(strictSamples);
+  const completeMedianMilliseconds = median(completeSamples);
+  const strictWorstMilliseconds = Math.max(...strictSamples);
+  const completeWorstMilliseconds = Math.max(...completeSamples);
 
   return {
     engine: "chromium",
+    retainedInputCount: decodedCases.length,
+    inputAcquisitionPasses: 1,
     warmupPasses,
     measuredPasses,
+    measuredExecutionOrder,
+    measuredExecutionTrace,
     cases,
-    medianMilliseconds: median(allSamples),
-    worstMilliseconds: Math.max(...allSamples),
+    strictMedianMilliseconds,
+    completeMedianMilliseconds,
+    strictWorstMilliseconds,
+    completeWorstMilliseconds,
+    medianRatio: completeMedianMilliseconds / strictMedianMilliseconds,
+    worstRatio: completeWorstMilliseconds / strictWorstMilliseconds,
   };
 }
 
