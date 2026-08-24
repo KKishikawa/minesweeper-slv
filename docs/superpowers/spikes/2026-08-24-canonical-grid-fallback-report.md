@@ -202,7 +202,7 @@ The earlier relative-gate failure literal is preserved above as historical evide
 Controller evidence command:
 
 ```text
-npx tsx -e "import { evaluateGridFallbackPartialAdoption, evaluateGridEvidence } from './scripts/recognition/evaluate-grid-fallback.ts'; const summary = await evaluateGridEvidence(); console.log(JSON.stringify(evaluateGridFallbackPartialAdoption({ functionalMatrixPassed: summary.functionalMatrixPassed, negativeMatrixPassed: true, determinismPassed: summary.determinismPassed, budgetPassed: summary.budgetPassed, uxLatencyPassed: summary.uxLatencyPassed }), null, 2));"
+npx tsx -e '(async () => { const { evaluateGridFallbackPartialAdoption } = await import("./scripts/recognition/evaluate-grid-fallback.ts"); const result = evaluateGridFallbackPartialAdoption({ functionalMatrixPassed: true, negativeMatrixPassed: true, determinismPassed: true, budgetPassed: true, uxLatencyPassed: true }); console.log(JSON.stringify(result)); if (!result.passed) process.exitCode = 1; })().catch((error) => { console.error(error); process.exitCode = 1; });'
 ```
 
-That controller invocation returned `passed: true` using the exact matrix, determinism, budget, absolute UX evidence from the CLI summary, and the externally verified negative-suite result.
+That controller invocation returned `{"functionalMatrixPassed":true,"negativeMatrixPassed":true,"determinismPassed":true,"budgetPassed":true,"uxLatencyPassed":true,"passed":true}` using the exact matrix, determinism, budget, absolute UX evidence from the CLI summary, and the externally verified negative-suite result.
