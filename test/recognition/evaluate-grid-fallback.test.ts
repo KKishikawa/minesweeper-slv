@@ -1,10 +1,30 @@
+import { createHash } from "node:crypto";
+
 import { describe, expect, it } from "vitest";
 
-import { evaluateGridEvidence } from "../../scripts/recognition/evaluate-grid-fallback.js";
+import {
+  assertStablePixelHash,
+  evaluateGridEvidence,
+} from "../../scripts/recognition/evaluate-grid-fallback.js";
+
+describe("grid evidence input hash stability", () => {
+  it("rejects an RGBA mutation with the case ID and pixel-hash field", () => {
+    const image = {
+      width: 1,
+      height: 1,
+      data: new Uint8ClampedArray([0, 0, 0, 255]),
+    };
+    const initialHash = createHash("sha256").update(image.data).digest("hex");
+    image.data[0] = 1;
+
+    expect(() => assertStablePixelHash("fixture:source", image, initialHash))
+      .toThrowError("Measured-pass drift for fixture:source field pixelHash.");
+  });
+});
 
 describe("strict-only grid evidence evaluator", () => {
   it("evaluates the complete Chromium matrix in stable order", async () => {
-    const summary = await evaluateGridEvidence({ warmupPasses: 0, measuredPasses: 1 });
+    const summary = await evaluateGridEvidence({ warmupPasses: 0, measuredPasses: 2 });
 
     expect(summary.cases).toHaveLength(16);
     expect(summary.cases.map((value) => value.caseId)).toEqual([
@@ -15,7 +35,7 @@ describe("strict-only grid evidence evaluator", () => {
     ]);
     expect(summary.cases.filter((value) => value.directStatus === "found")).toHaveLength(11);
     expect(summary.cases.filter((value) => value.pitchHint !== null)).toHaveLength(16);
-    expect(summary.cases.every((value) => value.samplesMilliseconds.length === 1)).toBe(true);
+    expect(summary.cases.every((value) => value.samplesMilliseconds.length === 2)).toBe(true);
     expect(Number.isFinite(summary.medianMilliseconds)).toBe(true);
     expect(Number.isFinite(summary.worstMilliseconds)).toBe(true);
   }, 120_000);

@@ -54,6 +54,18 @@ function hashRgbaPixels(image: PixelImage): string {
   return createHash("sha256").update(image.data).digest("hex");
 }
 
+export function assertStablePixelHash(
+  caseId: string,
+  image: PixelImage,
+  expectedHash: string,
+): string {
+  const actualHash = hashRgbaPixels(image);
+  if (actualHash !== expectedHash) {
+    throw new Error(`Measured-pass drift for ${caseId} field pixelHash.`);
+  }
+  return actualHash;
+}
+
 async function decodeEvaluationCases(): Promise<readonly DecodedEvaluationCase[]> {
   const cases: DecodedEvaluationCase[] = [];
   for (const fixture of await loadFixtureCases()) {
@@ -70,17 +82,19 @@ async function decodeEvaluationCases(): Promise<readonly DecodedEvaluationCase[]
 }
 
 function measureStrictAttempt(caseValue: DecodedEvaluationCase): StrictMeasurement {
+  assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.pixelHash);
   const startedAt = performance.now();
   const attempt = detectStrictGridAttempt(caseValue.image, caseValue.fixture);
   const pitchHint = attempt.coarseEvidence === null ? null : estimateCanonicalPitch(attempt.coarseEvidence);
   const elapsedMilliseconds = performance.now() - startedAt;
+  const pixelHash = assertStablePixelHash(caseValue.caseId, caseValue.image, caseValue.pixelHash);
 
   return {
     directStatus: attempt.status,
     pitchHint,
     geometry: attempt.status === "found" ? attempt.geometry : null,
     refinedPairCount: attempt.refinedPairCount,
-    pixelHash: caseValue.pixelHash,
+    pixelHash,
     elapsedMilliseconds,
   };
 }
