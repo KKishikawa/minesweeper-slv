@@ -135,13 +135,14 @@ describe("paired grid fallback evaluator", () => {
 
   it.each([
     ["functionalMatrix", { functionalMatrixPassed: false }],
+    ["negativeMatrix", { negativeMatrixPassed: false }],
     ["determinism", { determinismPassed: false }],
     ["budget", { budgetPassed: false }],
     ["uxLatency", { uxLatencyPassed: false }],
   ])("fails partial adoption when %s is false", (_, overrides) => {
     expect(evaluateGridFallbackPartialAdoption({
       functionalMatrixPassed: true,
-      negativeMatrixPassed: false,
+      negativeMatrixPassed: true,
       determinismPassed: true,
       budgetPassed: true,
       uxLatencyPassed: true,
