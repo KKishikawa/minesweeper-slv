@@ -17,6 +17,105 @@ import {
 } from "./grid-fixtures.js";
 
 describe("detectGrid", () => {
+  it("exposes deterministic range-score-ordered final candidates for an ambiguous strict attempt", () => {
+    const firstGrid = Array.from({ length: 31 }, (_, index) => 10 + index * 10);
+    const secondGrid = Array.from({ length: 31 }, (_, index) => 380 + index * 10);
+    const horizontalBoundaries = Array.from({ length: 17 }, (_, index) => 10 + index * 10);
+    const image = syntheticGridImage(700, 200, [...firstGrid, ...secondGrid], horizontalBoundaries);
+    const first = detectStrictGridAttempt(image, { columns: 30, rows: 16 }, new GridRefinementBudget(20_000));
+    const second = detectStrictGridAttempt(image, { columns: 30, rows: 16 }, new GridRefinementBudget(20_000));
+
+    expect(first.status).toBe("ambiguous");
+    expect(second.status).toBe("ambiguous");
+    if (first.status !== "ambiguous" || second.status !== "ambiguous") return;
+    expect(first.candidates.length).toBeGreaterThan(1);
+    expect(first.candidates).toEqual(second.candidates);
+    expect(first.candidates.map((candidate) => candidate.rangeScore)).toEqual(
+      [...first.candidates].map((candidate) => candidate.rangeScore).sort((a, b) => b - a),
+    );
+    expect(first.candidates.every((candidate) => !("geometry" in candidate))).toBe(true);
+  });
+
+  it("exposes only final candidates after support and weak-overlap filtering", () => {
+    const verticalBoundaries = Array.from({ length: 31 }, (_, index) => 10 + index * 10);
+    const horizontalBoundaries = Array.from({ length: 17 }, (_, index) => 10 + index * 10);
+    const projected = detectStrictGridAttempt(
+      syntheticSparseIntersectionImage(verticalBoundaries, horizontalBoundaries),
+      { columns: 30, rows: 16 },
+      new GridRefinementBudget(20_000),
+    );
+    const overflow = detectStrictGridAttempt(
+      syntheticCandidateOverflowImage(),
+      { columns: 30, rows: 16 },
+      new GridRefinementBudget(20_000),
+    );
+
+    expect(projected.status).toBe("ambiguous");
+    if (projected.status === "ambiguous") expect(projected.candidates).toEqual([]);
+    expect(overflow.status).toBe("ambiguous");
+    if (overflow.status !== "ambiguous") return;
+    expect(overflow.candidates.map((candidate) => [
+      candidate.verticalBoundaries[0],
+      candidate.verticalBoundaries.at(-1),
+      candidate.horizontalBoundaries[0],
+      candidate.horizontalBoundaries.at(-1),
+    ])).toEqual([
+      [10, 310, 10, 170],
+      [3030, 3330, 10, 170],
+    ]);
+  });
+
+  it("exposes exactly the selected candidate for found and none for rejected or exhausted attempts", () => {
+    const boundaries = Array.from({ length: 5 }, (_, index) => 20 + index * 20);
+    const image = syntheticGridImage(140, 140, boundaries, boundaries, false);
+    const found = detectStrictGridAttempt(
+      image,
+      { columns: 4, rows: 4 },
+      new GridRefinementBudget(20_000),
+    );
+    const rejected = detectStrictGridAttempt(
+      { width: 1, height: 1, data: new Uint8ClampedArray(0) },
+      { columns: 4, rows: 4 },
+      new GridRefinementBudget(20_000),
+    );
+    const exhausted = detectStrictGridAttempt(
+      image,
+      { columns: 4, rows: 4 },
+      new GridRefinementBudget(0),
+    );
+
+    expect(found.status).toBe("found");
+    if (found.status === "found") {
+      expect(found.candidates).toEqual([found.candidate]);
+      expect(detectGrid(image, { columns: 4, rows: 4 })).toEqual(found.geometry);
+    }
+    expect(rejected.status).toBe("rejected");
+    if (rejected.status === "rejected") expect(rejected.candidates).toEqual([]);
+    expect(exhausted.status).toBe("budget-exhausted");
+    if (exhausted.status === "budget-exhausted") expect(exhausted.candidates).toEqual([]);
+  });
+
+  it("keeps the strict-only one-pixel interior phase boundary and rejects two pixels", () => {
+    const verticalBoundaries = Array.from({ length: 31 }, (_, index) => 10 + index * 10);
+    const horizontalBoundaries = (sourceShift: number) => Array.from({ length: 17 }, (_, index) => (
+      10 + index * 10 + (index > 0 && index < 16 && index % 3 === 1 ? sourceShift : 0)
+    ));
+    const onePixelRefinedOffset = detectStrictGridAttempt(
+      syntheticGridImage(340, 200, verticalBoundaries, horizontalBoundaries(2), false),
+      { columns: 30, rows: 16 },
+      new GridRefinementBudget(20_000),
+    );
+    const twoPixelRefinedOffset = detectStrictGridAttempt(
+      syntheticGridImage(340, 200, verticalBoundaries, horizontalBoundaries(3), false),
+      { columns: 30, rows: 16 },
+      new GridRefinementBudget(20_000),
+    );
+
+    expect(onePixelRefinedOffset.status).toBe("found");
+    expect(twoPixelRefinedOffset.status).toBe("ambiguous");
+    if (twoPixelRefinedOffset.status === "ambiguous") expect(twoPixelRefinedOffset.candidates).toEqual([]);
+  });
+
   it("exposes source evidence for a direct strict detection", () => {
     const verticalBoundaries = Array.from({ length: 5 }, (_, index) => 20 + index * 20);
     const horizontalBoundaries = Array.from({ length: 5 }, (_, index) => 20 + index * 20);

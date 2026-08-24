@@ -1,6 +1,7 @@
 import { luminance } from "./pixels.js";
 import type { CoarsePitchEvidence } from "./grid-evidence.js";
 import type { GridRefinementBudget } from "./grid-budget.js";
+import { mapCanonicalCoordinateToSource } from "./grid-resample.js";
 import type { GridGeometry, PixelImage } from "./types.js";
 
 const MIN_CELL_PITCH = 8;
@@ -50,11 +51,14 @@ export interface EdgeProfiles {
   readonly horizontalGradientMedian: number;
 }
 
-export interface ValidatedGridCandidate {
-  readonly geometry: GridGeometry;
+export interface GridBoundaryCandidate {
   readonly verticalBoundaries: readonly number[];
   readonly horizontalBoundaries: readonly number[];
   readonly rangeScore: number;
+}
+
+export interface ValidatedGridCandidate extends GridBoundaryCandidate {
+  readonly geometry: GridGeometry;
 }
 
 export interface SourceGridValidationContext {
@@ -66,13 +70,29 @@ export type StrictGridAttempt =
   | {
       readonly status: "found";
       readonly candidate: ValidatedGridCandidate;
+      readonly candidates: readonly [ValidatedGridCandidate];
       readonly geometry: GridGeometry;
       readonly coarseEvidence: CoarsePitchEvidence;
       readonly sourceContext: SourceGridValidationContext;
       readonly refinedPairCount: number;
     }
   | {
-      readonly status: "rejected" | "ambiguous" | "budget-exhausted";
+      readonly status: "ambiguous";
+      readonly candidates: readonly GridBoundaryCandidate[];
+      readonly coarseEvidence: CoarsePitchEvidence | null;
+      readonly sourceContext: SourceGridValidationContext | null;
+      readonly refinedPairCount: number;
+    }
+  | {
+      readonly status: "rejected";
+      readonly candidates: readonly [];
+      readonly coarseEvidence: CoarsePitchEvidence | null;
+      readonly sourceContext: SourceGridValidationContext | null;
+      readonly refinedPairCount: number;
+    }
+  | {
+      readonly status: "budget-exhausted";
+      readonly candidates: readonly [];
       readonly coarseEvidence: CoarsePitchEvidence | null;
       readonly sourceContext: SourceGridValidationContext | null;
       readonly refinedPairCount: number;
@@ -821,13 +841,242 @@ function selectDistinctGridCandidates(candidates: readonly RefinedGridCandidate[
   return [...distinct.values()].sort((a, b) => b.rangeScore - a.rangeScore);
 }
 
+function refineMappedBoundaries(
+  profile: Float64Array,
+  canonicalBoundaries: readonly number[],
+  scale: number,
+  preferTrailingPlateau: boolean,
+): readonly number[] | null {
+  const boundaries: number[] = [];
+  for (const canonicalBoundary of canonicalBoundaries) {
+    const mapped = mapCanonicalCoordinateToSource(canonicalBoundary, scale);
+    if (!Number.isFinite(mapped)) return null;
+    const start = Math.max(0, Math.ceil(mapped - BOUNDARY_REFINEMENT_RADIUS));
+    const end = Math.min(profile.length - 1, Math.floor(mapped + BOUNDARY_REFINEMENT_RADIUS));
+    if (start > end) return null;
+    let best = start;
+    for (let position = start + 1; position <= end; position += 1) {
+      if (profile[position]! > profile[best]! || (preferTrailingPlateau && profile[position] === profile[best]!)) {
+        best = position;
+      }
+    }
+    boundaries.push(best);
+  }
+  return boundaries;
+}
+
+function relativeDifference(first: number, second: number): number {
+  return Math.abs(first - second) / Math.max(first, second);
+}
+
+export function hasMappedBoundaryProvenance(
+  mappedBoundaries: readonly number[],
+  refinedBoundaries: readonly number[],
+): boolean {
+  if (mappedBoundaries.length === 0 || mappedBoundaries.length !== refinedBoundaries.length) return false;
+  for (let index = 0; index < mappedBoundaries.length; index += 1) {
+    const mapped = mappedBoundaries[index]!;
+    const refined = refinedBoundaries[index]!;
+    if (
+      !Number.isFinite(mapped)
+      || !Number.isFinite(refined)
+      || Math.abs(mapped - refined) > BOUNDARY_REFINEMENT_RADIUS
+      || (index > 0 && mapped <= mappedBoundaries[index - 1]!)
+      || (index > 0 && refined <= refinedBoundaries[index - 1]!)
+    ) return false;
+  }
+  return true;
+}
+
+function endpointDistance(
+  firstVertical: readonly number[],
+  firstHorizontal: readonly number[],
+  secondVertical: readonly number[],
+  secondHorizontal: readonly number[],
+): number {
+  return Math.max(
+    Math.abs(firstVertical[0]! - secondVertical[0]!),
+    Math.abs(firstVertical[firstVertical.length - 1]! - secondVertical[secondVertical.length - 1]!),
+    Math.abs(firstHorizontal[0]! - secondHorizontal[0]!),
+    Math.abs(firstHorizontal[firstHorizontal.length - 1]! - secondHorizontal[secondHorizontal.length - 1]!),
+  );
+}
+
+export function revalidateMappedCandidate(
+  image: PixelImage,
+  dimensions: GridDimensions,
+  sourceContext: SourceGridValidationContext,
+  candidate: GridBoundaryCandidate,
+  scale: number,
+  observedPitch: number,
+): GridGeometry | null {
+  if (
+    !isPositiveInteger(image.width)
+    || !isPositiveInteger(image.height)
+    || !hasRgbaPixels(image)
+    || !isPositiveInteger(dimensions.columns)
+    || !isPositiveInteger(dimensions.rows)
+    || !Number.isFinite(scale)
+    || scale <= 0
+    || !Number.isFinite(observedPitch)
+    || observedPitch <= 0
+    || candidate.verticalBoundaries.length !== dimensions.columns + 1
+    || candidate.horizontalBoundaries.length !== dimensions.rows + 1
+  ) return null;
+
+  const mappedVertical = candidate.verticalBoundaries.map((boundary) => (
+    mapCanonicalCoordinateToSource(boundary, scale)
+  ));
+  const mappedHorizontal = candidate.horizontalBoundaries.map((boundary) => (
+    mapCanonicalCoordinateToSource(boundary, scale)
+  ));
+  if (!mappedVertical.every(Number.isFinite) || !mappedHorizontal.every(Number.isFinite)) return null;
+  const mappedPitchX = (
+    mappedVertical[mappedVertical.length - 1]! - mappedVertical[0]!
+  ) / dimensions.columns;
+  const mappedPitchY = (
+    mappedHorizontal[mappedHorizontal.length - 1]! - mappedHorizontal[0]!
+  ) / dimensions.rows;
+  if (
+    mappedPitchX <= 0
+    || mappedPitchY <= 0
+    || relativeDifference(mappedPitchX, mappedPitchY) > MAX_PITCH_DIFFERENCE_RATIO
+    || Math.abs(mappedPitchX - observedPitch) > 0.1 * observedPitch
+    || Math.abs(mappedPitchY - observedPitch) > 0.1 * observedPitch
+  ) return null;
+
+  const verticalBoundaries = refineMappedBoundaries(
+    sourceContext.profiles.vertical,
+    candidate.verticalBoundaries,
+    scale,
+    false,
+  );
+  const horizontalBoundaries = refineMappedBoundaries(
+    sourceContext.profiles.horizontal,
+    candidate.horizontalBoundaries,
+    scale,
+    true,
+  );
+  if (verticalBoundaries === null || horizontalBoundaries === null) return null;
+
+  const compatibleSourceCandidates = sourceContext.refinedCandidates.filter((sourceCandidate) => (
+    pitchesAreCompatible(sourceCandidate.candidate.vertical.pitch, observedPitch)
+    && pitchesAreCompatible(sourceCandidate.candidate.horizontal.pitch, observedPitch)
+  ));
+  const anchor = compatibleSourceCandidates.reduce<RefinedGridCandidate | null>((closest, sourceCandidate) => {
+    if (closest === null) return sourceCandidate;
+    return endpointDistance(
+      sourceCandidate.canonicalVerticalBoundaries,
+      sourceCandidate.canonicalHorizontalBoundaries,
+      verticalBoundaries,
+      horizontalBoundaries,
+    ) < endpointDistance(
+      closest.canonicalVerticalBoundaries,
+      closest.canonicalHorizontalBoundaries,
+      verticalBoundaries,
+      horizontalBoundaries,
+    ) ? sourceCandidate : closest;
+  }, null);
+  if (anchor === null) return null;
+
+  const left = verticalBoundaries[0]!;
+  const right = verticalBoundaries[verticalBoundaries.length - 1]!;
+  const top = horizontalBoundaries[0]!;
+  const bottom = horizontalBoundaries[horizontalBoundaries.length - 1]!;
+  const pitchX = (right - left) / dimensions.columns;
+  const pitchY = (bottom - top) / dimensions.rows;
+  if (
+    pitchX <= 0
+    || pitchY <= 0
+    || relativeDifference(pitchX, pitchY) > MAX_PITCH_DIFFERENCE_RATIO
+    || Math.abs(pitchX - observedPitch) > 0.1 * observedPitch
+    || Math.abs(pitchY - observedPitch) > 0.1 * observedPitch
+    || !hasMappedBoundaryProvenance(mappedVertical, verticalBoundaries)
+    || !hasMappedBoundaryProvenance(mappedHorizontal, horizontalBoundaries)
+    || intersectionSupportRatio(sourceContext.profiles, image, verticalBoundaries, horizontalBoundaries)
+      < MIN_INTERSECTION_SUPPORT_RATIO
+  ) return null;
+
+  const boundaryMetrics = outerBoundaryMetrics(
+    sourceContext.profiles,
+    image,
+    verticalBoundaries,
+    horizontalBoundaries,
+  );
+  const rangeScores = gridRangeScore(
+    sourceContext.profiles,
+    image,
+    anchor.candidate,
+    verticalBoundaries,
+    horizontalBoundaries,
+  );
+  const mappedCandidate: RefinedGridCandidate = {
+    candidate: anchor.candidate,
+    verticalBoundaries,
+    horizontalBoundaries,
+    duplicateHorizontalBoundaries: horizontalBoundaries,
+    canonicalVerticalBoundaries: verticalBoundaries,
+    canonicalHorizontalBoundaries: horizontalBoundaries,
+    intersectionSupportRatio: intersectionSupportRatio(
+      sourceContext.profiles,
+      image,
+      verticalBoundaries,
+      horizontalBoundaries,
+    ),
+    leadingIntersectionSupportRatio: leadingIntersectionSupportRatio(
+      sourceContext.profiles,
+      image,
+      verticalBoundaries,
+      horizontalBoundaries,
+    ),
+    outerBoundaryDistinctiveness: boundaryMetrics.distinctiveness,
+    outerBoundaryBalance: boundaryMetrics.balance,
+    minimumOuterBoundaryEnergyRatio: boundaryMetrics.minimumEnergyRatio,
+    localRangeScore: rangeScores.local,
+    rangeScore: rangeScores.normalized,
+  };
+  const competingCandidates = compatibleSourceCandidates
+    .filter((sourceCandidate) => endpointDistance(
+      sourceCandidate.canonicalVerticalBoundaries,
+      sourceCandidate.canonicalHorizontalBoundaries,
+      verticalBoundaries,
+      horizontalBoundaries,
+    ) > EDGE_PHASE_COMPATIBILITY_RADIUS)
+    .filter((sourceCandidate) => hasConsistentInteriorBoundaryPhase(
+      sourceCandidate.verticalBoundaries,
+      sourceCandidate.candidate.vertical.origin,
+      sourceCandidate.candidate.vertical.pitch,
+    ))
+    .filter((sourceCandidate) => hasConsistentInteriorBoundaryPhase(
+      sourceCandidate.horizontalBoundaries,
+      sourceCandidate.candidate.horizontal.origin,
+      sourceCandidate.candidate.horizontal.pitch,
+    ))
+    .filter((sourceCandidate) => sourceCandidate.intersectionSupportRatio >= MIN_INTERSECTION_SUPPORT_RATIO);
+  const candidates = selectDistinctGridCandidates(filterWeakOverlappingExtents([
+    mappedCandidate,
+    ...competingCandidates,
+  ]));
+  if (candidates[0] !== mappedCandidate || !hasSeparatedScore(candidates)) return null;
+
+  return {
+    bounds: { x: left, y: top, width: right - left, height: bottom - top },
+    columns: dimensions.columns,
+    rows: dimensions.rows,
+    pitchX,
+    pitchY,
+    score: mappedCandidate.rangeScore,
+  };
+}
+
 export function detectStrictGridAttempt(
   image: PixelImage,
   dimensions: GridDimensions,
   budget: GridRefinementBudget,
 ): StrictGridAttempt {
-  const rejected = (status: "rejected" | "ambiguous" | "budget-exhausted", coarseEvidence: CoarsePitchEvidence | null, sourceContext: SourceGridValidationContext | null, refinedPairCount: number): StrictGridAttempt => ({
+  const rejected = (status: "rejected" | "budget-exhausted", coarseEvidence: CoarsePitchEvidence | null, sourceContext: SourceGridValidationContext | null, refinedPairCount: number): StrictGridAttempt => ({
     status,
+    candidates: [],
     coarseEvidence,
     sourceContext,
     refinedPairCount,
@@ -872,7 +1121,19 @@ export function detectStrictGridAttempt(
   const supportCandidates = phaseCandidates
     .filter((candidate) => candidate.intersectionSupportRatio >= MIN_INTERSECTION_SUPPORT_RATIO);
   const candidates = selectDistinctGridCandidates(filterWeakOverlappingExtents(supportCandidates));
-  if (!hasSeparatedScore(candidates)) return rejected("ambiguous", coarseEvidence, sourceContext, refinedPairCount);
+  if (!hasSeparatedScore(candidates)) {
+    return {
+      status: "ambiguous",
+      candidates: candidates.map((candidate) => ({
+        verticalBoundaries: candidate.canonicalVerticalBoundaries,
+        horizontalBoundaries: candidate.canonicalHorizontalBoundaries,
+        rangeScore: candidate.rangeScore,
+      })),
+      coarseEvidence,
+      sourceContext,
+      refinedPairCount,
+    };
+  }
 
   const best = candidates[0]!;
   const [firstVerticalBoundary, finalVerticalBoundary] = canonicalEndpointPair(
@@ -914,14 +1175,16 @@ export function detectStrictGridAttempt(
     pitchY,
     score: best.rangeScore,
   };
+  const candidate: ValidatedGridCandidate = {
+    geometry,
+    verticalBoundaries: best.canonicalVerticalBoundaries,
+    horizontalBoundaries: best.canonicalHorizontalBoundaries,
+    rangeScore: best.rangeScore,
+  };
   return {
     status: "found",
-    candidate: {
-      geometry,
-      verticalBoundaries: best.canonicalVerticalBoundaries,
-      horizontalBoundaries: best.canonicalHorizontalBoundaries,
-      rangeScore: best.rangeScore,
-    },
+    candidate,
+    candidates: [candidate],
     geometry,
     coarseEvidence,
     sourceContext,

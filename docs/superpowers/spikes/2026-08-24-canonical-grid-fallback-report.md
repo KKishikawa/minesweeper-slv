@@ -76,3 +76,40 @@ These values are preliminary diagnostic context only. They are not the later pai
 coarse-pitch-gate-passed
 
 The initial failed-gate history above is retained. The fixed `0.65`, `0.05`, `[30, 50]`, and complete-link rules were not tuned; the only amendment was the approved supported-boundary quantization described above.
+
+## Supplemental canonical ambiguity revalidation gate
+
+The supplemental Chromium gate retained the public `detectGrid()` 16-case geometry assertion and added a second diagnostic-only assertion through `detectGridWithDiagnostics()`. Production orchestration was not copied into the test. All sixteen cases remained within the shared 20,000-pair limit, and the focused negative matrix remained rejected (5 files, 77 tests passed).
+
+The public result was 14/16, so the supplemental gate failed:
+
+- `1:canvas-scale-075` returned `null`. Canonical strict exposed 3 candidates and original-space revalidation returned 3 survivors, so the exactly-one rule rejected the result. Pair counts were 2,155 direct plus 1,449 canonical (3,604 total).
+- `2:canvas-scale-075` returned `null`. Canonical strict exposed 1 candidate and original-space revalidation returned 0 survivors. Pair counts were 2,207 direct plus 1,753 canonical (3,960 total).
+
+The other three formal fallback cases succeeded:
+
+| Case | Stage | Canonical candidates | Source survivors | Direct pairs | Canonical pairs | Total pairs |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| `1:canvas-scale-125` | fallback | 1 | 1 | 1,296 | 1,632 | 2,928 |
+| `2:canvas-scale-125` | fallback | 1 | 1 | 1,825 | 1,950 | 3,775 |
+| `3:canvas-scale-075` | fallback | 1 | 1 | 397 | 1,012 | 1,409 |
+
+No threshold, filter, ordering, refinement radius, or work budget was changed after this result. The failed gate stops the fallback spike before commit and returns the two formal failures to design review.
+
+## Supplemental Decision
+
+canonical-ambiguity-revalidation-failed
+
+## Partial Adoption
+
+The failed 16/16 ambiguity-revalidation decision above remains unchanged. Under the separately approved partial-adoption contract, the same production implementation passed the exact fail-closed functional matrix:
+
+- Direct success (11): `0:source`, `0:canvas-scale-075`, `0:canvas-scale-125`, `0:canvas-jpeg-q75`, `1:source`, `1:canvas-jpeg-q75`, `2:source`, `2:canvas-jpeg-q75`, `3:source`, `3:canvas-scale-125`, `3:canvas-jpeg-q75`.
+- Source-revalidated fallback success (3): `1:canvas-scale-125`, `2:canvas-scale-125`, `3:canvas-scale-075`.
+- Fail-closed source revalidation (2): `1:canvas-scale-075` remained public `null` with 3 canonical candidates and 3 survivors; `2:canvas-scale-075` remained public `null` with 1 canonical candidate and 0 survivors.
+
+All fourteen successes passed the existing bounds and pitch tolerances. An unexpected success or failure is rejected by the formal test rather than folded into the expectation. All sixteen cases remained within the shared 20,000-pair budget, and the focused unit/negative matrix passed 77/77 without threshold, filter, ordering, radius, pitch-range, budget, or runtime-branch changes.
+
+This is the functional gate only. Determinism and paired same-process performance remain required before the final partial-adoption decision.
+
+canonical-grid-fallback-partial-adoption-functional-gate-passed
