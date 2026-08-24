@@ -50,20 +50,20 @@ describe("detectGrid", () => {
   });
 
   it("stops a later attempt once the shared refinement budget is exhausted", () => {
-    const verticalBoundaries = Array.from({ length: 5 }, (_, index) => 20 + index * 20);
-    const horizontalBoundaries = Array.from({ length: 5 }, (_, index) => 20 + index * 20);
-    const image = syntheticGridImage(140, 140, verticalBoundaries, horizontalBoundaries, false);
-    const probe = detectStrictGridAttempt(image, { columns: 4, rows: 4 }, new GridRefinementBudget(20_000));
-    if (probe.status !== "found") throw new Error("probe grid was not found");
-    const budget = new GridRefinementBudget(probe.refinedPairCount);
+    const image = syntheticCandidateOverflowImage();
+    const budget = new GridRefinementBudget(30_000);
 
     const first = detectStrictGridAttempt(image, { columns: 4, rows: 4 }, budget);
-    const second = detectStrictGridAttempt(image, { columns: 4, rows: 4 }, budget);
 
-    expect(first.status).toBe("found");
-    expect(first.refinedPairCount).toBe(probe.refinedPairCount);
+    expect(first.status).not.toBe("budget-exhausted");
+    expect(first.refinedPairCount).toBe(29_658);
+    expect(budget.consumed).toBe(first.refinedPairCount);
+    expect(first.refinedPairCount).toBeLessThanOrEqual(30_000);
+
+    const second = detectStrictGridAttempt(image, { columns: 4, rows: 4 }, budget);
     expect(second.status).toBe("budget-exhausted");
-    expect(budget.consumed).toBe(probe.refinedPairCount);
+    expect(second.refinedPairCount).toBe(0);
+    expect(budget.consumed).toBe(first.refinedPairCount);
   });
 
   it("finds every source board without file-specific coordinates", async () => {

@@ -21,3 +21,11 @@ it("rejects invalid reservations without changing state", () => {
   expect(budget.consumed).toBe(0);
   expect(budget.remaining).toBe(10);
 });
+
+it("rejects invalid constructor limits", () => {
+  expect(() => new GridRefinementBudget(-1)).toThrow(RangeError);
+  expect(() => new GridRefinementBudget(1.5)).toThrow(RangeError);
+  expect(() => new GridRefinementBudget(Number.NaN)).toThrow(RangeError);
+  expect(() => new GridRefinementBudget(Number.POSITIVE_INFINITY)).toThrow(RangeError);
+  expect(() => new GridRefinementBudget(Number.MAX_SAFE_INTEGER + 1)).toThrow(RangeError);
+});

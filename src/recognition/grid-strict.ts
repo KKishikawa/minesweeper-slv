@@ -306,7 +306,6 @@ function coarsePitchEvidence(
 function selectGridCandidates(vertical: readonly AxisCandidate[], horizontal: readonly AxisCandidate[]): readonly GridCandidate[] | null {
   const verticalBuckets = bucketAxisCandidates(vertical);
   const horizontalBuckets = bucketAxisCandidates(horizontal);
-  if (countCompatibleGridCandidatePairs(verticalBuckets, horizontalBuckets) === null) return null;
 
   const compatibleHorizontalByPitch = new Map<number, readonly AxisCandidate[]>();
   for (const verticalBucket of verticalBuckets) {
