@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "vitest run",
+    "test:spike-evidence": "vitest run --config vitest.spike.config.ts",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "browsers:install:spike": "playwright install chromium firefox webkit",
