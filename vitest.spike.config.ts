@@ -4,7 +4,6 @@ export default defineConfig({
   test: {
     environment: "node",
     fileParallelism: false,
-    include: ["test/**/*.test.ts"],
-    exclude: ["test/**/*.spike.test.ts"],
+    include: ["test/**/*.spike.test.ts"],
   },
 });
