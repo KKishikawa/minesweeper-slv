@@ -24,4 +24,26 @@ describe("repository foundation", () => {
     expect(workflow).not.toContain("test:spike-evidence");
     expect(workflow).not.toContain("continue-on-error");
   });
+
+  it("publishes the approved license and contribution policy", async () => {
+    const license = await readRepositoryFile("LICENSE");
+    const contributing = await readRepositoryFile("CONTRIBUTING.md");
+
+    expect(license).toContain("MIT License");
+    expect(license).toContain("Copyright (c) 2026 KKishikawa");
+    expect(contributing).toContain("npm test");
+    expect(contributing).toContain("npm run typecheck");
+    expect(contributing).toContain("spike");
+  });
+
+  it("documents private security reporting and the reproducible runtime", async () => {
+    const security = await readRepositoryFile("SECURITY.md");
+    const readme = await readRepositoryFile("README.md");
+
+    expect(security).toContain("security/advisories/new");
+    expect(security).toContain("サポート対象のリリースはありません");
+    expect(readme).toContain("`.node-version`で22.12.0");
+    expect(readme).toContain("Playwright 1.62.1");
+    expect(readme).toContain("通常CI");
+  });
 });

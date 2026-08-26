@@ -36,20 +36,25 @@
 
 ## 動作環境
 
-- Node.js 22.12.0 以上
+- 開発・CI基準: `.node-version`で22.12.0に固定
+- 対応Node.js: 22.12.0以上
 - 正式評価: Chromium
 - 参考評価: Firefox / Playwright WebKit
+
+`package-lock.json`はPlaywright 1.62.1を固定し、Playwrightが対応するChromium revisionを管理します。通常CIとローカルセットアップは、独立したブラウザバージョンではなく、この組み合わせを使用します。
 
 ## セットアップ
 
 ```sh
 npm ci
-npx playwright install chromium
+npx --no-install playwright install chromium
 ```
 
 ## 検証
 
-通常の回帰テスト233件と型チェックは成功時に終了コード0を返します。
+Pull Requestと`main`へのpushでは、`CI / quality`が同じNode.js・Chromium条件で通常の回帰テストと型チェックを実行します。
+
+通常の回帰テスト237件と型チェックは成功時に終了コード0を返します。
 
 ```sh
 npm test
@@ -62,7 +67,7 @@ npm run typecheck
 npx tsx scripts/recognition/evaluate-grid-fallback.ts
 ```
 
-棄却されたセル認識方式の採用条件2件だけを再実行します。現在の証拠では2件とも失敗し、終了コード1を返します。この失敗は通常テストの失敗ではなく、認識方式を採用しない判断を再現するための証拠です。
+棄却されたセル認識方式の採用条件2件だけを再実行します。現在の証拠では2件とも失敗し、終了コード1を返します。この専用コマンドは通常CIでは実行しません。不採用判断の正本はspike報告書とGit履歴であり、この赤いテストは次期認識設計で再利用価値を棚卸しする退役候補です。
 
 ```sh
 npm run test:spike-evidence
