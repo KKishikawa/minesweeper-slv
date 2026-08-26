@@ -16,6 +16,45 @@ describe("repository foundation", () => {
   it("defines one honest ordinary CI quality check", async () => {
     const workflow = await readRepositoryFile(".github/workflows/ci.yml");
 
+    expect(workflow).toBe(`name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-\${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: CI / quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx --no-install playwright install --with-deps chromium
+      - name: Run ordinary regression tests
+        run: npm test
+      - name: Run type checking
+        run: npm run typecheck
+`);
     expect(workflow).toContain("name: CI / quality");
     expect(workflow).toContain("node-version-file: .node-version");
     expect(workflow).toContain("npx --no-install playwright install --with-deps chromium");
@@ -45,5 +84,6 @@ describe("repository foundation", () => {
     expect(readme).toContain("`.node-version`で22.12.0");
     expect(readme).toContain("Playwright 1.62.1");
     expect(readme).toContain("通常CI");
+    expect(readme).not.toMatch(/通常の回帰テスト\d+件/);
   });
 });

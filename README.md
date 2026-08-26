@@ -54,7 +54,7 @@ npx --no-install playwright install chromium
 
 Pull Requestと`main`へのpushでは、`CI / quality`が同じNode.js・Chromium条件で通常の回帰テストと型チェックを実行します。
 
-通常の回帰テスト237件と型チェックは成功時に終了コード0を返します。
+通常の回帰テストと型チェックは成功時に終了コード0を返します。
 
 ```sh
 npm test
