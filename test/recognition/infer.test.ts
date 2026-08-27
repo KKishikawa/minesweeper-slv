@@ -15,7 +15,7 @@ describe("optional image hints", () => {
       }
     }
     expect(evaluatedCases).toBe(16);
-  }, 10_000);
+  });
 
   it("keeps each observed left-counter outcome fixed", async () => {
     const expected = [

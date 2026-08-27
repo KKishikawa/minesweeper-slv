@@ -229,7 +229,7 @@ describe("detectGrid", () => {
         expect(Math.abs((result?.pitchX ?? 0) - (result?.pitchY ?? 0)) / Math.max(result?.pitchX ?? 0, result?.pitchY ?? 0)).toBeLessThanOrEqual(0.05);
       }
     }
-  }, 10_000);
+  });
 
   it("reconciles the refined final boundary with the sequence pitch", () => {
     const verticalBoundaries = Array.from({ length: 31 }, (_, index) => 10 + index * 10);
