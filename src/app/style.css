@@ -1,0 +1,4 @@
+:root { font-family: system-ui, sans-serif; color: #18212b; background: #f7f9fc; }
+body { margin: 0; }
+#app { padding: 1.5rem; }
+h1 { margin: 0; font-size: 1.6rem; }
