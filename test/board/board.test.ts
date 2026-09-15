@@ -38,4 +38,12 @@ describe('manual board', () => {
     expect(reset.cells.map(cell => cell.value)).toEqual(['closed', 'closed']);
     expect(reset.totalMines).toBe(1);
   });
+  it.each([-1, 0.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1])('rejects invalid revision %s', revision => {
+    expect(() => createBoard(1, 1, 0, revision)).toThrow(RangeError);
+  });
+  it('allows the maximum safe revision but rejects editing beyond it', () => {
+    const board = createBoard(1, 1, 0, Number.MAX_SAFE_INTEGER);
+    expect(board.revision).toBe(Number.MAX_SAFE_INTEGER);
+    expect(() => editCell(board, 0, 0)).toThrow(RangeError);
+  });
 });
