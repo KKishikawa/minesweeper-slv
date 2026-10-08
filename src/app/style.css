@@ -2,3 +2,12 @@
 body { margin: 0; }
 #app { padding: 1.5rem; }
 h1 { margin: 0; font-size: 1.6rem; }
+.board-cell:focus-visible { outline: 3px solid #0068ba; outline-offset: -3px; }
+.palette { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.palette button[aria-pressed="true"] { background: #173b51; color: white; }
+.editor-help { max-width: 65ch; font-size: .85rem; }
+.board-settings { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+.board-settings label { display: grid; gap: 6px; }
+.board-settings input { width: 90px; padding: 8px; }
+.field-error { flex-basis: 100%; color: #a32929; margin: 0; }
+.reset-button { margin-top: 16px; }
