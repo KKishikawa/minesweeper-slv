@@ -94,3 +94,7 @@ export function createSolverClient(onResponse: (response: SolverResponse) => voi
     dispose() { cancel(); disposed = true; },
   };
 }
+
+export function createModuleSolverWorker(): SolverWorkerPort {
+  return new Worker(new URL('../workers/solver.worker.ts', import.meta.url), { type: 'module' });
+}
