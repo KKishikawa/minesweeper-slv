@@ -46,3 +46,20 @@ it.each(['mouse', 'keyboard'])('resets exactly once through %s and retains setti
   expect(after.state.board.totalMines).toBe(1);
   expect(after.state.proposal).toBeNull();
 });
+it('leaves modified browser shortcuts out of board editing', async () => {
+  await page.goto(`${harness.baseUrl}/test/browser/editor.fixture.html`);
+  await page.getByRole('gridcell').first().focus();
+  const before = await inspect();
+  for (const modifiers of [{ ctrlKey: true }, { metaKey: true }, { altKey: true }]) {
+    for (const key of ['f', '1', '0', 'Delete', 'ArrowRight']) {
+      const prevented = await page.getByRole('gridcell').first().evaluate((element, data) => {
+        const event = new KeyboardEvent('keydown', { ...data, bubbles: true, cancelable: true });
+        element.dispatchEvent(event);
+        return event.defaultPrevented;
+      }, { key, ...modifiers });
+      expect(prevented, `${key}/${JSON.stringify(modifiers)}`).toBe(false);
+      expect((await inspect()).state.board).toEqual(before.state.board);
+      expect((await inspect()).edits).toBe(before.edits);
+    }
+  }
+});

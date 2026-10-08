@@ -65,6 +65,7 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
     select(Number(target.dataset.cell)); onEdit(selected, tool);
   };
   const keydown = (event: KeyboardEvent) => {
+    if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return;
     if (!board || !(event.target as HTMLElement).matches('[data-cell]')) return;
     const dx = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
     const dy = event.key === 'ArrowDown' ? 1 : event.key === 'ArrowUp' ? -1 : 0;
