@@ -78,6 +78,11 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
       : event.key === 'Delete' ? 'closed' : /^[1-8]$/.test(event.key) ? Number(event.key) as CellValue : null;
     if (value !== null) { event.preventDefault(); onEdit(selected, value); }
   };
+  const focusin = (event: FocusEvent) => {
+    const target = event.target as HTMLElement;
+    if (target.dataset.cell !== undefined) { selected = Number(target.dataset.cell); draw(); }
+  };
+  grid.addEventListener('focusin', focusin);
   grid.addEventListener('click', click); grid.addEventListener('keydown', keydown);
   const observer = new ResizeObserver(draw); observer.observe(root);
   return {
@@ -100,6 +105,6 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
       }
       draw();
     },
-    dispose() { observer.disconnect(); grid.removeEventListener('click', click); grid.removeEventListener('keydown', keydown); reset.removeEventListener('click', onReset); root.replaceChildren(); },
+    dispose() { observer.disconnect(); grid.removeEventListener('focusin', focusin); grid.removeEventListener('click', click); grid.removeEventListener('keydown', keydown); reset.removeEventListener('click', onReset); root.replaceChildren(); },
   };
 }
