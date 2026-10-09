@@ -188,7 +188,7 @@ export interface SolverClientOptions {
 
 **Files:** ファイル表の単位1。**Consumes:** なし。**Produces:** BoardSnapshot、createBoard、editCell。
 
-- [ ] 次を`test/board/board.test.ts`に書く。
+- [x] 次を`test/board/board.test.ts`に書く。
 
 ```ts
 it('手動編集は観測を複製してrevisionを進める', () => {
@@ -200,16 +200,16 @@ it('手動編集は観測を複製してrevisionを進める', () => {
 });
 ```
 
-- [ ] `npm test -- test/board/board.test.ts`でREDを確認。
-- [ ] 型契約どおりに実装。0、1、8、flag、closedの編集、最大・最小寸法、非整数、NaN、負数、総地雷数超過、不正index、リセットrevisionのテストを追加。
-- [ ] 同コマンドと`npm run typecheck`でGREEN。レビューは不変性、index範囲、提案との非結合を確認。
-- [ ] この単位のファイルだけをstageし`git commit -m "feat: add manual board model"`。
+- [x] `npm test -- test/board/board.test.ts`でREDを確認。
+- [x] 型契約どおりに実装。0、1、8、flag、closedの編集、最大・最小寸法、非整数、NaN、負数、総地雷数超過、不正index、リセットrevisionのテストを追加。
+- [x] 同コマンドと`npm run typecheck`でGREEN。レビューは不変性、index範囲、提案との非結合を確認。
+- [x] この単位のファイルだけをstageし`git commit -m "feat: add manual board model"`。
 
 ### 単位2 / #10: 事前検証
 
 **Files:** 単位2。**Consumes:** BoardSnapshot、FlagPolicy。**Produces:** validateBoard。
 
-- [ ] 以下をテストし`npm test -- test/board/validate.test.ts`でRED。
+- [x] 以下をテストし`npm test -- test/board/validate.test.ts`でRED。
 
 ```ts
 it('隣接0への旗はtrustedだけ矛盾する', () => {
@@ -220,16 +220,16 @@ it('隣接0への旗はtrustedだけ矛盾する', () => {
 });
 ```
 
-- [ ] 設定範囲、cells.lengthと寸法、uncertainを検査。次に各数字について`残必要地雷 = 数字 - trusted隣接旗数`が0〜隣接候補数か、盤面全体の`総地雷数 - trusted旗数`が0〜候補総数かを検証する。reconsideredでは旗を候補に数える。0も数字制約に含める。
-- [ ] needs-reviewと矛盾を別々にテスト。複数の違反セルは昇順・重複なしで返す。uncertainと寸法不一致では数値制約を解かない。
-- [ ] GREENと型検査。レビューは局所validが全体成立の保証ではない点、探索上限をvalidationへ偽装しない点を確認。
-- [ ] `git commit -m "feat: validate manual board observations"`（単位2だけをstage）。
+- [x] 設定範囲、cells.lengthと寸法、uncertainを検査。次に各数字について`残必要地雷 = 数字 - trusted隣接旗数`が0〜隣接候補数か、盤面全体の`総地雷数 - trusted旗数`が0〜候補総数かを検証する。reconsideredでは旗を候補に数える。0も数字制約に含める。
+- [x] needs-reviewと矛盾を別々にテスト。複数の違反セルは昇順・重複なしで返す。uncertainと寸法不一致では数値制約を解かない。
+- [x] GREENと型検査。レビューは局所validが全体成立の保証ではない点、探索上限をvalidationへ偽装しない点を確認。
+- [x] `git commit -m "feat: validate manual board observations"`（単位2だけをstage）。
 
 ### 単位3 / #10: 起動とWorker境界
 
 **Files:** 単位3と`test/browser/harness.ts`。**Consumes:** 単位1・2。**Produces:** 型契約、AppState、solver-client、起動可能な画面。
 
-- [ ] 応答破棄テストを作り`npm test -- test/app`でRED。
+- [x] 応答破棄テストを作り`npm test -- test/app`でRED。
 
 ```ts
 it('同revisionでも古いrequestを受け付けない', () => {
@@ -244,17 +244,17 @@ it('同revisionでも古いrequestを受け付けない', () => {
 });
 ```
 
-- [ ] state関数とclientを上記遷移表どおりに実装。偽WorkerとVitest fake timersで古い成功・error・タイマー、cancel、dispose、連続編集、policy変更を検証。
-- [ ] package.jsonに`dev: vite --host 127.0.0.1`、`build: vite build`、`preview: vite preview --host 127.0.0.1`を追加。index.htmlは`lang="ja"`と`src/main.ts`のmodule scriptを持つ。appは「マインスイーパー ソルバー」の見出しを表示し、例外時は日本語エラーをDOMへ出す。
-- [ ] smokeで`await page.goto(baseUrl)`、`expect(await page.locator('h1').textContent()).toBe('マインスイーパー ソルバー')`、pageerrorが空であることを確認。
-- [ ] `npm test -- test/app test/browser/smoke.test.ts`、`npm run typecheck`、`npm run build`がGREEN。レビューは未接続solverから架空の提案が出ないこと。
-- [ ] `git commit -m "feat: establish app and revision-safe worker boundary"`。#10完了後に#11と#14を開始可能とする。
+- [x] state関数とclientを上記遷移表どおりに実装。偽WorkerとVitest fake timersで古い成功・error・タイマー、cancel、dispose、連続編集、policy変更を検証。
+- [x] package.jsonに`dev: vite --host 127.0.0.1`、`build: vite build`、`preview: vite preview --host 127.0.0.1`を追加。index.htmlは`lang="ja"`と`src/main.ts`のmodule scriptを持つ。appは「マインスイーパー ソルバー」の見出しを表示し、例外時は日本語エラーをDOMへ出す。
+- [x] smokeで`await page.goto(baseUrl)`、`expect(await page.locator('h1').textContent()).toBe('マインスイーパー ソルバー')`、pageerrorが空であることを確認。
+- [x] `npm test -- test/app test/browser/smoke.test.ts`、`npm run typecheck`、`npm run build`がGREEN。レビューは未接続solverから架空の提案が出ないこと。
+- [x] `git commit -m "feat: establish app and revision-safe worker boundary"`。#10完了後に#11と#14を開始可能とする。
 
 ### 単位4 / #11: 制約と連結成分
 
 **Files:** 単位4。**Consumes:** validな盤面、policy。**Produces:** `Constraint = { cells: number[]; mines: number }`、`buildConstraints(board, policy): Constraint[]`、`reduceConstraints(input: Constraint[]): { constraints: Constraint[]; safe: number[]; mines: number[]; inconsistent: boolean }`、`splitComponents(input: Constraint[]): Constraint[][]`。
 
-- [ ] `npm test -- test/solver/constraints.test.ts`で次のREDを確認。
+- [x] `npm test -- test/solver/constraints.test.ts`で次のREDを確認。
 
 ```ts
 it('包含制約の差分から安全セルを得る', () => {
@@ -266,16 +266,16 @@ it('包含制約の差分から安全セルを得る', () => {
 });
 ```
 
-- [ ] 隣接8方向から制約を作る。0地雷なら全安全、候補数=地雷数なら全地雷、包含集合は差分を追加。代入後に再簡約し固定点まで繰り返す。空集合の非0地雷、残数負・超過、同集合の異なる残数を矛盾とする。
-- [ ] 共有候補セルで制約グラフを連結成分へ分割。交差するが包含しない制約、端と角、別成分、重複制約をテストする。
-- [ ] GREENと型検査。レビューは簡約時に必要な地雷数や候補を失わないこと。
-- [ ] `git commit -m "feat: derive and partition mine constraints"`。
+- [x] 隣接8方向から制約を作る。0地雷なら全安全、候補数=地雷数なら全地雷、包含集合は差分を追加。代入後に再簡約し固定点まで繰り返す。空集合の非0地雷、残数負・超過、同集合の異なる残数を矛盾とする。
+- [x] 共有候補セルで制約グラフを連結成分へ分割。交差するが包含しない制約、端と角、別成分、重複制約をテストする。
+- [x] GREENと型検査。レビューは簡約時に必要な地雷数や候補を失わないこと。
+- [x] `git commit -m "feat: derive and partition mine constraints"`。
 
 ### 単位5 / #11: 列挙・全体統合・oracle
 
 **Files:** 単位5。**Consumes:** 単位4。**Produces:** solve、SolveResult。内部公開は`enumerateComponent(constraints: Constraint[], budget: { visited: number; maxNodes: number }): { ways: Map<number, bigint>; mineWays: Map<number, Map<number, bigint>>; limited: boolean }`、`choose(n: number, k: number): bigint`。mineWaysはcell index→成分地雷数→配置数。
 
-- [ ] 次を作り`npm test -- test/solver/solve.test.ts`でRED。
+- [x] 次を作り`npm test -- test/solver/solve.test.ts`でRED。
 
 ```ts
 it('同率候補を決定論的に選ぶ', () => {
@@ -291,62 +291,66 @@ it('全体地雷数から確定安全を返す', () => {
 });
 ```
 
-- [ ] 成分ごとに0/1を列挙し、各制約で割当済み地雷数が超過、または未割当を全地雷にしても不足なら枝刈り。budgetは全成分で共有し、各探索ノードで増加させる。
-- [ ] 成分のwaysを地雷数別に畳み込み、制約なしUセルには`choose(U, remaining)`を掛ける。特定の制約なしセルの地雷配置数は`choose(U - 1, remaining - 1)`。chooseはk<0またはk>nで0n。簡約確定地雷とtrusted旗を総数から引く。
-- [ ] 成立配置総数0nはinconsistent。各候補の地雷配置数0nはsafe、総数と同じならmines。確定手がなければBigInt交差積で最小地雷率を比較し同率を全て返す。上限に達したら全ての部分結果を捨てる。
-- [ ] oracle.tsではsolverの制約・簡約・組合せ関数を使わず、最大3×3の全ビット配置から数字・policy・総数を直接判定する。全2×2観測パターンと固定seedの3×3ケースで成立有無、全候補の確定性と同率候補を比較する。数値確率をUIへ出さない。
-- [ ] テストに独立成分+制約なし領域、局所validな全体矛盾、trusted/reconsidered、全セル開示、全地雷、maxNodes=0、巨大BigIntのchooseを含める。全体矛盾の具体例は3×1・中央1・両端closed・総地雷2（局所valid、全体配置なし）。
-- [ ] `npm test -- test/solver`と型検査がGREEN。レビューは総配置の重み付け、探索打切りと矛盾の分離、oracleの独立性。
-- [ ] `git commit -m "feat: solve boards with exact global model counts"`。
+- [x] 成分ごとに0/1を列挙し、各制約で割当済み地雷数が超過、または未割当を全地雷にしても不足なら枝刈り。budgetは全成分で共有し、各探索ノードで増加させる。
+- [x] 成分のwaysを地雷数別に畳み込み、制約なしUセルには`choose(U, remaining)`を掛ける。特定の制約なしセルの地雷配置数は`choose(U - 1, remaining - 1)`。chooseはk<0またはk>nで0n。簡約確定地雷とtrusted旗を総数から引く。
+- [x] 成立配置総数0nはinconsistent。各候補の地雷配置数0nはsafe、総数と同じならmines。確定手がなければBigInt交差積で最小地雷率を比較し同率を全て返す。上限に達したら全ての部分結果を捨てる。
+- [x] oracle.tsではsolverの制約・簡約・組合せ関数を使わず、最大3×3の全ビット配置から数字・policy・総数を直接判定する。全2×2観測パターンと固定seedの3×3ケースで成立有無、全候補の確定性と同率候補を比較する。数値確率をUIへ出さない。
+- [x] テストに独立成分+制約なし領域、局所validな全体矛盾、trusted/reconsidered、全セル開示、全地雷、maxNodes=0、巨大BigIntのchooseを含める。全体矛盾の具体例は3×1・中央1・両端closed・総地雷2（局所valid、全体配置なし）。
+- [x] `npm test -- test/solver`と型検査がGREEN。レビューは総配置の重み付け、探索打切りと矛盾の分離、oracleの独立性。
+- [x] `git commit -m "feat: solve boards with exact global model counts"`。
 
 ### 単位6 / #11: Workerと旗の再検討
 
 **Files:** 単位6と`test/app/solver-client.test.ts`。**Consumes:** solve、protocol、AppState。**Produces:** UIから利用できる実solver経路。
 
-- [ ] 実Workerへの2×1・1地雷requestがguess-requiredを返すテストを追加。`npm test -- test/browser/solver-worker.test.ts`でRED。
-- [ ] solver.worker.tsはrequestを検査し、validateBoardがvalidの場合だけsolveを呼ぶ。例外はkind:errorへ変換し、requestIdとrevisionを保持。invalidな外部メッセージは実行しない。
-- [ ] 実Workerとtransitionの統合テストを追加し、遷移表の再検討経路を検証する。画面への接続は単位8で行う。3×1・左0・中央flag・総数1ではtrustedの局所矛盾からreconsideredで中央safe/右minesに到達。autoReconsider=falseなら矛盾のまま。全体矛盾、needs-review、limit-reached、errorについても再試行の有無を検証する。
-- [ ] trustedで成立する誤旗は検出できない旨を状態説明に残す。自動再検討で入力旗を消さずeffectivePolicyだけを変える。
-- [ ] `npm test -- test/app test/solver test/browser/solver-worker.test.ts`、型検査、build。レビューは再試行が一度で止まること、古いrequestによる再試行が起きないこと。
-- [ ] `git commit -m "feat: run solver in worker with flag reconsideration"`。
+- [x] 実Workerへの2×1・1地雷requestがguess-requiredを返すテストを追加。`npm test -- test/browser/solver-worker.test.ts`でRED。
+- [x] solver.worker.tsはrequestを検査し、validateBoardがvalidの場合だけsolveを呼ぶ。例外はkind:errorへ変換し、requestIdとrevisionを保持。invalidな外部メッセージは実行しない。
+- [x] 実Workerとtransitionの統合テストを追加し、遷移表の再検討経路を検証する。画面への接続は単位8で行う。3×1・左0・中央flag・総数1ではtrustedの局所矛盾からreconsideredで中央safe/右minesに到達。autoReconsider=falseなら矛盾のまま。全体矛盾、needs-review、limit-reached、errorについても再試行の有無を検証する。
+- [x] trustedで成立する誤旗は検出できない旨を状態説明に残す。自動再検討で入力旗を消さずeffectivePolicyだけを変える。
+- [x] `npm test -- test/app test/solver test/browser/solver-worker.test.ts`、型検査、build。レビューは再試行が一度で止まること、古いrequestによる再試行が起きないこと。
+- [x] `git commit -m "feat: run solver in worker with flag reconsideration"`。
 
 ### 単位7 / #14: 設定・描画・手動編集
 
 **Files:** 単位7。**Consumes:** BoardSnapshot、SolverProposal、ValidationResult。**Produces:** `renderBoard(ctx: CanvasRenderingContext2D, board: BoardSnapshot, proposal: SolverProposal | null, validation: ValidationResult, selected: number, cellSize: number): void`、`hitTest(x: number, y: number, cellSize: number, width: number, height: number): number | null`、`mountBoardEditor(root: HTMLElement, onEdit: (index: number, value: CellValue) => void, onReset: () => void): { update(board: BoardSnapshot, proposal: SolverProposal | null, validation: ValidationResult): void; dispose(): void }`、`mountBoardSettings(root: HTMLElement, onCreate: (width: number, height: number, totalMines: number) => void): { dispose(): void }`。
 
-- [ ] `expect(hitTest(24, 0, 24, 2, 1)).toBe(1)`と右端48pxでnullのテストを追加し`npm test -- test/ui/geometry.test.ts`でRED。
-- [ ] 設定フォームは「幅」「高さ」「総地雷数」「盤面を作成」。無効設定は現在盤面を保持してフィールドエラー。編集パレットは「閉じる」「空き」「旗」「1」〜「8」。クリックで選択、矢印で移動、0/Spaceは空き、Fは旗、Deleteは閉じる、1〜8は数字。入力フォーム内では盤面ショートカットを発火しない。
-- [ ] CanvasをDPRで拡大しCSS座標でhitTest。観測は基底レイヤー、入力旗は旗形、提案地雷は菱形M、安全は丸S、推測は枠付き?、不確実は破線枠、矛盾は×を重ねる。選択は二重枠。提案で基底を変更しない。
-- [ ] セルのDOM表現にrole=grid/gridcell、行列数と「行1 列2 閉じたセル」等の名前、roving tabindexを付ける。Canvasはaria-hidden。DOMセルをCanvas位置に重ね、フォーカスはCanvasとCSSの両方で可視化。パレットとリセットはbuttonで操作する。リセットのクリックまたはキーボードでのボタン起動は`onReset()`を一度だけ通知し、セルごとの`onEdit`は発行しない。受け手は現在のAppStateの盤面から`createBoard(board.width, board.height, board.totalMines, board.revision + 1)`を作り、`transition(state, { type: 'board-changed', board: resetBoard })`を一度だけ実行する。これにより幅・高さ・総地雷数と旗policyを保ち、全セルをmanual/closed/uncertain=falseへ戻し、revisionを一度だけ更新して古い提案・実行を無効化する。
-- [ ] ブラウザテストで設定→クリック編集→矢印/全入力値を行い、onEditの観測値とrevisionを確認。リセットはマウスとキーボードの両経路で、onResetが一度だけ呼ばれonEditが発行されないこと、受け手で設定と旗policyを保持した全閉じ盤面になること、revisionが1だけ増えて旧提案が消えることを確認。future recognition由来セルを手動編集したらmanual/uncertain=falseになることをモデルテストで確認する（uncertain自体を入力パレットに追加しない）。
-- [ ] `npm test -- test/ui test/browser/board-editor.test.ts`、型検査、build。レビューはCanvasとDOMの座標一致、フォーカス維持、記号の判読性。
-- [ ] `git commit -m "feat: render and edit boards with mouse and keyboard"`。
+- [x] `expect(hitTest(24, 0, 24, 2, 1)).toBe(1)`と右端48pxでnullのテストを追加し`npm test -- test/ui/geometry.test.ts`でRED。
+- [x] 設定フォームは「幅」「高さ」「総地雷数」「盤面を作成」。無効設定は現在盤面を保持してフィールドエラー。編集パレットは「閉じる」「空き」「旗」「1」〜「8」。クリックで選択、矢印で移動、0/Spaceは空き、Fは旗、Deleteは閉じる、1〜8は数字。入力フォーム内では盤面ショートカットを発火しない。
+- [x] CanvasをDPRで拡大しCSS座標でhitTest。観測は基底レイヤー、入力旗は旗形、提案地雷は菱形M、安全は丸S、推測は枠付き?、不確実は破線枠、矛盾は×を重ねる。選択は二重枠。提案で基底を変更しない。
+- [x] セルのDOM表現にrole=grid/gridcell、行列数と「行1 列2 閉じたセル」等の名前、roving tabindexを付ける。Canvasはaria-hidden。DOMセルをCanvas位置に重ね、フォーカスはCanvasとCSSの両方で可視化。パレットとリセットはbuttonで操作する。リセットのクリックまたはキーボードでのボタン起動は`onReset()`を一度だけ通知し、セルごとの`onEdit`は発行しない。受け手は現在のAppStateの盤面から`createBoard(board.width, board.height, board.totalMines, board.revision + 1)`を作り、`transition(state, { type: 'board-changed', board: resetBoard })`を一度だけ実行する。これにより幅・高さ・総地雷数と旗policyを保ち、全セルをmanual/closed/uncertain=falseへ戻し、revisionを一度だけ更新して古い提案・実行を無効化する。
+- [x] ブラウザテストで設定→クリック編集→矢印/全入力値を行い、onEditの観測値とrevisionを確認。リセットはマウスとキーボードの両経路で、onResetが一度だけ呼ばれonEditが発行されないこと、受け手で設定と旗policyを保持した全閉じ盤面になること、revisionが1だけ増えて旧提案が消えることを確認。future recognition由来セルを手動編集したらmanual/uncertain=falseになることをモデルテストで確認する（uncertain自体を入力パレットに追加しない）。
+- [x] `npm test -- test/ui test/browser/board-editor.test.ts`、型検査、build。レビューはCanvasとDOMの座標一致、フォーカス維持、記号の判読性。
+- [x] `git commit -m "feat: render and edit boards with mouse and keyboard"`。
 
 ### 単位8 / #15: 日本語MVP統合
 
 **Files:** 単位8。**Consumes:** 単位6・7。**Produces:** 完全なMVP操作フロー。layout.tsは`computeLayout(availableWidth: number, columns: number): { placement: 'right' | 'below'; cellSize: number }`を公開する。
 
-- [ ] `test/browser/mvp.test.ts`でフォームに幅3・高さ1・総数1を設定し、盤面セル1を0に編集。「確定した手があります」とセル2の安全、セル3の地雷表示を期待するテストを追加。`npm test -- test/browser/mvp.test.ts`でRED。
-- [ ] app.tsで編集→transition(board-changed)→effects実行→client応答→transition(response)→描画を接続。onResetの受け手も単位7の契約どおりに同じboard-changed経路へ接続する。再実行ボタンはsolve actionで同revision・新requestIdを使う。二重実行をcancelで防ぐ。status.tsはaria-live=politeで「入力を確認してください」「盤面に矛盾があります」「解析中」「確定した手があります」「推測が必要です」「探索上限に達しました」「解析に失敗しました」を状態に対応させる。未確定セルがないsolvedは「盤面の確認が完了しました」。
-- [ ] 「入力旗を地雷として扱う」「入力旗を再検討する」のラジオ、自動再検討checkbox、既定trusted/自動offを追加。trustedの制限と再検討使用中を明記。入力旗と提案地雷の凡例を常時表示。
-- [ ] 右情報欄288px、間隔24px、盤面セル最大40pxを仮定。`floor((availableWidth - 288 - 24) / columns) >= 24`ならright、その他below。belowでは`floor(availableWidth / columns)`を最大40で制限する。Canvasと親にoverflow scrollを付けず、縦スクロールはbodyだけにする。
-- [ ] 全体矛盾（3×1・中央1・総数2）、guess-required（2×1・1地雷）、再入力による矛盾解消、旗policy変更、編集中の遅い結果破棄をE2E化。上限とWorkerエラーはテスト専用Worker factoryを注入して再現し、production UIに試験専用設定を追加しない。
-- [ ] `npm test -- test/app test/ui test/browser/mvp.test.ts`、型検査、build。レビューは数値確率の不表示、観測の不変性、各状態の文言、キーボード経路。
-- [ ] `git commit -m "feat: integrate Japanese manual solver workflow"`。
+- [x] `test/browser/mvp.test.ts`でフォームに幅3・高さ1・総数1を設定し、盤面セル1を0に編集。「確定した手があります」とセル2の安全、セル3の地雷表示を期待するテストを追加。`npm test -- test/browser/mvp.test.ts`でRED。
+- [x] app.tsで編集→transition(board-changed)→effects実行→client応答→transition(response)→描画を接続。onResetの受け手も単位7の契約どおりに同じboard-changed経路へ接続する。再実行ボタンはsolve actionで同revision・新requestIdを使う。二重実行をcancelで防ぐ。status.tsはaria-live=politeで「入力を確認してください」「盤面に矛盾があります」「解析中」「確定した手があります」「推測が必要です」「探索上限に達しました」「解析に失敗しました」を状態に対応させる。未確定セルがないsolvedは「盤面の確認が完了しました」。
+- [x] 「入力旗を地雷として扱う」「入力旗を再検討する」のラジオ、自動再検討checkbox、既定trusted/自動offを追加。trustedの制限と再検討使用中を明記。入力旗と提案地雷の凡例を常時表示。
+- [x] 右情報欄288px、間隔24px、盤面セル最大40pxを仮定。`floor((availableWidth - 288 - 24) / columns) >= 24`ならright、その他below。belowでは`floor(availableWidth / columns)`を最大40で制限する。Canvasと親にoverflow scrollを付けず、縦スクロールはbodyだけにする。
+- [x] 全体矛盾（3×1・中央1・総数2）、guess-required（2×1・1地雷）、再入力による矛盾解消、旗policy変更、編集中の遅い結果破棄をE2E化。上限とWorkerエラーはテスト専用Worker factoryを注入して再現し、production UIに試験専用設定を追加しない。
+- [x] `npm test -- test/app test/ui test/browser/mvp.test.ts`、型検査、build。レビューは数値確率の不表示、観測の不変性、各状態の文言、キーボード経路。
+- [x] `git commit -m "feat: integrate Japanese manual solver workflow"`。
 
 ### 単位9 / #16: 出荷前品質と公開手順
 
 **Files:** 単位9。**Consumes:** production build。**Produces:** 再現可能な品質証跡とリリース文書。公開先への実際の配信はこの計画作成Issueの範囲外。
 
-- [ ] previewを使うrelease.test.tsに単位8の正常・矛盾・再入力フローを追加。`npm run build`後、`npm test -- test/browser/release.test.ts`でproductionの不足を確認する。
-- [ ] 1920×1080、1280×800、960×1080で9列と30列を確認。セル幅=高さ、対象範囲で24px以上、right/below切替、Canvas親のscrollWidth=clientWidth、ページ横スクロールなしをassert。スクリーンショットで色以外の記号と可視フォーカスもレビューする。
-- [ ] request監視でorigin外の通信、WebSocket、beaconを禁止してフローを実行。入力前後のlocalStorage/sessionStorageが空、IndexedDB作成なし、リロードで盤面が初期化されることを確認。HTTPによる静的JS/CSS/Worker取得は許可する。Service Workerを登録しない。
+- [x] previewを使うrelease.test.tsに単位8の正常・矛盾・再入力フローを追加。`npm run build`後、`npm test -- test/browser/release.test.ts`でproductionの不足を確認する。
+- [x] 1920×1080、1280×800、960×1080で9列と30列を確認。セル幅=高さ、対象範囲で24px以上、right/below切替、Canvas親のscrollWidth=clientWidth、ページ横スクロールなしをassert。スクリーンショットで色以外の記号と可視フォーカスもレビューする。
+- [x] request監視でorigin外の通信、WebSocket、beaconを禁止してフローを実行。入力前後のlocalStorage/sessionStorageが空、IndexedDB作成なし、リロードで盤面が初期化されることを確認。HTTPによる静的JS/CSS/Worker取得は許可する。Service Workerを登録しない。
 - [ ] ChromiumでTabのみの設定・編集・policy・再実行・リセットを検証。最新Windows Chromeで同じ主要フローを手動確認し、OS/browser versionと結果をrelease文書へ記録。利用できない環境は「未実施」と記し出荷確認を完了扱いにしない。
-- [ ] CI実ファイルを確認してqualityの順序をtypecheck→build→testに統一し、production smokeを通常テストに含める。npm scriptsに`test:browser: vitest run test/browser`を追加。通常テストとbrowserテストをCIで重複実行しない構成にする。既存spike evidenceは通常CIに追加しない。
+- [x] CI実ファイルを確認してqualityの順序をtypecheck→build→testに統一し、production smokeを通常テストに含める。npm scriptsに`test:browser: vitest run test/browser`を追加。通常テストとbrowserテストをCIで重複実行しない構成にする。既存spike evidenceは通常CIに追加しない。
 - [ ] release文書に`npm ci`→`npx --no-install playwright install chromium`→`npm run typecheck`→`npm run build`→`npm test`→`npm run preview`を記載。成果物はdist、静的配信、Worker module MIME、HTTPS、サブパス配置時のVite base設定、配置後smoke、直前artifactへのロールバックを明記する。公開先選定と配信は#16で具体化する。
-- [ ] 対応範囲・入力上限・探索上限・旗の限界・画像非対応・自動保存なし・Windows確認結果・変更に対応するversionを記録。実装済み範囲に合わせREADMEを更新。
-- [ ] `npm run typecheck`→`npm run build`→`npm test`の順に実行する。CI・ローカル公開手順の両方でproductionテストより先にbuildを必須とし、harnessは生成済みdistをpreviewする。distが存在しないクリーンcheckoutから上記公開手順を順番に実行して成功することを確認する。READMEの検証手順と`test:browser`の実行説明にもbuildが前提であることを記載する。
-- [ ] `git commit -m "test: verify manual MVP release readiness"`。署名失敗は調査へ切り替え、署名なしで再実行しない。
+- [x] 対応範囲・入力上限・探索上限・旗の限界・画像非対応・自動保存なし・Windows確認結果・変更に対応するversionを記録。実装済み範囲に合わせREADMEを更新。
+- [x] `npm run typecheck`→`npm run build`→`npm test`の順に実行する。CI・ローカル公開手順の両方でproductionテストより先にbuildを必須とし、harnessは生成済みdistをpreviewする。distが存在しないクリーンcheckoutから上記公開手順を順番に実行して成功することを確認する。READMEの検証手順と`test:browser`の実行説明にもbuildが前提であることを記載する。
+- [x] `git commit -m "test: verify manual MVP release readiness"`。署名失敗は調査へ切り替え、署名なしで再実行しない。
+
+### 2026-10-09 実装結果
+
+単位1〜8と単位9の自動検証・文書化を実装。最終41ファイル358テスト、型検査、production build成功。Windows実機確認と公開先選定・配信は未実施のため、単位9の出荷確認は未完了。独立レビューの修飾キー付き入力の指摘は回帰テストで修正。詳細は[リリース確認](../../project/manual-mvp-release.md)を参照。
 
 ## レビュー・Issueの完了境界
 

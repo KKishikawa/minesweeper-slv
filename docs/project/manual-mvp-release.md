@@ -1,0 +1,67 @@
+# 手動盤面入力型MVP リリース確認
+
+対象: `0.1.0-dev.1`（開発版）。初回記録: 2026-10-08。最終検証: 2026-10-09。
+
+## 判定
+
+手動入力からローカルsolver提案まで実装済み。**出荷確認は未完了**です。Windowsの最新Chromeによる実機確認、公開先選定、実際の配信と配信後smokeは未実施です。GitHub Issueのcloseやmainへの統合を表しません。
+
+## 実装範囲と制限
+
+- 幅・高さは1〜30、総地雷数は0〜セル数の整数。既定9×9、10地雷。
+- マウスとキーボードの入力、正方形CanvasとアクセシブルなDOMセル、旗policy、リセット、再解析。
+- 盤面観測と提案は分離。編集時にrevisionを進め、古いrequest/revisionの応答は破棄。
+- 入力旗を尊重する既定policyでは、成立する誤旗は検出できない。再検討policyで全旗を未確定として扱う。
+- 探索上限200,000ノード、Worker待機上限5秒。打切り時に部分的な確定手を返さない。
+- 画像入力・認識統合・数値確率・自動クリック・バックエンドなし。
+- 自動保存なし。localStorage/sessionStorage/IndexedDBを使用せず、再読み込みで初期化。
+
+## 検証証跡
+
+| 項目 | 結果 |
+| --- | --- |
+| 盤面、validation、state、Worker client | 対象の単体テスト成功 |
+| solver | 独立oracleで2×2の全11^4観測パターン×5総地雷数×2旗policy、固定seedの3×3盤面400件×2policyに一致 |
+| 実Worker | 同率候補、旗の再検討、全体矛盾、無効メッセージの非実行を確認 |
+| 開発版ブラウザ | マウスと全入力キー、リセット、矛盾から復帰、旗policy、遅延応答破棄、注入エラー・タイムアウトを確認 |
+| production Chromium | `151.0.7922.34`、macOS上のPlaywright Chromiumで5件成功 |
+| レイアウト | 1920×1080、1280×800、960×1080で9列・30列を確認。正方形・24 CSS px以上・ページ横スクロールなし・sidebar切替・DPR 2を検証 |
+| キーボード | Tab移動で設定・編集・policy・再解析・リセットを完了 |
+| ローカル処理 | 通信は同一originの静的JS/CSS/Workerのみ。WebSocket・beaconなし、storageなし、Service Worker登録なし |
+| 視覚確認 | `test/artifacts/manual-mvp/`の画像でS記号、選択枠、右/下情報欄を確認。画像はテストで再生成する |
+| クリーンソースでの全体検証 | 新規ソース展開（dist・node_modulesなし）→npm ci→Chromium install→typecheck→build→全体テスト成功。最終コードは41ファイル358件、372.74秒、終了コード0。レビュー指摘の修飾キー保護も含む。 |
+| Windows Chrome実機 | **未実施**。OS・browser versionと主要フローの結果を追記するまで出荷確認を完了しない |
+| Windows Edge | 未実施 |
+
+## 再現手順
+
+`.node-version`のNode.js 22.12.0を使用します。lockfileで固定した依存とChromiumを使い、buildを必ずブラウザテストより先に実行します。
+
+```sh
+npm ci
+npx --no-install playwright install chromium
+npm run typecheck
+npm run build
+npm test
+npm run preview
+```
+
+`npm run test:browser`も生成済み`dist`が前提です。通常CIはtypecheck → build → testの順で、ブラウザテストを別stepで重複実行しません。不採用認識spikeの専用テストは通常CIの対象外です。
+
+## 配信手順（未実施）
+
+1. Windows Chromeで設定→入力→提案、矛盾→修正、旗policy、キーボード、3画面サイズを確認する。OS・ブラウザversion・日付を本書へ記録する。
+2. 静的配信先を選び、HTTPSを有効にする。配信対象は`dist/`のみ。APIサーバーは不要。
+3. `.js`（module Workerを含む）はJavaScript MIME（`text/javascript`または`application/javascript`）、CSSは`text/css`で返す。WorkerをHTML fallbackで返さない。
+4. サブパス配信ではViteの`base`を配置先に合わせてbuildし直す（例: `npm run build -- --base=/minesweeper/`）。rootパスの検証だけでサブパスを完了扱いにしない。
+5. versionとコミットIDを付けたartifactを保存し、直前artifactを残して配信する。
+6. 配信後に静的ファイル・Worker取得、3×1/1地雷/左0の安全・地雷提案、矛盾と再入力、キーボード、外部通信なしをsmoke確認する。
+7. 不具合時は直前artifactへ配信先を戻し、キャッシュ更新後に同じsmokeを再実施する。自動保存がないためデータ移行は不要。
+
+公開先への実配信はこの作業では実行していません。
+
+## 依存関係の監査（2026-10-09）
+
+`npm ci` / `npm audit`は既存の開発用依存にhigh 6件を報告しました。対象はVitest / @vitest/mocker、Vite / postcss / source-map-js、認識研究用sharpです。`npm audit --omit=dev`は0件でした。MVPは静的artifactのみを配信し、開発サーバーやtest fixtureを公開しません。
+
+本実装では計画の固定lockfile方針に従い依存を更新していません。監査時点で自動修正版は提示されていません。開発ツールの公開・信頼できない入力の処理を行う前に各advisoryの影響と修正版を確認することを、残課題として記録します。
