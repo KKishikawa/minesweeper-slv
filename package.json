@@ -16,7 +16,8 @@
     "typecheck": "tsc --noEmit",
     "browsers:install:spike": "playwright install chromium firefox webkit",
     "spike:recognition": "tsx scripts/run-multi-prototype-spike.ts",
-    "test:browser": "vitest run test/browser"
+    "test:browser": "vitest run test/browser",
+    "build:pages": "vite build --base=/minesweeper-slv/"
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
