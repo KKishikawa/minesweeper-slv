@@ -1,10 +1,10 @@
 # 手動盤面入力型MVP リリース確認
 
-対象: `0.1.0-dev.1`（開発版）。初回記録: 2026-10-08。最終検証: 2026-10-09。
+対象: `0.1.0-dev.1`（開発版）。初回記録: 2026-10-08。最終検証: 2026-10-10。
 
 ## 判定
 
-手動入力からローカルsolver提案まで実装済み。**出荷確認は未完了**です。Windowsの最新Chromeによる実機確認、公開先選定、実際の配信と配信後smokeは未実施です。GitHub Issueのcloseやmainへの統合を表しません。
+手動入力からローカルsolver提案まで実装済み。**出荷確認は未完了**です。Windowsの最新Chromeによる実機確認は未実施です。公開先はGitHub Pagesに決定しました。実際の配信と配信後smokeは未実施です。実装はPR #20でmainへ統合済みです。GitHub Issueのcloseや公開を表しません。
 
 ## 実装範囲と制限
 
@@ -50,13 +50,13 @@ npm run preview
 
 ## 配信手順（未実施）
 
-1. Windows Chromeで設定→入力→提案、矛盾→修正、旗policy、キーボード、3画面サイズを確認する。OS・ブラウザversion・日付を本書へ記録する。
-2. 静的配信先を選び、HTTPSを有効にする。配信対象は`dist/`のみ。APIサーバーは不要。
+1. [Windows確認票](manual-mvp-windows-checklist.md)に沿って、Windows Chromeで設定→入力→提案、矛盾→修正、旗policy、キーボード、3画面サイズを確認する。対象commit・OS・ブラウザversion・日付・結果を記録する。
+2. GitHubのSettings → Pages → Build and deploymentでSourceをGitHub Actionsに設定する。HTTPSのプロジェクトサイトを使い、配信対象は`dist/`のみとする。APIサーバーは不要。
 3. `.js`（module Workerを含む）はJavaScript MIME（`text/javascript`または`application/javascript`）、CSSは`text/css`で返す。WorkerをHTML fallbackで返さない。
-4. サブパス配信ではViteの`base`を配置先に合わせてbuildし直す（例: `npm run build -- --base=/minesweeper/`）。rootパスの検証だけでサブパスを完了扱いにしない。
-5. versionとコミットIDを付けたartifactを保存し、直前artifactを残して配信する。
+4. `npm run build:pages`で`/minesweeper-slv/`向けにbuildする。`npm test -- test/browser/pages.test.ts`は別の一時出力先でこのbuildを実行し、サブパスから静的ファイルと実Workerを読み込み、solver提案まで確認する。通常の`dist/`を上書きしない。
+5. 本変更をmainへ統合し、Windows確認票の対象commitと公開対象を一致させる。Actionsの「Publish GitHub Pages」をmainから手動実行し、確認票完了と公開承認の入力をtrueにする。ワークフローは型検査・全テストを再実行し、versionとcommitを`release.json`へ記録してPages artifactを配信する。pushやPRでは公開しない。直前の成功runとcommitをロールバック用に記録する。
 6. 配信後に静的ファイル・Worker取得、3×1/1地雷/左0の安全・地雷提案、矛盾と再入力、キーボード、外部通信なしをsmoke確認する。
-7. 不具合時は直前artifactへ配信先を戻し、キャッシュ更新後に同じsmokeを再実施する。自動保存がないためデータ移行は不要。
+7. 不具合時は直前の成功したPages workflow runを再実行して、そのrunのcommitを再build・配信する。再実行が利用できない場合は、mainを直前公開版の内容へ戻すrevert PRをレビュー・統合し、手動公開する。履歴の強制書換えはしない。配信後に`release.json`のcommitと同じsmokeを再確認する。自動保存がないためデータ移行は不要。
 
 公開先への実配信はこの作業では実行していません。
 
@@ -65,3 +65,15 @@ npm run preview
 `npm ci` / `npm audit`は既存の開発用依存にhigh 6件を報告しました。対象はVitest / @vitest/mocker、Vite / postcss / source-map-js、認識研究用sharpです。`npm audit --omit=dev`は0件でした。MVPは静的artifactのみを配信し、開発サーバーやtest fixtureを公開しません。
 
 本実装では計画の固定lockfile方針に従い依存を更新していません。監査時点で自動修正版は提示されていません。開発ツールの公開・信頼できない入力の処理を行う前に各advisoryの影響と修正版を確認することを、残課題として記録します。
+
+## GitHub Pages配信準備（2026-10-10）
+
+公開先はユーザー指定のGitHub Pages。想定URLは`https://kkishikawa.github.io/minesweeper-slv/`です（未公開）。Pages設定のAPI確認は404で、既存サイトは確認できませんでした。設定変更とworkflow dispatchは未実施です。カスタムドメインとユーザーサイト直下の配信は本設定の対象外です。
+
+[GitHubの公式手順](https://docs.github.com/ja/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)に従い、artifactのuploadとdeploy jobを分け、配信権限はdeploy jobだけに付与します。Actionsはcommit SHAで固定します。`github-pages` environmentのbranch制限をmainに設定し、利用可能ならrequired reviewerも設定します。手動入力のチェックは確認者の申告であり、実機検証の自動的な証明ではありません。
+
+初回の公開後は実際のURLでWindows確認票のsmokeを実施し、日時・公開commit・workflow run URL・`release.json`・結果を本書へ追記します。公開前のローカルsmokeを配信後の結果として記録しません。
+
+### 配信準備のローカル検証
+
+2026-10-10、macOS・Node.js 22.12.0で新規worktreeへ`npm ci`を実行し、型検査、通常production build、全42ファイル・365テスト（384.37秒）、Pages用buildが成功しました。Pagesテストでは`/minesweeper-slv/`からJS/CSSと実Workerを取得し、3×1盤面の安全・地雷提案、rootへのasset要求がないこと、HTTPエラー・pageerrorがないことを確認しました。`actionlint` 1.7.12で公開ワークフローを検査し、指摘なしでした。これはGitHub Actions上の公開成功やWindows実機確認を意味しません。
