@@ -32,7 +32,9 @@ jobs:
         run: npm ci
       - name: Install Chromium
         run: npx --no-install playwright install --with-deps chromium
-      - name: Run ordinary regression tests
-        run: npm test
       - name: Run type checking
         run: npm run typecheck
+      - name: Build production app
+        run: npm run build
+      - name: Run ordinary regression and production browser tests
+        run: npm test
