@@ -60,6 +60,7 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
   }
   function select(index: number) { selected = index; draw(); buttons[index]?.focus(); }
   const click = (event: MouseEvent) => {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
     const target = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-cell]');
     if (!target || !board) return;
     select(Number(target.dataset.cell)); onEdit(selected, tool);

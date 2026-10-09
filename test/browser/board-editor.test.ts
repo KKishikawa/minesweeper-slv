@@ -63,3 +63,16 @@ it('leaves modified browser shortcuts out of board editing', async () => {
     }
   }
 });
+it.each(['Control', 'Meta', 'Alt'])('does not edit through a %s+Space generated click', async modifier => {
+  await page.goto(`${harness.baseUrl}/test/browser/editor.fixture.html`);
+  await page.getByRole('gridcell').first().focus();
+  await page.keyboard.press('1');
+  const before = await inspect();
+  expect(before.state.board.cells[0].value).toBe(1);
+  await page.keyboard.press(`${modifier}+Space`);
+  const after = await inspect();
+  expect(after.state.board).toEqual(before.state.board);
+  expect(after.edits).toBe(before.edits);
+  await page.keyboard.press('Space');
+  expect((await inspect()).state.board.cells[0].value).toBe(0);
+});
