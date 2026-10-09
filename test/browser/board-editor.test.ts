@@ -76,3 +76,21 @@ it.each(['Control', 'Meta', 'Alt'])('does not edit through a %s+Space generated 
   await page.keyboard.press('Space');
   expect((await inspect()).state.board.cells[0].value).toBe(0);
 });
+it.each(['Control', 'Meta', 'Alt'])('does not edit when %s is released before Space', async modifier => {
+  await page.goto(`${harness.baseUrl}/test/browser/editor.fixture.html`);
+  await page.getByRole('gridcell').first().focus();
+  await page.keyboard.press('1');
+  const before = await inspect();
+  expect(before.state.board.cells[0].value).toBe(1);
+  await page.keyboard.down(modifier);
+  await page.keyboard.down('Space');
+  await page.keyboard.up(modifier);
+  await page.keyboard.up('Space');
+  const after = await inspect();
+  expect(after.state.board).toEqual(before.state.board);
+  expect(after.edits).toBe(before.edits);
+  await page.keyboard.press('Space');
+  expect((await inspect()).state.board.cells[0].value).toBe(0);
+  await page.getByRole('gridcell').first().click();
+  expect((await inspect()).state.board.cells[0].value).toBe('closed');
+});
