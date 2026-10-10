@@ -42,7 +42,7 @@ it('retains input flags when reconsidering and exposes the effective policy', as
   await status('推測が必要です');
   expect(await page.getByLabel('入力旗を再検討する', { exact: true }).isChecked()).toBe(true);
 });
-it.each([['error', '解析に失敗しました'], ['limit', '探索上限に達しました']])('clears proposals on %s and exposes retry', async (mode, message) => {
+it.each([['error', '解析に失敗しました'], ['limit', '待機時間の上限に達しました']])('clears proposals on %s and exposes retry', async (mode, message) => {
   await page.goto(`${harness.baseUrl}/test/browser/app.fixture.html?mode=${mode}`);
   await status(message!);
   expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).not.toContain('提案:');

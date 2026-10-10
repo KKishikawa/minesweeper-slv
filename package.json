@@ -17,6 +17,7 @@
     "browsers:install:spike": "playwright install chromium firefox webkit",
     "spike:recognition": "tsx scripts/run-multi-prototype-spike.ts",
     "test:browser": "vitest run test/browser",
+    "diagnostics:replay": "tsx scripts/solver/replay.ts",
     "build:pages": "vite build --base=/minesweeper-slv/"
   },
   "devDependencies": {

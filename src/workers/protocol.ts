@@ -1,10 +1,11 @@
 import type { BoardSnapshot, FlagPolicy } from '../board/types.js';
-import type { SolveOptions, SolveResult } from '../solver/types.js';
+import type { SolveOptions, SolveResult, SolverStatistics } from '../solver/types.js';
 
-export type SolverRequest = { kind: 'solve'; requestId: number; revision: number; board: BoardSnapshot; policy: FlagPolicy; options: SolveOptions };
+export type SolverRequest = { kind: 'solve'; requestId: number; revision: number; board: BoardSnapshot; policy: FlagPolicy; options: SolveOptions; diagnostics?: boolean };
 export type SolverResponse =
-  | { kind: 'result'; requestId: number; revision: number; result: SolveResult }
-  | { kind: 'error'; requestId: number; revision: number; message: string };
+  | { kind: 'result'; requestId: number; revision: number; result: SolveResult; statistics?: SolverStatistics }
+  | { kind: 'error'; requestId: number; revision: number; message: string; statistics?: SolverStatistics };
+export type SolverProgress = { kind: 'progress'; requestId: number; revision: number; statistics: SolverStatistics };
 export type RecognitionRequest = { kind: 'recognize'; requestId: number; revision: number; width: number; height: number; rgba: Uint8ClampedArray };
 export type RecognitionResponse =
   | { kind: 'recognized'; requestId: number; revision: number; board: BoardSnapshot | null }

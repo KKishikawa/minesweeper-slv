@@ -15,6 +15,7 @@ export interface AppState {
   nextRequestId: number;
   effectivePolicy: FlagPolicy;
   message: string | null;
+  limitReason?: 'node-budget' | 'timeout' | undefined;
 }
 export type AppAction =
   | { type: 'board-changed'; board: BoardSnapshot }
@@ -45,7 +46,7 @@ function start(state: AppState, policy: FlagPolicy, prefix: AppEffect[]): Transi
     ? 'reconsidered' : policy;
   const effectiveValidation = effectivePolicy === policy ? validation : validateBoard(state.board, effectivePolicy);
   const base: AppState = { ...state, validation: effectiveValidation, effectivePolicy,
-    phase: phaseFor(effectiveValidation), proposal: null, activeRequestId: null, message: null };
+    phase: phaseFor(effectiveValidation), proposal: null, activeRequestId: null, message: null, limitReason: undefined };
   if (effectiveValidation.status !== 'valid') return { state: base, effects: prefix };
   const requestId = state.nextRequestId;
   const request: SolverRequest = { kind: 'solve', requestId, revision: state.board.revision,
@@ -75,5 +76,6 @@ export function transition(state: AppState, action: AppAction): Transition {
     return start(state, 'reconsidered', [{ type: 'cancel' }]);
   }
   return { state: { ...state, phase: response.result.status, activeRequestId: null,
-    proposal: 'proposal' in response.result ? response.result.proposal : null, message: null }, effects: [] };
+    proposal: 'proposal' in response.result ? response.result.proposal : null, message: null,
+    limitReason: response.result.status === 'limit-reached' ? response.result.reason : undefined }, effects: [] };
 }
