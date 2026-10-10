@@ -85,7 +85,8 @@ describe("repository foundation", () => {
     expect(serial).toContain("ref: ${{ needs.validate.outputs.target_sha }}");
     expect(serial).toContain("run: npm run typecheck");
     expect(serial).toContain("run: npm run build");
-    expect(serial).toContain('"$GITHUB_WORKSPACE/control/scripts/ci/run-tests.ts" --external-all "$GITHUB_WORKSPACE/target"');
+    expect(serial).toContain('run: npm exec --offline -- tsx "$GITHUB_WORKSPACE/control/scripts/ci/run-tests.ts" --external-all "$GITHUB_WORKSPACE/target"');
+    expect(serial).toContain("working-directory: target");
     expect(serial).not.toMatch(/cp |copy|test:ci/);
     expect(regression).toContain("needs.validate.outputs.condition == 'C'");
     expect(regression).toContain("ref: ${{ needs.validate.outputs.target_sha }}");
