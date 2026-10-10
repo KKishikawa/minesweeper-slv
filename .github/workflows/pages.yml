@@ -3,8 +3,8 @@ name: Publish GitHub Pages
 on:
   workflow_dispatch:
     inputs:
-      windows_verified:
-        description: '対象commitのWindows Chrome確認票を完了し、公開を承認した'
+      release_verified:
+        description: '対象commitの出荷確認（Windows実機記録＋Chromium補完）を完了し、公開を承認した'
         required: true
         type: boolean
         default: false
@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   build:
-    if: github.ref == 'refs/heads/main' && inputs.windows_verified
+    if: github.ref == 'refs/heads/main' && inputs.release_verified
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:

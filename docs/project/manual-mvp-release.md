@@ -4,7 +4,7 @@
 
 ## 判定
 
-手動入力からローカルsolver提案まで実装済み。**出荷確認は未完了**です。2026-10-10にWindows Chromeで実機確認を実施しました。当時W1の凡例とW5の入力旗の視認性に指摘がありました。#22の修正はChromiumで検証済みです（確認者の合意によりWindows Chrome再確認は本件の完了条件から除外）。表示・通信の一部記録は引き続き補完が必要です。公開先はGitHub Pagesに決定しました。実際の配信と配信後smokeは未実施です。実装はPR #20でmainへ統合済みです。
+手動入力からローカルsolver提案まで実装済み。**出荷確認は未完了**です。2026-10-10にWindows Chromeで実機確認を実施しました。当時W1の凡例とW5の入力旗の視認性に指摘がありました。#22の修正はChromiumで検証済みです（確認者の合意によりWindows Chrome再確認は本件の完了条件から除外）。表示・通信の不足記録は確認者の合意によりMac上のChromiumで補完済みです（[証跡](evidence/manual-mvp-chromium/2026-10-10/README.md)）。公開先はGitHub Pagesに決定しました。実際の配信と配信後smokeは未実施です。実装はPR #20でmainへ統合済みです。
 
 ## 実装範囲と制限
 
@@ -50,11 +50,11 @@ npm run preview
 
 ## 配信手順（未実施）
 
-1. [Windows確認票](manual-mvp-windows-checklist.md)に沿って、Windows Chromeで設定→入力→提案、矛盾→修正、旗policy、キーボード、3画面サイズを確認する。初回実施の結果は記録済み。#22の表示指摘はChromiumで検証済み。表示・通信の不足記録の補完を行い、対象commit・OS・ブラウザversion・日付・結果を記録する。
+1. [Windows確認票](manual-mvp-windows-checklist.md)に沿って、Windows Chromeで設定→入力→提案、矛盾→修正、旗policy、キーボード、3画面サイズを確認する。初回実施の結果は記録済み。#22の表示指摘はChromiumで検証済み。残る表示・通信記録は合意済みのMac上Chromiumで補完し、対象commit・OS・ブラウザversion・日付・結果を記録する。
 2. GitHubのSettings → Pages → Build and deploymentでSourceをGitHub Actionsに設定する。HTTPSのプロジェクトサイトを使い、配信対象は`dist/`のみとする。APIサーバーは不要。
 3. `.js`（module Workerを含む）はJavaScript MIME（`text/javascript`または`application/javascript`）、CSSは`text/css`で返す。WorkerをHTML fallbackで返さない。
 4. `npm run build:pages`で`/minesweeper-slv/`向けにbuildする。`npm test -- test/browser/pages.test.ts`は別の一時出力先でこのbuildを実行し、サブパスから静的ファイルと実Workerを読み込み、solver提案まで確認する。通常の`dist/`を上書きしない。
-5. 本変更をmainへ統合し、Windows確認票の対象commitと公開対象を一致させる。Actionsの「Publish GitHub Pages」をmainから手動実行し、確認票完了と公開承認の入力をtrueにする。ワークフローは型検査・全テストを再実行し、versionとcommitを`release.json`へ記録してPages artifactを配信する。pushやPRでは公開しない。直前の成功runとcommitをロールバック用に記録する。
+5. 本変更をmainへ統合し、Windows実機の過去記録とChromium補完の対象commitを区別し、Chromium補完と公開対象のアプリを一致させる。Actionsの「Publish GitHub Pages」をmainから手動実行し、`release_verified`（Windows実機記録＋Chromium補完による出荷確認と公開承認）をtrueにする。ワークフローは型検査・全テストを再実行し、versionとcommitを`release.json`へ記録してPages artifactを配信する。pushやPRでは公開しない。直前の成功runとcommitをロールバック用に記録する。
 6. 配信後に静的ファイル・Worker取得、3×1/1地雷/左0の安全・地雷提案、矛盾と再入力、キーボード、外部通信なしをsmoke確認する。
 7. 不具合時は直前の成功したPages workflow runを再実行して、そのrunのcommitを再build・配信する。再実行が利用できない場合は、mainを直前公開版の内容へ戻すrevert PRをレビュー・統合し、手動公開する。履歴の強制書換えはしない。配信後に`release.json`のcommitと同じsmokeを再確認する。自動保存がないためデータ移行は不要。
 
@@ -64,11 +64,11 @@ npm run preview
 
 確認者はKKishikawa。非開発端末のWindows 11 Pro（25H2 26200.9457）でChrome 155.0.8059.40を使用し、MacBook Proから配信した`http://192.168.3.3:4172/`を操作しました。対象commitは`ba4aea80faac9214ad57a829dd8ff0dc0fc6c210`、versionは`0.1.0-dev.1`です。Windows上でのbuild・ホスト起動は確認範囲外です。
 
-W2〜W4・W6〜W12は確認者の記録でOK。W1の凡例と盤面の記号の不一致、W5の選択中の入力旗の識別しづらさは[#22](https://github.com/KKishikawa/minesweeper-slv/issues/22)で修正・再確認を管理します。29枚の画像を[証跡ディレクトリ](evidence/manual-mvp-windows/2026-10-10/README.md)へ保存しました。ファイル名のずれ、W2/W12の重複、30列の小サイズが900×1080である点、9列×3サイズ・960×1080・表示領域/セル寸法の実測・Network画像の不足を記録しています。Edgeはversionのみ記録され、結果は未記録です。
+W2〜W4・W6〜W12は確認者の記録でOK。W1の凡例と盤面の記号の不一致、W5の選択中の入力旗の識別しづらさは修正済みで、詳細を[#22](https://github.com/KKishikawa/minesweeper-slv/issues/22)に記録しています。29枚の画像を[証跡ディレクトリ](evidence/manual-mvp-windows/2026-10-10/README.md)へ保存しました。ファイル名のずれ、W2/W12の重複、30列の小サイズが900×1080である点、9列×3サイズ・960×1080・表示領域/セル寸法の実測・Network画像の不足を記録しています。Edgeはversionのみ記録され、結果は未記録です。
 
 利用上の指摘と改善仮説は[検証整理](manual-mvp-windows-feedback-2026-10-10.md)にまとめ、[#23](https://github.com/KKishikawa/minesweeper-slv/issues/23)（フォーカス復帰時の誤入力）、[#24](https://github.com/KKishikawa/minesweeper-slv/issues/24)（ちらつき調査）、[#25](https://github.com/KKishikawa/minesweeper-slv/issues/25)（解析限界の診断）、[#26](https://github.com/KKishikawa/minesweeper-slv/issues/26)（旗policyの説明）を起票しました。30×16・99地雷での限界到達は確認者報告であり、停止盤面と原因は未確定です。
 
-#16はopenを維持します。全必須条件の合格、GitHub Pages実配信、公開後のHTTPS/サブパスでのsmokeは未完了です。改善でcommitが変わる場合は、影響ケースを新commitで再検証します。
+#16はopenを維持します。Windows実機記録と合意済みChromium補完による公開前の必須検証は完了しました。GitHub Pages実配信、公開後のHTTPS/サブパスでのsmokeは未完了です。改善でcommitが変わる場合は、影響ケースを新commitで再検証します。
 
 ## 依存関係の監査（2026-10-09）
 
@@ -78,12 +78,33 @@ W2〜W4・W6〜W12は確認者の記録でOK。W1の凡例と盤面の記号の�
 
 ## GitHub Pages配信準備（2026-10-10）
 
-公開先はユーザー指定のGitHub Pages。想定URLは`https://kkishikawa.github.io/minesweeper-slv/`です（未公開）。Pages設定のAPI確認は404で、既存サイトは確認できませんでした。設定変更とworkflow dispatchは未実施です。カスタムドメインとユーザーサイト直下の配信は本設定の対象外です。
+公開先はユーザー指定のGitHub Pages。公開URLは`https://kkishikawa.github.io/minesweeper-slv/`です。初回確認ではPages APIが404でしたが、2026-10-10に`build_type=workflow`で設定し、HTTPS強制を確認しました。配信workflowの実行結果は後述します。カスタムドメインとユーザーサイト直下の配信は本設定の対象外です。
 
-[GitHubの公式手順](https://docs.github.com/ja/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)に従い、artifactのuploadとdeploy jobを分け、配信権限はdeploy jobだけに付与します。Actionsはcommit SHAで固定します。`github-pages` environmentのbranch制限をmainに設定し、利用可能ならrequired reviewerも設定します。手動入力のチェックは確認者の申告であり、実機検証の自動的な証明ではありません。
+[GitHubの公式手順](https://docs.github.com/ja/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)に従い、artifactのuploadとdeploy jobを分け、配信権限はdeploy jobだけに付与します。Actionsはcommit SHAで固定します。`github-pages` environmentのbranch制限をmainに設定します。公開は手動workflowの`release_verified`で明示的に承認します。手動入力のチェックは確認者の申告であり、実機検証の自動的な証明ではありません。
 
 初回の公開後は実際のURLでWindows確認票のsmokeを実施し、日時・公開commit・workflow run URL・`release.json`・結果を本書へ追記します。公開前のローカルsmokeを配信後の結果として記録しません。
 
 ### 配信準備のローカル検証
 
 2026-10-10、macOS・Node.js 22.12.0で新規worktreeへ`npm ci`を実行し、型検査、通常production build、全42ファイル・365テスト（384.37秒）、Pages用buildが成功しました。Pagesテストでは`/minesweeper-slv/`からJS/CSSと実Workerを取得し、3×1盤面の安全・地雷提案、rootへのasset要求がないこと、HTTPエラー・pageerrorがないことを確認しました。`actionlint` 1.7.12で公開ワークフローを検査し、指摘なしでした。これはGitHub Actions上の公開成功やWindows実機確認を意味しません。
+
+## 出荷確認の再実行と証跡補完
+
+2026-10-10の確認者の合意により、Windows実機記録で不足していた表示・通信の証跡はMac上のPlaywright Chromiumで補完します。Windows固有の検証結果には置き換えません。DevTools Issues 3件の過去の内容は不明のままです。
+
+`npm run build && npm test -- test/browser/release.test.ts`で6通りの寸法JSON・画面画像、環境情報、HTTP要求／応答（method・body有無・status・MIME）、Worker取得、WebSocket／beacon／保存境界の記録を`test/artifacts/manual-mvp/`へ出力します。通常テストの出力はGit管理外です。出荷判定に使った実行分は`docs/project/evidence/`へコピーし、対象commitと環境を明記して保存します。
+
+公開後は次のコマンドで同じ操作・表示・通信テストを実URLに対して実行します。`RELEASE_COMMIT`には公開workflowの完全なcommit SHAを指定します。`release.json`のcommitとversionが一致しない場合は失敗します。
+
+```sh
+RELEASE_URL=https://kkishikawa.github.io/minesweeper-slv/ \
+RELEASE_COMMIT=<公開commitの完全SHA> \
+RELEASE_ARTIFACTS=test/artifacts/pages-smoke \
+npm test -- test/browser/release.test.ts
+```
+
+外部URL指定はこのリリーステストだけに適用されます。公開前の検証結果を公開後smokeとして扱いません。
+
+### 今回の補完検証（2026-10-10）
+
+アプリ対象`9b08c5fa8df3aea28d94b4635c70322f79deefc4`。アプリソース・依存に差分なし。型検査、通常production build、全43ファイル369テスト（388.66秒）、Pages build、actionlintが成功しました。公開URL向けテストは一時ディレクトリのPagesサブパス配信でも5件成功し、異なる`RELEASE_COMMIT`を指定した場合は失敗することを確認しました。[寸法・画像・通信の保存証跡](evidence/manual-mvp-chromium/2026-10-10/README.md)を参照してください。
