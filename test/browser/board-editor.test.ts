@@ -9,6 +9,7 @@ afterAll(async () => { await harness?.close(); });
 const inspect = () => page.evaluate(() => (window as any).inspection);
 it('creates a board, supports every keyboard value and keeps focus', async () => {
   await page.goto(`${harness.baseUrl}/test/browser/editor.fixture.html`);
+  await page.getByLabel('クリック・タップ中心', { exact: true }).check();
   await page.getByLabel('幅', { exact: true }).fill('3');
   await page.getByLabel('高さ', { exact: true }).fill('2');
   await page.getByLabel('総地雷数', { exact: true }).fill('1');
@@ -31,6 +32,7 @@ it('creates a board, supports every keyboard value and keeps focus', async () =>
 });
 it.each(['mouse', 'keyboard'])('resets exactly once through %s and retains settings and policy', async method => {
   await page.goto(`${harness.baseUrl}/test/browser/editor.fixture.html`);
+  await page.getByLabel('クリック・タップ中心', { exact: true }).check();
   await page.getByRole('button', { name: '旗', exact: true }).click();
   await page.getByRole('gridcell').nth(0).click();
   const before = await inspect();
@@ -48,6 +50,7 @@ it.each(['mouse', 'keyboard'])('resets exactly once through %s and retains setti
 });
 it('leaves modified browser shortcuts out of board editing', async () => {
   await page.goto(`${harness.baseUrl}/test/browser/editor.fixture.html`);
+  await page.getByLabel('クリック・タップ中心', { exact: true }).check();
   await page.getByRole('gridcell').first().focus();
   const before = await inspect();
   for (const modifiers of [{ ctrlKey: true }, { metaKey: true }, { altKey: true }]) {
@@ -65,6 +68,7 @@ it('leaves modified browser shortcuts out of board editing', async () => {
 });
 it.each(['Control', 'Meta', 'Alt'])('does not edit through a %s+Space generated click', async modifier => {
   await page.goto(`${harness.baseUrl}/test/browser/editor.fixture.html`);
+  await page.getByLabel('クリック・タップ中心', { exact: true }).check();
   await page.getByRole('gridcell').first().focus();
   await page.keyboard.press('1');
   const before = await inspect();
@@ -78,6 +82,7 @@ it.each(['Control', 'Meta', 'Alt'])('does not edit through a %s+Space generated 
 });
 it.each(['Control', 'Meta', 'Alt'])('does not edit when %s is released before Space', async modifier => {
   await page.goto(`${harness.baseUrl}/test/browser/editor.fixture.html`);
+  await page.getByLabel('クリック・タップ中心', { exact: true }).check();
   await page.getByRole('gridcell').first().focus();
   await page.keyboard.press('1');
   const before = await inspect();

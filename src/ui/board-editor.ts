@@ -7,6 +7,20 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
   dispose(): void;
 } {
   root.classList.add('board-editor');
+  let inputMode = window.matchMedia('(pointer: coarse)').matches ? 'pointer' : 'keyboard';
+  const modeSelector = document.createElement('fieldset'); modeSelector.className = 'input-mode';
+  const modeLegend = document.createElement('legend'); modeLegend.textContent = '入力方式'; modeSelector.append(modeLegend);
+  ['keyboard', 'pointer'].forEach(mode => {
+    const label = document.createElement('label');
+    const input = document.createElement('input'); input.type = 'radio'; input.name = 'board-input-mode'; input.value = mode;
+    input.checked = mode === inputMode;
+    input.addEventListener('change', () => {
+      if (!input.checked) return;
+      inputMode = mode; updateHelp();
+    });
+    label.append(input, mode === 'keyboard' ? 'キーボード中心' : 'クリック・タップ中心');
+    modeSelector.append(label);
+  });
   const palette = document.createElement('div'); palette.className = 'palette'; palette.setAttribute('aria-label', '入力する値');
   let tool: CellValue = 'closed';
   let selected = 0;
@@ -25,7 +39,13 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
     palette.append(button); return button;
   });
   const help = document.createElement('p'); help.className = 'editor-help';
-  help.textContent = '入力する値を選んでセルをクリック。矢印で移動、0 / Spaceで空き、Fで旗、Deleteで閉じる、1〜8で数字。';
+  function updateHelp() {
+    palette.hidden = inputMode === 'keyboard';
+    help.textContent = inputMode === 'keyboard'
+      ? 'セルをクリックして選択（値は変わりません）。矢印で移動、0 / Spaceで空き、Fで旗、Deleteで閉じる、1〜8で数字。'
+      : '入力する値を選んでセルをクリック・タップ。キーボードで入力する場合は「キーボード中心」に切り替えられます。';
+  }
+  updateHelp();
   const surface = document.createElement('div'); surface.className = 'board-surface'; surface.style.position = 'relative';
   const canvas = document.createElement('canvas'); canvas.setAttribute('aria-hidden', 'true'); canvas.style.display = 'block';
   const grid = document.createElement('div'); grid.setAttribute('role', 'grid'); grid.setAttribute('aria-label', '盤面');
@@ -33,7 +53,7 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
   surface.append(canvas, grid);
   const reset = document.createElement('button'); reset.type = 'button'; reset.textContent = '盤面をリセット'; reset.className = 'reset-button';
   reset.addEventListener('click', onReset);
-  root.append(palette, help, surface, reset);
+  root.append(modeSelector, palette, help, surface, reset);
   let buttons: HTMLButtonElement[] = [];
   function draw() {
     if (!board) return;
@@ -63,7 +83,8 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     const target = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-cell]');
     if (!target || !board) return;
-    select(Number(target.dataset.cell)); onEdit(selected, tool);
+    select(Number(target.dataset.cell));
+    if (inputMode === 'pointer') onEdit(selected, tool);
   };
   const keydown = (event: KeyboardEvent) => {
     if (!board || !(event.target as HTMLElement).matches('[data-cell]')) return;
