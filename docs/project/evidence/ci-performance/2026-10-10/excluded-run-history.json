@@ -1,0 +1,2584 @@
+{
+  "schemaVersion": 1,
+  "comparisonRunIds": [
+    38057729631,
+    38058646463,
+    38059568524,
+    38059903713,
+    38060695233,
+    38061573301,
+    38061910284,
+    38062641843,
+    38063595644
+  ],
+  "allDispatchedRuns": [
+    {
+      "condition": "A",
+      "replicate": 1,
+      "runId": 38056774173,
+      "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38056774173",
+      "dispatchAt": "2026-10-10T13:42:44.447362+00:00",
+      "createdAt": "2026-10-10T13:42:46Z",
+      "updatedAt": "2026-10-10T13:50:43Z",
+      "conclusion": "failure",
+      "controlSha": "1858c4a3d6fb7ca65a5dc1111e2fad9178d36429",
+      "includedInComparison": false
+    },
+    {
+      "condition": "A",
+      "replicate": 1,
+      "runId": 38057729631,
+      "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38057729631",
+      "dispatchAt": "2026-10-10T13:57:39.599261+00:00",
+      "createdAt": "2026-10-10T13:57:41Z",
+      "updatedAt": "2026-10-10T14:11:07Z",
+      "conclusion": "success",
+      "controlSha": "fd2f3878e5f0bbc89589fdad8d8517ac3c11abe1",
+      "includedInComparison": true
+    },
+    {
+      "condition": "B",
+      "replicate": 1,
+      "runId": 38058646463,
+      "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38058646463",
+      "dispatchAt": "2026-10-10T14:11:44.167100+00:00",
+      "createdAt": "2026-10-10T14:11:45Z",
+      "updatedAt": "2026-10-10T14:25:08Z",
+      "conclusion": "success",
+      "controlSha": "fd2f3878e5f0bbc89589fdad8d8517ac3c11abe1",
+      "includedInComparison": true
+    },
+    {
+      "condition": "C",
+      "replicate": 1,
+      "runId": 38059568524,
+      "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38059568524",
+      "dispatchAt": "2026-10-10T14:25:49.328383+00:00",
+      "createdAt": "2026-10-10T14:25:51Z",
+      "updatedAt": "2026-10-10T14:30:16Z",
+      "conclusion": "success",
+      "controlSha": "fd2f3878e5f0bbc89589fdad8d8517ac3c11abe1",
+      "includedInComparison": true
+    },
+    {
+      "condition": "A",
+      "replicate": 2,
+      "runId": 38059903713,
+      "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38059903713",
+      "dispatchAt": "2026-10-10T14:30:52.782351+00:00",
+      "createdAt": "2026-10-10T14:30:54Z",
+      "updatedAt": "2026-10-10T14:42:07Z",
+      "conclusion": "success",
+      "controlSha": "fd2f3878e5f0bbc89589fdad8d8517ac3c11abe1",
+      "includedInComparison": true
+    },
+    {
+      "condition": "B",
+      "replicate": 2,
+      "runId": 38060695233,
+      "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38060695233",
+      "dispatchAt": "2026-10-10T14:42:39.306261+00:00",
+      "createdAt": "2026-10-10T14:42:41Z",
+      "updatedAt": "2026-10-10T14:55:42Z",
+      "conclusion": "success",
+      "controlSha": "fd2f3878e5f0bbc89589fdad8d8517ac3c11abe1",
+      "includedInComparison": true
+    },
+    {
+      "condition": "C",
+      "replicate": 2,
+      "runId": 38061573301,
+      "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38061573301",
+      "dispatchAt": "2026-10-10T14:55:58.603170+00:00",
+      "createdAt": "2026-10-10T14:56:00Z",
+      "updatedAt": "2026-10-10T15:00:23Z",
+      "conclusion": "success",
+      "controlSha": "fd2f3878e5f0bbc89589fdad8d8517ac3c11abe1",
+      "includedInComparison": true
+    },
+    {
+      "condition": "A",
+      "replicate": 3,
+      "runId": 38061910284,
+      "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38061910284",
+      "dispatchAt": "2026-10-10T15:01:01.852266+00:00",
+      "createdAt": "2026-10-10T15:01:03Z",
+      "updatedAt": "2026-10-10T15:11:40Z",
+      "conclusion": "success",
+      "controlSha": "fd2f3878e5f0bbc89589fdad8d8517ac3c11abe1",
+      "includedInComparison": true
+    },
+    {
+      "condition": "B",
+      "replicate": 3,
+      "runId": 38062641843,
+      "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38062641843",
+      "dispatchAt": "2026-10-10T15:12:02.897603+00:00",
+      "createdAt": "2026-10-10T15:12:04Z",
+      "updatedAt": "2026-10-10T15:25:36Z",
+      "conclusion": "success",
+      "controlSha": "fd2f3878e5f0bbc89589fdad8d8517ac3c11abe1",
+      "includedInComparison": true
+    },
+    {
+      "condition": "C",
+      "replicate": 3,
+      "runId": 38063595644,
+      "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38063595644",
+      "dispatchAt": "2026-10-10T15:26:08.466065+00:00",
+      "createdAt": "2026-10-10T15:26:10Z",
+      "updatedAt": "2026-10-10T15:30:45Z",
+      "conclusion": "success",
+      "controlSha": "fd2f3878e5f0bbc89589fdad8d8517ac3c11abe1",
+      "includedInComparison": true
+    }
+  ],
+  "excludedRunCollector": {
+    "comparable": false,
+    "reasons": [
+      "run 38056774173:1: run conclusion failure",
+      "run 38056774173:1: benchmark-A-all: Vitest success false",
+      "run 38056774173:1: Serial / A: failure",
+      "run 38056774173:1: all: child failure/signal/JSON missing",
+      "run 38056774173:1: non-passed assertion (failure/pending/todo)",
+      "A: at least 3 runs required (1)",
+      "B: at least 3 runs required (0)",
+      "C: at least 3 runs required (0)"
+    ],
+    "runs": [
+      {
+        "condition": "A",
+        "runId": 38056774173,
+        "attempt": 1,
+        "controlSha": "1858c4a3d6fb7ca65a5dc1111e2fad9178d36429",
+        "targetSha": "1a01eac18f389e7933be9937ad7fa4aa8be476b7",
+        "conclusion": "failure",
+        "createdAt": "2026-10-10T13:42:46Z",
+        "startedAt": "2026-10-10T13:42:46Z",
+        "finishedAt": "2026-10-10T13:50:43Z",
+        "jobs": [
+          {
+            "name": "validate",
+            "conclusion": "success",
+            "startedAt": "2026-10-10T13:42:50Z",
+            "completedAt": "2026-10-10T13:42:53Z",
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "steps": [
+              {
+                "name": "Set up job",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:42:51Z",
+                "completedAt": "2026-10-10T13:42:51Z"
+              },
+              {
+                "name": "Validate fixed benchmark refs",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:42:51Z",
+                "completedAt": "2026-10-10T13:42:51Z"
+              },
+              {
+                "name": "Complete job",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:42:51Z",
+                "completedAt": "2026-10-10T13:42:51Z"
+              }
+            ]
+          },
+          {
+            "name": "Serial / A",
+            "conclusion": "failure",
+            "startedAt": "2026-10-10T13:42:55Z",
+            "completedAt": "2026-10-10T13:50:43Z",
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "steps": [
+              {
+                "name": "Set up job",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:42:56Z",
+                "completedAt": "2026-10-10T13:42:57Z"
+              },
+              {
+                "name": "Check out benchmark control",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:42:57Z",
+                "completedAt": "2026-10-10T13:42:58Z"
+              },
+              {
+                "name": "Check out fixed target",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:42:58Z",
+                "completedAt": "2026-10-10T13:43:00Z"
+              },
+              {
+                "name": "Set up Node.js",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:43:00Z",
+                "completedAt": "2026-10-10T13:43:05Z"
+              },
+              {
+                "name": "Install dependencies",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:43:05Z",
+                "completedAt": "2026-10-10T13:43:06Z"
+              },
+              {
+                "name": "Install Chromium",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:43:06Z",
+                "completedAt": "2026-10-10T13:43:25Z"
+              },
+              {
+                "name": "Run type checking",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:43:25Z",
+                "completedAt": "2026-10-10T13:43:26Z"
+              },
+              {
+                "name": "Build production app",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:43:26Z",
+                "completedAt": "2026-10-10T13:43:26Z"
+              },
+              {
+                "name": "Run unchanged target full regression with external timing recorder",
+                "conclusion": "failure",
+                "startedAt": "2026-10-10T13:43:26Z",
+                "completedAt": "2026-10-10T13:50:40Z"
+              },
+              {
+                "name": "Save serial timing records",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:50:40Z",
+                "completedAt": "2026-10-10T13:50:41Z"
+              },
+              {
+                "name": "Post Set up Node.js",
+                "conclusion": "skipped",
+                "startedAt": "2026-10-10T13:50:41Z",
+                "completedAt": "2026-10-10T13:50:41Z"
+              },
+              {
+                "name": "Post Check out fixed target",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:50:41Z",
+                "completedAt": "2026-10-10T13:50:41Z"
+              },
+              {
+                "name": "Post Check out benchmark control",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:50:41Z",
+                "completedAt": "2026-10-10T13:50:41Z"
+              },
+              {
+                "name": "Complete job",
+                "conclusion": "success",
+                "startedAt": "2026-10-10T13:50:41Z",
+                "completedAt": "2026-10-10T13:50:41Z"
+              }
+            ]
+          },
+          {
+            "name": "Grouped / ${{ matrix.group }}",
+            "conclusion": "skipped",
+            "startedAt": "2026-10-10T13:42:53Z",
+            "completedAt": "2026-10-10T13:42:53Z",
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "steps": []
+          },
+          {
+            "name": "Benchmark / quality",
+            "conclusion": "skipped",
+            "startedAt": "2026-10-10T13:42:54Z",
+            "completedAt": "2026-10-10T13:42:53Z",
+            "labels": [
+              "ubuntu-24.04"
+            ],
+            "steps": []
+          }
+        ],
+        "files": [
+          {
+            "path": "test/repository-foundation.test.ts",
+            "elapsedMs": 6.48779296875,
+            "assertionMs": 6.308286999999993,
+            "tests": [
+              "repository foundation pins the development and CI Node.js version",
+              "repository foundation defines one honest ordinary CI quality check",
+              "repository foundation publishes the approved license and contribution policy",
+              "repository foundation documents private security reporting and the reproducible runtime",
+              "repository foundation provides current project, product, and roadmap sources of truth",
+              "repository foundation indexes active and superseded architectural decisions",
+              "repository foundation routes public and contributor-facing readers to current project sources"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/app/solver-client.test.ts",
+            "elapsedMs": 9.193603515625,
+            "assertionMs": 9.280994000000007,
+            "tests": [
+              "solver client 新requestは前Workerを終了し古い成功・errorを通知しない",
+              "solver client 別IDの応答を無視してタイムアウト監視を続ける",
+              "solver client 旧盤面では範囲内の別ID応答を現盤面検査前に無視し監視を続ける",
+              "solver client 現requestの不正envelopeはerrorへ変換する",
+              "solver client 不正応答とmessageerrorをerrorに変換する",
+              "solver client cancelとdisposeの後は通知せずdispose後のrunを拒否する",
+              "solver client factory例外とpostMessage例外を現requestのerrorに変換する",
+              "solver client 端末応答は通知前にWorkerを終了し二重通知しない",
+              "solver client 契約違反のproposalまたは応答をerrorへ変換する 0",
+              "solver client 契約違反のproposalまたは応答をerrorへ変換する 1",
+              "solver client 契約違反のproposalまたは応答をerrorへ変換する 2",
+              "solver client 契約違反のproposalまたは応答をerrorへ変換する 3",
+              "solver client 契約違反のproposalまたは応答をerrorへ変換する 4",
+              "solver client 契約違反のproposalまたは応答をerrorへ変換する 5",
+              "solver client 契約違反のproposalまたは応答をerrorへ変換する 6",
+              "solver client 契約違反のproposalまたは応答をerrorへ変換する 7",
+              "solver client 契約違反のproposalまたは応答をerrorへ変換する 8",
+              "solver client 契約違反のproposalまたは応答をerrorへ変換する 9",
+              "solver client 契約違反のproposalまたは応答をerrorへ変換する 10",
+              "solver client trustedの入力旗を提案対象に含めない",
+              "solver client 契約どおりの確定手と推測は結果として受け付ける",
+              "solver client reconsideredでは入力旗も提案対象にできる",
+              "solver client 不正なtimeout 0を拒否する",
+              "solver client 不正なtimeout -1を拒否する",
+              "solver client 不正なtimeout NaNを拒否する",
+              "solver client 不正なtimeout Infinityを拒否する"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/app/state.test.ts",
+            "elapsedMs": 6.3623046875,
+            "assertionMs": 5.64393699999998,
+            "tests": [
+              "app state 同revisionでも古いrequestを受け付けない",
+              "app state 編集は古い提案を消して新しいrequestを発行する",
+              "app state 同じか古い盤面は無視する",
+              "app state 設定変更は盤面の観測を保ちrevisionを進める",
+              "app state 安全な整数の最大revisionから設定を変更できない",
+              "app state trusted矛盾は自動再検討を一度だけ実行する",
+              "app state solverがtrustedの全体矛盾を返したら同revisionで新IDに再検討する",
+              "app state 不確実な盤面は実行せずneeds-reviewになる",
+              "app state 総地雷数の設定矛盾は自動再検討してもsettingsを保持する",
+              "app state 有効なsolved応答は提案を保持し、limitとerrorは消す"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/board/board.test.ts",
+            "elapsedMs": 5.604248046875,
+            "assertionMs": 4.823855000000023,
+            "tests": [
+              "manual board creates closed observations and preserves requested revision",
+              "manual board edits 0 without mutating input",
+              "manual board edits 1 without mutating input",
+              "manual board edits 8 without mutating input",
+              "manual board edits flag without mutating input",
+              "manual board edits closed without mutating input",
+              "manual board rejects invalid dimension 0",
+              "manual board rejects invalid dimension -1",
+              "manual board rejects invalid dimension 31",
+              "manual board rejects invalid dimension 1.5",
+              "manual board rejects invalid dimension NaN",
+              "manual board rejects invalid dimension Infinity",
+              "manual board rejects invalid mine count -1",
+              "manual board rejects invalid mine count 2",
+              "manual board rejects invalid mine count 0.5",
+              "manual board rejects invalid mine count NaN",
+              "manual board rejects invalid mine count Infinity",
+              "manual board rejects invalid index -1",
+              "manual board rejects invalid index 3",
+              "manual board rejects invalid index 0.5",
+              "manual board rejects invalid index NaN",
+              "manual board rejects invalid index Infinity",
+              "manual board replaces recognition uncertainty with a manual observation",
+              "manual board recreates a board with the next revision and retained settings",
+              "manual board rejects invalid revision -1",
+              "manual board rejects invalid revision 0.5",
+              "manual board rejects invalid revision NaN",
+              "manual board rejects invalid revision Infinity",
+              "manual board rejects invalid revision 9007199254740992",
+              "manual board allows the maximum safe revision but rejects editing beyond it"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/board/validate.test.ts",
+            "elapsedMs": 2.287841796875,
+            "assertionMs": 2.7800290000000416,
+            "tests": [
+              "treats flags as candidates only when reconsidering",
+              "reports all impossible number cells in order",
+              "checks dimensions before uncertainty and numeric constraints",
+              "rejects mine settings -1",
+              "rejects mine settings 2",
+              "rejects mine settings NaN",
+              "rejects mine settings 0.5",
+              "rejects too many flags or too few mine candidates",
+              "does not mistake local validity for global satisfiability",
+              "does not wrap adjacency across row boundaries"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/browser/board-editor.test.ts",
+            "elapsedMs": 1349.958984375,
+            "assertionMs": 1349.3023069999992,
+            "tests": [
+              "creates a board, supports every keyboard value and keeps focus",
+              "resets exactly once through mouse and retains settings and policy",
+              "resets exactly once through keyboard and retains settings and policy",
+              "leaves modified browser shortcuts out of board editing",
+              "does not edit through a Control+Space generated click",
+              "does not edit through a Meta+Space generated click",
+              "does not edit through a Alt+Space generated click",
+              "does not edit when Control is released before Space",
+              "does not edit when Meta is released before Space",
+              "does not edit when Alt is released before Space"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/browser/input-mode.test.ts",
+            "elapsedMs": 3229.162109375,
+            "assertionMs": 3226.55903,
+            "tests": [
+              "defaults to keyboard input on desktop and resumes without changing observations",
+              "inputs every palette value through mouse and allows manual override",
+              "inputs every palette value through touch and allows manual override",
+              "keeps IME and settings input out of editing in キーボード中心 mode",
+              "keeps IME and settings input out of editing in クリック・タップ中心 mode"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/browser/legend.test.ts",
+            "elapsedMs": 1959.38037109375,
+            "assertionMs": 1958.9266210000003,
+            "tests": [
+              "renders the same flag, safe, mine and guess symbols in the legend and board at 24px",
+              "keeps a flag shape separate from the safe proposal at 24px and DPR 1",
+              "keeps a flag shape separate from the safe proposal at 24px and DPR 2",
+              "uses 24px cells for the responsive 30-column W5 reproduction"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/browser/mvp.test.ts",
+            "elapsedMs": 1867.448486328125,
+            "assertionMs": 1866.0651030000001,
+            "tests": [
+              "creates, solves, detects contradictions and recovers by editing",
+              "retains input flags when reconsidering and exposes the effective policy",
+              "clears proposals on error and exposes retry",
+              "clears proposals on limit and exposes retry",
+              "discards delayed proposals after a newer board has been analyzed"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/browser/pages.test.ts",
+            "elapsedMs": 0,
+            "assertionMs": 0,
+            "tests": [
+              "loads the Pages subpath and runs the real solver Worker without root asset requests"
+            ],
+            "statuses": [
+              "skipped"
+            ]
+          },
+          {
+            "path": "test/browser/release.test.ts",
+            "elapsedMs": 2424.591796875,
+            "assertionMs": 2423.6939159999997,
+            "tests": [
+              "keeps square readable cells and no horizontal scrolling at 1920 x 1080",
+              "keeps square readable cells and no horizontal scrolling at 1280 x 800",
+              "keeps square readable cells and no horizontal scrolling at 960 x 1080",
+              "production flow stays local and leaves no browser storage behind",
+              "supports the main workflow using keyboard navigation only"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/browser/smoke.test.ts",
+            "elapsedMs": 142.573974609375,
+            "assertionMs": 142.57388300000002,
+            "tests": [
+              "startup smoke 日本語見出しを表示しページエラーがない"
+            ],
+            "statuses": [
+              "passed"
+            ]
+          },
+          {
+            "path": "test/browser/solver-worker.test.ts",
+            "elapsedMs": 399.03173828125,
+            "assertionMs": 398.223959,
+            "tests": [
+              "runs the real worker and state fallback without changing flags",
+              "ignores malformed requests then accepts a valid request on the same worker"
+            ],
+            "statuses": [
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/artifact-directory.test.ts",
+            "elapsedMs": 6.084716796875,
+            "assertionMs": 6.007376000000008,
+            "tests": [
+              "recognition artifact directory rejects an ancestor symlink without touching its external target",
+              "recognition artifact directory cleans and recreates a normal explicit artifact directory"
+            ],
+            "statuses": [
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/browser-derive.test.ts",
+            "elapsedMs": 1716.218017578125,
+            "assertionMs": 1716.218116,
+            "tests": [
+              "browser Canvas derivatives creates the formal Chromium matrix deterministically"
+            ],
+            "statuses": [
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/browser-grid-evidence.test.ts",
+            "elapsedMs": 9044.0830078125,
+            "assertionMs": 9043.973699,
+            "tests": [
+              "Chromium coarse pitch evidence gate keeps direct successes strict while supplying only the five fixed fallback pitch hints",
+              "Chromium coarse pitch evidence gate does not emit a pitch hint for ambiguous or noise evidence"
+            ],
+            "statuses": [
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/browser-grid-fallback.test.ts",
+            "elapsedMs": 49292.177978515625,
+            "assertionMs": 49292.177898999995,
+            "tests": [
+              "Chromium canonical grid fallback keeps the exact formal matrix deterministic across three runs over retained inputs"
+            ],
+            "statuses": [
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/browser-grid-resample.test.ts",
+            "elapsedMs": 61724.93798828125,
+            "assertionMs": 61724.289872,
+            "tests": [
+              "browser canonical grid resampling hashes every browser output chunk in fixed offset order",
+              "browser canonical grid resampling rejects a browser chunk that omits trailing bytes",
+              "browser canonical grid resampling matches Node bytes in formal Chromium for unit, 30-pixel, and 50-pixel inputs"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/calibrate.test.ts",
+            "elapsedMs": 4.880126953125,
+            "assertionMs": 4.664834000000013,
+            "tests": [
+              "threshold calibration selects only pairs with zero wrong certain cells",
+              "threshold calibration uses inclusive relative-margin and absolute-distance certainty boundaries",
+              "threshold calibration uses deterministic uncertainty and threshold tie breaking",
+              "threshold calibration sorts by maximum uncertainty, then total uncertainty, then lower margin, then higher distance",
+              "threshold calibration prefers lower total uncertainty when maximum uncertainty ties",
+              "threshold calibration prefers lower maximum transformed uncertainty first",
+              "threshold calibration prefers lower relative margin and then higher distance after uncertainty ties",
+              "threshold calibration applies source and transformed uncertainty budgets separately",
+              "threshold calibration returns null when no pair passes",
+              "threshold calibration rejects malformed and non-finite cases and pairs",
+              "threshold calibration exposes the exact fixed candidate arrays and stable Cartesian order"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/classify.test.ts",
+            "elapsedMs": 4206.441650390625,
+            "assertionMs": 4206.01492,
+            "tests": [
+              "cell normalization trims exactly 12.5 percent from every edge and forces opaque output",
+              "cell normalization takes the vertical three-row median independently for each RGB channel",
+              "cell normalization applies the vertical median before area resizing",
+              "cell normalization produces a stable 16 by 16 RGBA image",
+              "cell classification classifies every source cell with the correct top candidate"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/derive.test.ts",
+            "elapsedMs": 43.231201171875,
+            "assertionMs": 43.231142000000006,
+            "tests": [
+              "recognition derivatives keeps the 0.75 scale derivative on the explicit Lanczos3 pixel contract"
+            ],
+            "statuses": [
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/evaluate-grid-fallback.test.ts",
+            "elapsedMs": 59049.453857421875,
+            "assertionMs": 59049.077863000006,
+            "tests": [
+              "grid evidence input hash stability rejects an RGBA mutation with the case ID and input-hash field",
+              "paired grid fallback evaluator accepts absolute UX latency when relative ratios still fail",
+              "paired grid fallback evaluator passes exact UX boundaries at 500 and 1000",
+              "paired grid fallback evaluator fails absolute UX latency when median exceeds 500 by a fraction",
+              "paired grid fallback evaluator fails absolute UX latency when worst exceeds 1000 by a fraction",
+              "paired grid fallback evaluator fails partial adoption when functionalMatrix is false",
+              "paired grid fallback evaluator fails partial adoption when negativeMatrix is false",
+              "paired grid fallback evaluator fails partial adoption when determinism is false",
+              "paired grid fallback evaluator fails partial adoption when budget is false",
+              "paired grid fallback evaluator fails partial adoption when uxLatency is false",
+              "paired grid fallback evaluator fails CLI decision when functionalMatrix is false",
+              "paired grid fallback evaluator fails CLI decision when determinism is false",
+              "paired grid fallback evaluator fails CLI decision when budget is false",
+              "paired grid fallback evaluator fails CLI decision when uxLatency is false",
+              "paired grid fallback evaluator passes CLI decision when all inputs are true",
+              "paired grid fallback evaluator reuses sixteen retained Chromium inputs across three alternating measured runs"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/fixture-manifest.test.ts",
+            "elapsedMs": 1702.53466796875,
+            "assertionMs": 1701.682742,
+            "tests": [
+              "recognition fixture manifest contains four independently labeled 30 by 16 boards",
+              "recognition fixture manifest covers every currently observed label",
+              "recognition fixture manifest owns exactly 480 uniquely indexed feature samples per fixture",
+              "recognition fixture manifest contains no embedded ancillary metadata"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/folds.test.ts",
+            "elapsedMs": 68644.30883789062,
+            "assertionMs": 68644.30894999999,
+            "tests": [
+              "whole-screen holdout keeps held-out truth out of fitting and calibration and records formal fold metrics"
+            ],
+            "statuses": [
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/formal-runner.test.ts",
+            "elapsedMs": 91085.04443359375,
+            "assertionMs": 91085.044522,
+            "tests": [
+              "writes fresh rejected formal evidence through the production evaluators"
+            ],
+            "statuses": [
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/generated-bank.test.ts",
+            "elapsedMs": 39942.9697265625,
+            "assertionMs": 39942.795239,
+            "tests": [
+              "final prototype bank generation rejects through the local tsx CLI without leaking transform helpers or output",
+              "final prototype bank generation reproduces a passing candidate or records deterministic rejection without output"
+            ],
+            "statuses": [
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/grid-budget.test.ts",
+            "elapsedMs": 2.390380859375,
+            "assertionMs": 1.6002830000000046,
+            "tests": [
+              "shares one limit across reservations",
+              "rejects invalid reservations without changing state",
+              "rejects invalid constructor limits"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/grid-evidence.test.ts",
+            "elapsedMs": 3.278564453125,
+            "assertionMs": 3.1038980000000294,
+            "tests": [
+              "estimateCanonicalPitch returns the score-weighted pitch of one separated family",
+              "estimateCanonicalPitch accepts an X/Y pair whose pitches differ by exactly five percent",
+              "estimateCanonicalPitch rejects a runner-up inside the five-percent family-score margin",
+              "estimateCanonicalPitch does not merge a chained pitch range into one complete-link family",
+              "estimateCanonicalPitch accepts the inclusive 30 and 50 pitch bounds",
+              "estimateCanonicalPitch rejects estimates outside the canonical pitch range",
+              "estimateCanonicalPitch rejects evidence with a missing axis",
+              "estimateCanonicalPitch corrects a selected 29/30 boundary family to 30",
+              "estimateCanonicalPitch corrects a selected 50/51 boundary family to 50",
+              "estimateCanonicalPitch does not correct a family whose two buckets are below the supported range",
+              "estimateCanonicalPitch does not correct a family whose two buckets are above the supported range",
+              "estimateCanonicalPitch does not correct a boundary pair outside five-percent compatibility"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/grid-fallback.test.ts",
+            "elapsedMs": 131.380859375,
+            "assertionMs": 130.4864400000001,
+            "tests": [
+              "detectGridDirectFirst returns a direct success without estimating or normalizing",
+              "detectGridDirectFirst rejects 'missing evidence' before normalization",
+              "detectGridDirectFirst rejects 'ambiguous evidence' before normalization",
+              "detectGridDirectFirst rejects an out-of-range pitch before normalization",
+              "detectGridDirectFirst fails closed without source context before normalization",
+              "detectGridDirectFirst does not fall back after direct budget exhaustion",
+              "detectGridDirectFirst normalizes once and gives both strict attempts the same budget",
+              "detectGridDirectFirst fails closed when canonical strict detection is rejected",
+              "detectGridDirectFirst fails closed when canonical strict detection is ambiguous",
+              "detectGridDirectFirst reports canonical budget exhaustion without revalidation",
+              "detectGridDirectFirst fails closed when resampling rejects the normalization",
+              "detectGridDirectFirst exposes only the source-revalidated mapped geometry",
+              "detectGridDirectFirst fails closed when source revalidation rejects the canonical candidate",
+              "detectGridDirectFirst returns an ambiguous canonical grid when exactly one candidate survives source revalidation",
+              "detectGridDirectFirst rejects after revalidating all candidates when 'zero' candidates survive",
+              "detectGridDirectFirst rejects after revalidating all candidates when 'two' candidates survive",
+              "detectGridDirectFirst rejects nine canonical candidates without truncating or revalidating",
+              "detectGridDirectFirst makes the exactly-one decision independently of canonical candidate order",
+              "hasMappedBoundaryProvenance accepts the measured periodic two-pixel mapped/refined alias pattern",
+              "hasMappedBoundaryProvenance requires equal non-empty finite strictly increasing shapes within the refinement radius",
+              "revalidateMappedCandidate accepts a canonical strict candidate mapped back to a valid source grid",
+              "revalidateMappedCandidate accepts canonical-phase-valid boundaries with periodic two-pixel source aliasing",
+              "revalidateMappedCandidate rejects projected lines with less than 90 percent source intersection support",
+              "revalidateMappedCandidate rejects a two-through-four-pixel displaced competing extent",
+              "revalidateMappedCandidate rejects a mapped candidate whose X/Y pitches differ by more than five percent",
+              "revalidateMappedCandidate rejects more than 0.1-cell mapped/coarse pitch disagreement",
+              "revalidateMappedCandidate rejects weak original outer-boundary evidence"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/grid-resample.test.ts",
+            "elapsedMs": 14.076171875,
+            "assertionMs": 14.452782999999982,
+            "tests": [
+              "canonical grid resampling preserves hand-authored 2 by 2 bytes at identity scale",
+              "canonical grid resampling bilinearly samples hand-authored 2 by 2 pixels at centers",
+              "canonical grid resampling interpolates alpha and clamps samples that map outside source edges",
+              "canonical grid resampling maps center coordinates between canonical and source space inversely",
+              "canonical grid resampling normalizes only supported observed pitches to the canonical pitch",
+              "canonical grid resampling rejects malformed source images and invalid output size inputs",
+              "canonical grid resampling rejects unsafe and oversized output allocation dimensions without allocating",
+              "canonical grid resampling resamples the deterministic 30-pixel-pitch RGBA grid identically three times",
+              "canonical grid resampling resamples the deterministic 50-pixel-pitch RGBA grid identically three times"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/grid.test.ts",
+            "elapsedMs": 10244.69775390625,
+            "assertionMs": 10242.192644000002,
+            "tests": [
+              "detectGrid exposes deterministic range-score-ordered final candidates for an ambiguous strict attempt",
+              "detectGrid exposes only final candidates after support and weak-overlap filtering",
+              "detectGrid exposes exactly the selected candidate for found and none for rejected or exhausted attempts",
+              "detectGrid keeps the strict-only one-pixel interior phase boundary and rejects two pixels",
+              "detectGrid exposes source evidence for a direct strict detection",
+              "detectGrid counts only pitch-compatible pairs and rejects over-budget refinement work",
+              "detectGrid stops a later attempt once the shared refinement budget is exhausted",
+              "detectGrid finds every source board without file-specific coordinates",
+              "detectGrid tiles exactly 480 non-overlapping cells",
+              "detectGrid detects every deterministic derivative",
+              "detectGrid reconciles the refined final boundary with the sequence pitch",
+              "detectGrid starts the bounds at the refined first boundary",
+              "detectGrid uses pitch-20 refined X endpoints for bounds, pitch, and cells",
+              "detectGrid uses refined Y endpoints when every leading intersection is supported",
+              "detectGrid uses refined Y endpoints when a leading intersection is unsupported",
+              "detectGrid ignores an isolated adjacent edge outside the established boundary phase",
+              "detectGrid detects a noise-free grid whose median background gradient is zero",
+              "detectGrid rejects projected lines when fewer than 90% of intersections have local support",
+              "detectGrid accepts exactly 90% local intersection support without a leading-edge gate",
+              "detectGrid rejects same-pitch grids whose runner-up is within 5% of the best score",
+              "detectGrid does not amplify a normalized score difference below 5%",
+              "detectGrid keeps a one-cell-shifted extent as a distinct runner-up",
+              "detectGrid keeps grids displaced by two through four pixels as physical runner-ups",
+              "detectGrid keeps a valid runner-up beyond the first 64 coarse axis candidates",
+              "detectGrid rejects deterministic non-board noise within the candidate work budget",
+              "detectGrid shares borders when a geometry has fractional pitches"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/infer.test.ts",
+            "elapsedMs": 8144.91455078125,
+            "assertionMs": 8144.276455,
+            "tests": [
+              "optional image hints returns no dimension hint when the full edge-profile matrix is ambiguous",
+              "optional image hints keeps each observed left-counter outcome fixed"
+            ],
+            "statuses": [
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/multi-classify.test.ts",
+            "elapsedMs": 6.44775390625,
+            "assertionMs": 5.845101,
+            "tests": [
+              "classifyCellWithBank ranks distinct labels instead of sibling prototypes",
+              "classifyCellWithBank requires both the label margin and absolute distance",
+              "classifyCellWithBank returns an uncertain null result for non-finite features",
+              "classifyCellWithBank rejects a wrong-length feature vector even when it contains a non-finite value",
+              "classifyCellWithBank orders equal-distance labels by the stable cell-label order",
+              "classifyCellWithBank marks a single distinct label as uncertain with no margin"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/multi-prototype-runner.test.ts",
+            "elapsedMs": 9.69970703125,
+            "assertionMs": 9.971337999999946,
+            "tests": [
+              "multi-prototype spike summary creates an explicit formal evidence directory once and preserves it",
+              "multi-prototype spike summary reports resolved dependency versions instead of manifest ranges",
+              "multi-prototype spike summary publishes checkpoints atomically without a temporary file",
+              "multi-prototype spike summary writes a stable progress marker to the supplied stderr sink",
+              "multi-prototype spike summary keeps compatibility failure separate from Chromium adoption",
+              "multi-prototype spike summary distinguishes unavailable, limited, and guaranteed compatibility",
+              "multi-prototype spike summary requires the exact expected case-id set for a guarantee",
+              "multi-prototype spike summary preserves a hard failure when an engine is interrupted later",
+              "multi-prototype spike summary retains a measured hard failure when case persistence is interrupted",
+              "multi-prototype spike summary rejects a complete Chromium matrix when the final case cannot be persisted",
+              "multi-prototype spike summary serializes complete per-cell and derivative diagnostics",
+              "multi-prototype spike summary rejects when the candidate bank or any fold is missing",
+              "multi-prototype spike summary requires the complete sixteen-case Chromium matrix",
+              "multi-prototype spike summary writes a rejected bank-null summary without evaluating engines",
+              "multi-prototype spike summary does not reject a passing Chromium bank for compatibility-only failures"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/multi-recognize.test.ts",
+            "elapsedMs": 39.134033203125,
+            "assertionMs": 39.19265499999999,
+            "tests": [
+              "recognizeBoardWithBank marks every row-major cell for review when the absolute confidence gate fails",
+              "recognizeBoardWithBank rejects non-positive or non-integer dimensions: +0 x 1",
+              "recognizeBoardWithBank rejects non-positive or non-integer dimensions: -1 x 1",
+              "recognizeBoardWithBank rejects non-positive or non-integer dimensions: 1.5 x 1",
+              "recognizeBoardWithBank rejects non-positive or non-integer dimensions: 1 x +0",
+              "recognizeBoardWithBank rejects non-positive or non-integer dimensions: 1 x -1",
+              "recognizeBoardWithBank rejects non-positive or non-integer dimensions: 1 x 1.5",
+              "recognizeBoardWithBank returns the empty grid-not-found result when detection fails",
+              "recognizeBoardWithBank rejects a gridless image with 'zero width'",
+              "recognizeBoardWithBank rejects a gridless image with 'fractional height'",
+              "recognizeBoardWithBank rejects a gridless image with 'non-RGBA data length'",
+              "recognizeBoardWithBank rejects an unsupported bank before returning grid-not-found"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/pixels.test.ts",
+            "elapsedMs": 2.266357421875,
+            "assertionMs": 1.6741850000000085,
+            "tests": [
+              "pixel utilities crops without sharing the source buffer",
+              "pixel utilities area-averages a 2 by 2 image",
+              "pixel utilities provides deterministic color metrics"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/prototype-bank-codec.test.ts",
+            "elapsedMs": 22.479736328125,
+            "assertionMs": 22.54118099999998,
+            "tests": [
+              "prototype bank codec round-trips the exact serialized Float32 bank with two distinct labels",
+              "prototype bank codec produces deterministic hashes that drift with serialized bank content",
+              "prototype bank codec rejects malformed serialized format version",
+              "prototype bank codec rejects malformed serialized feature version",
+              "prototype bank codec rejects malformed serialized feature length",
+              "prototype bank codec rejects malformed serialized threshold shape",
+              "prototype bank codec rejects malformed serialized label/count shape",
+              "prototype bank codec rejects malformed serialized canonical label order",
+              "prototype bank codec rejects malformed serialized duplicate labels",
+              "prototype bank codec rejects malformed serialized zero prototype count",
+              "prototype bank codec rejects malformed serialized oversized prototype count",
+              "prototype bank codec rejects malformed serialized fractional prototype count",
+              "prototype bank codec rejects malformed serialized center byte length",
+              "prototype bank codec rejects malformed serialized scale byte length",
+              "prototype bank codec rejects malformed serialized prototype byte length",
+              "prototype bank codec rejects malformed serialized hash syntax",
+              "prototype bank codec rejects thresholds with missing own key",
+              "prototype bank codec rejects thresholds with extra own key",
+              "prototype bank codec rejects thresholds with inherited required keys",
+              "prototype bank codec rejects non-finite decoded center, scale, and prototype values",
+              "prototype bank codec rejects noncanonical unused bits before double base64 padding",
+              "prototype bank codec rejects noncanonical unused bits before single base64 padding",
+              "prototype bank codec rejects finite Float64 values that overflow during Float32 serialization",
+              "prototype bank codec rejects a positive scale that quantizes to Float32 zero: 1e-50",
+              "prototype bank codec rejects a positive scale that quantizes to Float32 zero: 5e-324"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/prototype-builder.test.ts",
+            "elapsedMs": 104.265625,
+            "assertionMs": 103.049936,
+            "tests": [
+              "multi-prototype builder is deterministic across input order and caps each label",
+              "multi-prototype builder fits one finite global scaler for every label",
+              "multi-prototype builder rejects malformed geometry with a validation error",
+              "multi-prototype builder rejects malformed builder options with a range error",
+              "multi-prototype builder uses the global mean, population standard deviation, and scale floor",
+              "multi-prototype builder chooses the lexicographically first farthest-point tie",
+              "multi-prototype builder assigns equidistant samples to the lower center index",
+              "multi-prototype builder uses exactly eight default refinement rounds",
+              "multi-prototype builder stops before adding duplicate farthest-point centers",
+              "multi-prototype builder rejects invalid samples: empty sample set",
+              "multi-prototype builder rejects invalid samples: wrong feature length",
+              "multi-prototype builder rejects invalid samples: NaN feature",
+              "multi-prototype builder rejects invalid samples: infinite feature",
+              "multi-prototype builder rejects invalid samples: unknown label",
+              "multi-prototype builder rejects invalid options: zero prototype cap",
+              "multi-prototype builder rejects invalid options: oversized prototype cap",
+              "multi-prototype builder rejects invalid options: fractional prototype cap",
+              "multi-prototype builder rejects invalid options: negative iterations",
+              "multi-prototype builder rejects invalid options: fractional iterations",
+              "multi-prototype builder rejects invalid options: zero scale floor",
+              "multi-prototype builder rejects invalid options: non-finite scale floor",
+              "multi-prototype builder rejects invalid prototype geometry: unsupported format version",
+              "multi-prototype builder rejects invalid prototype geometry: unsupported feature version",
+              "multi-prototype builder rejects invalid prototype geometry: non-finite center",
+              "multi-prototype builder rejects invalid prototype geometry: non-positive scale",
+              "multi-prototype builder rejects invalid prototype geometry: non-finite prototype",
+              "multi-prototype builder rejects invalid prototype geometry: too many prototypes",
+              "multi-prototype builder rejects confidence threshold boundaries: relative margin below zero",
+              "multi-prototype builder rejects confidence threshold boundaries: relative margin above one",
+              "multi-prototype builder rejects confidence threshold boundaries: absolute distance below zero",
+              "multi-prototype builder rejects confidence threshold boundaries: non-finite absolute distance"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/recognize.test.ts",
+            "elapsedMs": 4498.115966796875,
+            "assertionMs": 4496.881807,
+            "tests": [
+              "recognizeBoard acceptance accepts every source fixture without uncertain cells",
+              "recognizeBoard contract rejects non-positive or non-integer dimensions: +0 x 1",
+              "recognizeBoard contract rejects non-positive or non-integer dimensions: -1 x 1",
+              "recognizeBoard contract rejects non-positive or non-integer dimensions: 1.5 x 1",
+              "recognizeBoard contract rejects non-positive or non-integer dimensions: 1 x +0",
+              "recognizeBoard contract rejects non-positive or non-integer dimensions: 1 x -1",
+              "recognizeBoard contract rejects non-positive or non-integer dimensions: 1 x 1.5",
+              "recognizeBoard contract returns the empty grid-not-found result when detection fails",
+              "shared confidence calibration selects the lowest candidate that satisfies every mandatory gate",
+              "shared confidence calibration reports every fixed candidate without hiding certain errors as review cells",
+              "shared confidence calibration returns null when no shared candidate satisfies the mandatory gates"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/recognition/runner-cli-exit.test.ts",
+            "elapsedMs": 531.3095703125,
+            "assertionMs": 531.309653,
+            "tests": [
+              "waits for evidence writes and exits despite a lingering handle"
+            ],
+            "statuses": [
+              "passed"
+            ]
+          },
+          {
+            "path": "test/solver/constraints.test.ts",
+            "elapsedMs": 4.274169921875,
+            "assertionMs": 3.8610820000000103,
+            "tests": [
+              "constraint derivation derives edge and corner neighbors without wrapping rows",
+              "constraint derivation subtracts trusted flags but includes reconsidered flags as candidates",
+              "fixed point reduction 包含制約の差分から安全セルを得る",
+              "fixed point reduction propagates assignments and subset differences until no more cells resolve",
+              "fixed point reduction deduplicates equivalent constraints and resolves zero and full sets",
+              "fixed point reduction detects impossible residual or conflicting assignments: [{\"cells\":[],\"mines\":1}]",
+              "fixed point reduction detects impossible residual or conflicting assignments: [{\"cells\":[0],\"mines\":-1}]",
+              "fixed point reduction detects impossible residual or conflicting assignments: [{\"cells\":[0],\"mines\":2}]",
+              "fixed point reduction detects impossible residual or conflicting assignments: [{\"cells\":[0,1],\"mines\":0},{\"cells\":[1,0],\"mines\":1}]",
+              "fixed point reduction detects impossible residual or conflicting assignments: [{\"cells\":[0],\"mines\":1},{\"cells\":[0],\"mines\":0}]",
+              "fixed point reduction retains overlapping non-subset equations and their mine counts",
+              "component partitioning joins constraints sharing candidate cells transitively",
+              "component partitioning keeps duplicate constraints in the same component"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/solver/solve.test.ts",
+            "elapsedMs": 1189.137939453125,
+            "assertionMs": 1188.21134,
+            "tests": [
+              "selects tied guesses deterministically",
+              "finds globally safe cells, all mines, and a completed board",
+              "detects globally impossible but locally valid observations",
+              "combines independent components with unconstrained cells",
+              "reconsiders flags without modifying observations",
+              "discards partial results when the shared budget is exhausted",
+              "counts component arrangements by mine count",
+              "uses exact large combinations",
+              "matches an independent oracle for every 2x2 observation pattern and both flag policies",
+              "matches seeded 3x3 truth-derived boards including wrong flags and totals"
+            ],
+            "statuses": [
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed",
+              "passed"
+            ]
+          },
+          {
+            "path": "test/ui/geometry.test.ts",
+            "elapsedMs": 1.027099609375,
+            "assertionMs": 1.0272180000000048,
+            "tests": [
+              "maps CSS coordinates to cells with exclusive right and bottom edges"
+            ],
+            "statuses": [
+              "passed"
+            ]
+          },
+          {
+            "path": "test/ui/layout.test.ts",
+            "elapsedMs": 1.299560546875,
+            "assertionMs": 1.2995990000000006,
+            "tests": [
+              "uses a right sidebar only when cells stay at least 24 CSS pixels"
+            ],
+            "statuses": [
+              "passed"
+            ]
+          }
+        ],
+        "artifacts": [
+          {
+            "group": "all",
+            "durationMs": 433445.09838499996,
+            "maxRssKiB": 1018488,
+            "rssScope": "GNU time maximum resident set size of the Vitest command and its waited-for descendants; not the simultaneous RSS sum of all processes",
+            "rssUnavailableReason": null,
+            "nodeVersion": "v22.12.0",
+            "chromiumVersion": "Google Chrome for Testing 151.0.7922.34",
+            "exitCode": 1,
+            "signal": null,
+            "reportMissing": false
+          }
+        ],
+        "missingArtifacts": [],
+        "issues": [
+          "benchmark-A-all: Vitest success false"
+        ],
+        "metrics": {
+          "queueSeconds": 9,
+          "workflowStartDelaySeconds": 0,
+          "totalSeconds": 477,
+          "preparationSeconds": 9,
+          "wallSeconds": 468,
+          "runnerMinutes": 7.85
+        },
+        "jobWaits": [
+          {
+            "name": "validate",
+            "readyAt": "2026-10-10T13:42:46Z",
+            "startedAt": "2026-10-10T13:42:50Z",
+            "waitSeconds": 4,
+            "readyBasis": "workflow created_at",
+            "estimated": true
+          },
+          {
+            "name": "Serial / A",
+            "readyAt": "2026-10-10T13:42:53Z",
+            "startedAt": "2026-10-10T13:42:55Z",
+            "waitSeconds": 2,
+            "readyBasis": "validate completed_at",
+            "estimated": true
+          },
+          {
+            "name": "Grouped / ${{ matrix.group }}",
+            "readyAt": null,
+            "startedAt": "2026-10-10T13:42:53Z",
+            "waitSeconds": null,
+            "readyBasis": "not executed",
+            "estimated": true
+          },
+          {
+            "name": "Benchmark / quality",
+            "readyAt": null,
+            "startedAt": "2026-10-10T13:42:54Z",
+            "waitSeconds": null,
+            "readyBasis": "not executed",
+            "estimated": true
+          }
+        ]
+      }
+    ],
+    "conditions": {
+      "A": {
+        "count": 1,
+        "heavyFiles": [
+          {
+            "path": "test/recognition/formal-runner.test.ts",
+            "presentRuns": 1,
+            "missingRuns": 0,
+            "unavailableReason": null,
+            "elapsedMs": {
+              "median": 91085.04443359375,
+              "min": 91085.04443359375,
+              "max": 91085.04443359375
+            },
+            "assertionMs": {
+              "median": 91085.044522,
+              "min": 91085.044522,
+              "max": 91085.044522
+            }
+          },
+          {
+            "path": "test/recognition/folds.test.ts",
+            "presentRuns": 1,
+            "missingRuns": 0,
+            "unavailableReason": null,
+            "elapsedMs": {
+              "median": 68644.30883789062,
+              "min": 68644.30883789062,
+              "max": 68644.30883789062
+            },
+            "assertionMs": {
+              "median": 68644.30894999999,
+              "min": 68644.30894999999,
+              "max": 68644.30894999999
+            }
+          },
+          {
+            "path": "test/recognition/generated-bank.test.ts",
+            "presentRuns": 1,
+            "missingRuns": 0,
+            "unavailableReason": null,
+            "elapsedMs": {
+              "median": 39942.9697265625,
+              "min": 39942.9697265625,
+              "max": 39942.9697265625
+            },
+            "assertionMs": {
+              "median": 39942.795239,
+              "min": 39942.795239,
+              "max": 39942.795239
+            }
+          },
+          {
+            "path": "test/recognition/browser-grid-resample.test.ts",
+            "presentRuns": 1,
+            "missingRuns": 0,
+            "unavailableReason": null,
+            "elapsedMs": {
+              "median": 61724.93798828125,
+              "min": 61724.93798828125,
+              "max": 61724.93798828125
+            },
+            "assertionMs": {
+              "median": 61724.289872,
+              "min": 61724.289872,
+              "max": 61724.289872
+            }
+          },
+          {
+            "path": "test/recognition/browser-grid-fallback.test.ts",
+            "presentRuns": 1,
+            "missingRuns": 0,
+            "unavailableReason": null,
+            "elapsedMs": {
+              "median": 49292.177978515625,
+              "min": 49292.177978515625,
+              "max": 49292.177978515625
+            },
+            "assertionMs": {
+              "median": 49292.177898999995,
+              "min": 49292.177898999995,
+              "max": 49292.177898999995
+            }
+          },
+          {
+            "path": "test/recognition/evaluate-grid-fallback.test.ts",
+            "presentRuns": 1,
+            "missingRuns": 0,
+            "unavailableReason": null,
+            "elapsedMs": {
+              "median": 59049.453857421875,
+              "min": 59049.453857421875,
+              "max": 59049.453857421875
+            },
+            "assertionMs": {
+              "median": 59049.077863000006,
+              "min": 59049.077863000006,
+              "max": 59049.077863000006
+            }
+          }
+        ],
+        "workflowStartDelaySeconds": {
+          "median": 0,
+          "min": 0,
+          "max": 0
+        },
+        "totalSeconds": {
+          "median": 477,
+          "min": 477,
+          "max": 477
+        },
+        "queueSeconds": {
+          "median": 9,
+          "min": 9,
+          "max": 9
+        },
+        "preparationSeconds": {
+          "median": 9,
+          "min": 9,
+          "max": 9
+        },
+        "wallSeconds": {
+          "median": 468,
+          "min": 468,
+          "max": 468
+        },
+        "runnerMinutes": {
+          "median": 7.85,
+          "min": 7.85,
+          "max": 7.85
+        },
+        "files": [
+          {
+            "path": "test/recognition/formal-runner.test.ts",
+            "elapsedMs": {
+              "median": 91085.04443359375,
+              "min": 91085.04443359375,
+              "max": 91085.04443359375
+            },
+            "assertionMs": {
+              "median": 91085.044522,
+              "min": 91085.044522,
+              "max": 91085.044522
+            }
+          },
+          {
+            "path": "test/recognition/folds.test.ts",
+            "elapsedMs": {
+              "median": 68644.30883789062,
+              "min": 68644.30883789062,
+              "max": 68644.30883789062
+            },
+            "assertionMs": {
+              "median": 68644.30894999999,
+              "min": 68644.30894999999,
+              "max": 68644.30894999999
+            }
+          },
+          {
+            "path": "test/recognition/browser-grid-resample.test.ts",
+            "elapsedMs": {
+              "median": 61724.93798828125,
+              "min": 61724.93798828125,
+              "max": 61724.93798828125
+            },
+            "assertionMs": {
+              "median": 61724.289872,
+              "min": 61724.289872,
+              "max": 61724.289872
+            }
+          },
+          {
+            "path": "test/recognition/evaluate-grid-fallback.test.ts",
+            "elapsedMs": {
+              "median": 59049.453857421875,
+              "min": 59049.453857421875,
+              "max": 59049.453857421875
+            },
+            "assertionMs": {
+              "median": 59049.077863000006,
+              "min": 59049.077863000006,
+              "max": 59049.077863000006
+            }
+          },
+          {
+            "path": "test/recognition/browser-grid-fallback.test.ts",
+            "elapsedMs": {
+              "median": 49292.177978515625,
+              "min": 49292.177978515625,
+              "max": 49292.177978515625
+            },
+            "assertionMs": {
+              "median": 49292.177898999995,
+              "min": 49292.177898999995,
+              "max": 49292.177898999995
+            }
+          },
+          {
+            "path": "test/recognition/generated-bank.test.ts",
+            "elapsedMs": {
+              "median": 39942.9697265625,
+              "min": 39942.9697265625,
+              "max": 39942.9697265625
+            },
+            "assertionMs": {
+              "median": 39942.795239,
+              "min": 39942.795239,
+              "max": 39942.795239
+            }
+          },
+          {
+            "path": "test/recognition/grid.test.ts",
+            "elapsedMs": {
+              "median": 10244.69775390625,
+              "min": 10244.69775390625,
+              "max": 10244.69775390625
+            },
+            "assertionMs": {
+              "median": 10242.192644000002,
+              "min": 10242.192644000002,
+              "max": 10242.192644000002
+            }
+          },
+          {
+            "path": "test/recognition/browser-grid-evidence.test.ts",
+            "elapsedMs": {
+              "median": 9044.0830078125,
+              "min": 9044.0830078125,
+              "max": 9044.0830078125
+            },
+            "assertionMs": {
+              "median": 9043.973699,
+              "min": 9043.973699,
+              "max": 9043.973699
+            }
+          },
+          {
+            "path": "test/recognition/infer.test.ts",
+            "elapsedMs": {
+              "median": 8144.91455078125,
+              "min": 8144.91455078125,
+              "max": 8144.91455078125
+            },
+            "assertionMs": {
+              "median": 8144.276455,
+              "min": 8144.276455,
+              "max": 8144.276455
+            }
+          },
+          {
+            "path": "test/recognition/recognize.test.ts",
+            "elapsedMs": {
+              "median": 4498.115966796875,
+              "min": 4498.115966796875,
+              "max": 4498.115966796875
+            },
+            "assertionMs": {
+              "median": 4496.881807,
+              "min": 4496.881807,
+              "max": 4496.881807
+            }
+          },
+          {
+            "path": "test/recognition/classify.test.ts",
+            "elapsedMs": {
+              "median": 4206.441650390625,
+              "min": 4206.441650390625,
+              "max": 4206.441650390625
+            },
+            "assertionMs": {
+              "median": 4206.01492,
+              "min": 4206.01492,
+              "max": 4206.01492
+            }
+          },
+          {
+            "path": "test/browser/input-mode.test.ts",
+            "elapsedMs": {
+              "median": 3229.162109375,
+              "min": 3229.162109375,
+              "max": 3229.162109375
+            },
+            "assertionMs": {
+              "median": 3226.55903,
+              "min": 3226.55903,
+              "max": 3226.55903
+            }
+          },
+          {
+            "path": "test/browser/release.test.ts",
+            "elapsedMs": {
+              "median": 2424.591796875,
+              "min": 2424.591796875,
+              "max": 2424.591796875
+            },
+            "assertionMs": {
+              "median": 2423.6939159999997,
+              "min": 2423.6939159999997,
+              "max": 2423.6939159999997
+            }
+          },
+          {
+            "path": "test/browser/legend.test.ts",
+            "elapsedMs": {
+              "median": 1959.38037109375,
+              "min": 1959.38037109375,
+              "max": 1959.38037109375
+            },
+            "assertionMs": {
+              "median": 1958.9266210000003,
+              "min": 1958.9266210000003,
+              "max": 1958.9266210000003
+            }
+          },
+          {
+            "path": "test/browser/mvp.test.ts",
+            "elapsedMs": {
+              "median": 1867.448486328125,
+              "min": 1867.448486328125,
+              "max": 1867.448486328125
+            },
+            "assertionMs": {
+              "median": 1866.0651030000001,
+              "min": 1866.0651030000001,
+              "max": 1866.0651030000001
+            }
+          },
+          {
+            "path": "test/recognition/browser-derive.test.ts",
+            "elapsedMs": {
+              "median": 1716.218017578125,
+              "min": 1716.218017578125,
+              "max": 1716.218017578125
+            },
+            "assertionMs": {
+              "median": 1716.218116,
+              "min": 1716.218116,
+              "max": 1716.218116
+            }
+          },
+          {
+            "path": "test/recognition/fixture-manifest.test.ts",
+            "elapsedMs": {
+              "median": 1702.53466796875,
+              "min": 1702.53466796875,
+              "max": 1702.53466796875
+            },
+            "assertionMs": {
+              "median": 1701.682742,
+              "min": 1701.682742,
+              "max": 1701.682742
+            }
+          },
+          {
+            "path": "test/browser/board-editor.test.ts",
+            "elapsedMs": {
+              "median": 1349.958984375,
+              "min": 1349.958984375,
+              "max": 1349.958984375
+            },
+            "assertionMs": {
+              "median": 1349.3023069999992,
+              "min": 1349.3023069999992,
+              "max": 1349.3023069999992
+            }
+          },
+          {
+            "path": "test/solver/solve.test.ts",
+            "elapsedMs": {
+              "median": 1189.137939453125,
+              "min": 1189.137939453125,
+              "max": 1189.137939453125
+            },
+            "assertionMs": {
+              "median": 1188.21134,
+              "min": 1188.21134,
+              "max": 1188.21134
+            }
+          },
+          {
+            "path": "test/recognition/runner-cli-exit.test.ts",
+            "elapsedMs": {
+              "median": 531.3095703125,
+              "min": 531.3095703125,
+              "max": 531.3095703125
+            },
+            "assertionMs": {
+              "median": 531.309653,
+              "min": 531.309653,
+              "max": 531.309653
+            }
+          },
+          {
+            "path": "test/browser/solver-worker.test.ts",
+            "elapsedMs": {
+              "median": 399.03173828125,
+              "min": 399.03173828125,
+              "max": 399.03173828125
+            },
+            "assertionMs": {
+              "median": 398.223959,
+              "min": 398.223959,
+              "max": 398.223959
+            }
+          },
+          {
+            "path": "test/browser/smoke.test.ts",
+            "elapsedMs": {
+              "median": 142.573974609375,
+              "min": 142.573974609375,
+              "max": 142.573974609375
+            },
+            "assertionMs": {
+              "median": 142.57388300000002,
+              "min": 142.57388300000002,
+              "max": 142.57388300000002
+            }
+          },
+          {
+            "path": "test/recognition/grid-fallback.test.ts",
+            "elapsedMs": {
+              "median": 131.380859375,
+              "min": 131.380859375,
+              "max": 131.380859375
+            },
+            "assertionMs": {
+              "median": 130.4864400000001,
+              "min": 130.4864400000001,
+              "max": 130.4864400000001
+            }
+          },
+          {
+            "path": "test/recognition/prototype-builder.test.ts",
+            "elapsedMs": {
+              "median": 104.265625,
+              "min": 104.265625,
+              "max": 104.265625
+            },
+            "assertionMs": {
+              "median": 103.049936,
+              "min": 103.049936,
+              "max": 103.049936
+            }
+          },
+          {
+            "path": "test/recognition/derive.test.ts",
+            "elapsedMs": {
+              "median": 43.231201171875,
+              "min": 43.231201171875,
+              "max": 43.231201171875
+            },
+            "assertionMs": {
+              "median": 43.231142000000006,
+              "min": 43.231142000000006,
+              "max": 43.231142000000006
+            }
+          },
+          {
+            "path": "test/recognition/multi-recognize.test.ts",
+            "elapsedMs": {
+              "median": 39.134033203125,
+              "min": 39.134033203125,
+              "max": 39.134033203125
+            },
+            "assertionMs": {
+              "median": 39.19265499999999,
+              "min": 39.19265499999999,
+              "max": 39.19265499999999
+            }
+          },
+          {
+            "path": "test/recognition/prototype-bank-codec.test.ts",
+            "elapsedMs": {
+              "median": 22.479736328125,
+              "min": 22.479736328125,
+              "max": 22.479736328125
+            },
+            "assertionMs": {
+              "median": 22.54118099999998,
+              "min": 22.54118099999998,
+              "max": 22.54118099999998
+            }
+          },
+          {
+            "path": "test/recognition/grid-resample.test.ts",
+            "elapsedMs": {
+              "median": 14.076171875,
+              "min": 14.076171875,
+              "max": 14.076171875
+            },
+            "assertionMs": {
+              "median": 14.452782999999982,
+              "min": 14.452782999999982,
+              "max": 14.452782999999982
+            }
+          },
+          {
+            "path": "test/recognition/multi-prototype-runner.test.ts",
+            "elapsedMs": {
+              "median": 9.69970703125,
+              "min": 9.69970703125,
+              "max": 9.69970703125
+            },
+            "assertionMs": {
+              "median": 9.971337999999946,
+              "min": 9.971337999999946,
+              "max": 9.971337999999946
+            }
+          },
+          {
+            "path": "test/app/solver-client.test.ts",
+            "elapsedMs": {
+              "median": 9.193603515625,
+              "min": 9.193603515625,
+              "max": 9.193603515625
+            },
+            "assertionMs": {
+              "median": 9.280994000000007,
+              "min": 9.280994000000007,
+              "max": 9.280994000000007
+            }
+          },
+          {
+            "path": "test/repository-foundation.test.ts",
+            "elapsedMs": {
+              "median": 6.48779296875,
+              "min": 6.48779296875,
+              "max": 6.48779296875
+            },
+            "assertionMs": {
+              "median": 6.308286999999993,
+              "min": 6.308286999999993,
+              "max": 6.308286999999993
+            }
+          },
+          {
+            "path": "test/recognition/multi-classify.test.ts",
+            "elapsedMs": {
+              "median": 6.44775390625,
+              "min": 6.44775390625,
+              "max": 6.44775390625
+            },
+            "assertionMs": {
+              "median": 5.845101,
+              "min": 5.845101,
+              "max": 5.845101
+            }
+          },
+          {
+            "path": "test/app/state.test.ts",
+            "elapsedMs": {
+              "median": 6.3623046875,
+              "min": 6.3623046875,
+              "max": 6.3623046875
+            },
+            "assertionMs": {
+              "median": 5.64393699999998,
+              "min": 5.64393699999998,
+              "max": 5.64393699999998
+            }
+          },
+          {
+            "path": "test/recognition/artifact-directory.test.ts",
+            "elapsedMs": {
+              "median": 6.084716796875,
+              "min": 6.084716796875,
+              "max": 6.084716796875
+            },
+            "assertionMs": {
+              "median": 6.007376000000008,
+              "min": 6.007376000000008,
+              "max": 6.007376000000008
+            }
+          },
+          {
+            "path": "test/board/board.test.ts",
+            "elapsedMs": {
+              "median": 5.604248046875,
+              "min": 5.604248046875,
+              "max": 5.604248046875
+            },
+            "assertionMs": {
+              "median": 4.823855000000023,
+              "min": 4.823855000000023,
+              "max": 4.823855000000023
+            }
+          },
+          {
+            "path": "test/recognition/calibrate.test.ts",
+            "elapsedMs": {
+              "median": 4.880126953125,
+              "min": 4.880126953125,
+              "max": 4.880126953125
+            },
+            "assertionMs": {
+              "median": 4.664834000000013,
+              "min": 4.664834000000013,
+              "max": 4.664834000000013
+            }
+          },
+          {
+            "path": "test/solver/constraints.test.ts",
+            "elapsedMs": {
+              "median": 4.274169921875,
+              "min": 4.274169921875,
+              "max": 4.274169921875
+            },
+            "assertionMs": {
+              "median": 3.8610820000000103,
+              "min": 3.8610820000000103,
+              "max": 3.8610820000000103
+            }
+          },
+          {
+            "path": "test/recognition/grid-evidence.test.ts",
+            "elapsedMs": {
+              "median": 3.278564453125,
+              "min": 3.278564453125,
+              "max": 3.278564453125
+            },
+            "assertionMs": {
+              "median": 3.1038980000000294,
+              "min": 3.1038980000000294,
+              "max": 3.1038980000000294
+            }
+          },
+          {
+            "path": "test/recognition/grid-budget.test.ts",
+            "elapsedMs": {
+              "median": 2.390380859375,
+              "min": 2.390380859375,
+              "max": 2.390380859375
+            },
+            "assertionMs": {
+              "median": 1.6002830000000046,
+              "min": 1.6002830000000046,
+              "max": 1.6002830000000046
+            }
+          },
+          {
+            "path": "test/board/validate.test.ts",
+            "elapsedMs": {
+              "median": 2.287841796875,
+              "min": 2.287841796875,
+              "max": 2.287841796875
+            },
+            "assertionMs": {
+              "median": 2.7800290000000416,
+              "min": 2.7800290000000416,
+              "max": 2.7800290000000416
+            }
+          },
+          {
+            "path": "test/recognition/pixels.test.ts",
+            "elapsedMs": {
+              "median": 2.266357421875,
+              "min": 2.266357421875,
+              "max": 2.266357421875
+            },
+            "assertionMs": {
+              "median": 1.6741850000000085,
+              "min": 1.6741850000000085,
+              "max": 1.6741850000000085
+            }
+          },
+          {
+            "path": "test/ui/layout.test.ts",
+            "elapsedMs": {
+              "median": 1.299560546875,
+              "min": 1.299560546875,
+              "max": 1.299560546875
+            },
+            "assertionMs": {
+              "median": 1.2995990000000006,
+              "min": 1.2995990000000006,
+              "max": 1.2995990000000006
+            }
+          },
+          {
+            "path": "test/ui/geometry.test.ts",
+            "elapsedMs": {
+              "median": 1.027099609375,
+              "min": 1.027099609375,
+              "max": 1.027099609375
+            },
+            "assertionMs": {
+              "median": 1.0272180000000048,
+              "min": 1.0272180000000048,
+              "max": 1.0272180000000048
+            }
+          },
+          {
+            "path": "test/browser/pages.test.ts",
+            "elapsedMs": {
+              "median": 0,
+              "min": 0,
+              "max": 0
+            },
+            "assertionMs": {
+              "median": 0,
+              "min": 0,
+              "max": 0
+            }
+          }
+        ],
+        "commonFileElapsedMs": {
+          "median": 422808.1574707031,
+          "min": 422808.1574707031,
+          "max": 422808.1574707031
+        },
+        "configurationElapsedMs": {
+          "median": 6.48779296875,
+          "min": 6.48779296875,
+          "max": 6.48779296875
+        }
+      },
+      "B": {
+        "count": 0,
+        "heavyFiles": [
+          {
+            "path": "test/recognition/formal-runner.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          },
+          {
+            "path": "test/recognition/folds.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          },
+          {
+            "path": "test/recognition/generated-bank.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          },
+          {
+            "path": "test/recognition/browser-grid-resample.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          },
+          {
+            "path": "test/recognition/browser-grid-fallback.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          },
+          {
+            "path": "test/recognition/evaluate-grid-fallback.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          }
+        ],
+        "workflowStartDelaySeconds": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "totalSeconds": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "queueSeconds": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "preparationSeconds": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "wallSeconds": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "runnerMinutes": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "files": [],
+        "commonFileElapsedMs": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "configurationElapsedMs": {
+          "median": null,
+          "min": null,
+          "max": null
+        }
+      },
+      "C": {
+        "count": 0,
+        "heavyFiles": [
+          {
+            "path": "test/recognition/formal-runner.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          },
+          {
+            "path": "test/recognition/folds.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          },
+          {
+            "path": "test/recognition/generated-bank.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          },
+          {
+            "path": "test/recognition/browser-grid-resample.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          },
+          {
+            "path": "test/recognition/browser-grid-fallback.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          },
+          {
+            "path": "test/recognition/evaluate-grid-fallback.test.ts",
+            "presentRuns": 0,
+            "missingRuns": 0,
+            "unavailableReason": "no runs",
+            "elapsedMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            },
+            "assertionMs": {
+              "median": null,
+              "min": null,
+              "max": null
+            }
+          }
+        ],
+        "workflowStartDelaySeconds": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "totalSeconds": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "queueSeconds": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "preparationSeconds": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "wallSeconds": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "runnerMinutes": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "files": [],
+        "commonFileElapsedMs": {
+          "median": null,
+          "min": null,
+          "max": null
+        },
+        "configurationElapsedMs": {
+          "median": null,
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    "historicalReference": {
+      "A": {
+        "measuredWallSeconds": null,
+        "savedSeconds": null,
+        "reductionPercent": null
+      },
+      "B": {
+        "measuredWallSeconds": null,
+        "savedSeconds": null,
+        "reductionPercent": null
+      },
+      "C": {
+        "measuredWallSeconds": null,
+        "savedSeconds": null,
+        "reductionPercent": null
+      }
+    },
+    "reductions": {
+      "AtoB": null,
+      "BtoC": null,
+      "AtoC": null
+    },
+    "testSetDifferences": [],
+    "commonFilePaths": [
+      "test/app/solver-client.test.ts",
+      "test/app/state.test.ts",
+      "test/board/board.test.ts",
+      "test/board/validate.test.ts",
+      "test/browser/board-editor.test.ts",
+      "test/browser/input-mode.test.ts",
+      "test/browser/legend.test.ts",
+      "test/browser/mvp.test.ts",
+      "test/browser/pages.test.ts",
+      "test/browser/release.test.ts",
+      "test/browser/smoke.test.ts",
+      "test/browser/solver-worker.test.ts",
+      "test/recognition/artifact-directory.test.ts",
+      "test/recognition/browser-derive.test.ts",
+      "test/recognition/browser-grid-evidence.test.ts",
+      "test/recognition/browser-grid-fallback.test.ts",
+      "test/recognition/browser-grid-resample.test.ts",
+      "test/recognition/calibrate.test.ts",
+      "test/recognition/classify.test.ts",
+      "test/recognition/derive.test.ts",
+      "test/recognition/evaluate-grid-fallback.test.ts",
+      "test/recognition/fixture-manifest.test.ts",
+      "test/recognition/folds.test.ts",
+      "test/recognition/formal-runner.test.ts",
+      "test/recognition/generated-bank.test.ts",
+      "test/recognition/grid-budget.test.ts",
+      "test/recognition/grid-evidence.test.ts",
+      "test/recognition/grid-fallback.test.ts",
+      "test/recognition/grid-resample.test.ts",
+      "test/recognition/grid.test.ts",
+      "test/recognition/infer.test.ts",
+      "test/recognition/multi-classify.test.ts",
+      "test/recognition/multi-prototype-runner.test.ts",
+      "test/recognition/multi-recognize.test.ts",
+      "test/recognition/pixels.test.ts",
+      "test/recognition/prototype-bank-codec.test.ts",
+      "test/recognition/prototype-builder.test.ts",
+      "test/recognition/recognize.test.ts",
+      "test/recognition/runner-cli-exit.test.ts",
+      "test/solver/constraints.test.ts",
+      "test/solver/solve.test.ts",
+      "test/ui/geometry.test.ts",
+      "test/ui/layout.test.ts"
+    ]
+  },
+  "exclusionReason": "Initial A1 used control 1858c4a with direct node launch lacking npm_execpath; test/browser/pages.test.ts beforeAll failed. Corrected control fd2f387 was used for all nine comparable runs."
+}
