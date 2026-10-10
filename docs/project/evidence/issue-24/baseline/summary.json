@@ -1,0 +1,194 @@
+[
+  {
+    "date": "2026-10-10T09:59:26.776Z",
+    "commit": "1a01eac18f389e7933be9937ad7fa4aa8be476b7",
+    "platform": "darwin",
+    "os": "27.0.0",
+    "browser": "151.0.7922.34",
+    "summary": {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "columns": 9,
+      "keys": 15,
+      "boardDraws": 43,
+      "legendDraws": 205,
+      "canvasSizeWrites": 496,
+      "redundantSizeWrites": 496,
+      "pageHeight": [
+        1225,
+        1279
+      ],
+      "resultHeight": [
+        181.875,
+        236.359375
+      ],
+      "scrollY": [
+        0,
+        0
+      ],
+      "layoutShifts": 18
+    }
+  },
+  {
+    "date": "2026-10-10T09:59:28.870Z",
+    "commit": "1a01eac18f389e7933be9937ad7fa4aa8be476b7",
+    "platform": "darwin",
+    "os": "27.0.0",
+    "browser": "151.0.7922.34",
+    "summary": {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "columns": 30,
+      "keys": 15,
+      "boardDraws": 43,
+      "legendDraws": 205,
+      "canvasSizeWrites": 496,
+      "redundantSizeWrites": 496,
+      "pageHeight": [
+        1238,
+        1279
+      ],
+      "resultHeight": [
+        181.875,
+        236.359375
+      ],
+      "scrollY": [
+        0,
+        0
+      ],
+      "layoutShifts": 18
+    }
+  },
+  {
+    "date": "2026-10-10T09:59:30.581Z",
+    "commit": "1a01eac18f389e7933be9937ad7fa4aa8be476b7",
+    "platform": "darwin",
+    "os": "27.0.0",
+    "browser": "151.0.7922.34",
+    "summary": {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "columns": 9,
+      "keys": 15,
+      "boardDraws": 43,
+      "legendDraws": 205,
+      "canvasSizeWrites": 496,
+      "redundantSizeWrites": 496,
+      "pageHeight": [
+        1225,
+        1279
+      ],
+      "resultHeight": [
+        181.875,
+        236.359375
+      ],
+      "scrollY": [
+        0,
+        0
+      ],
+      "layoutShifts": 18
+    }
+  },
+  {
+    "date": "2026-10-10T09:59:32.352Z",
+    "commit": "1a01eac18f389e7933be9937ad7fa4aa8be476b7",
+    "platform": "darwin",
+    "os": "27.0.0",
+    "browser": "151.0.7922.34",
+    "summary": {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "columns": 30,
+      "keys": 15,
+      "boardDraws": 43,
+      "legendDraws": 205,
+      "canvasSizeWrites": 496,
+      "redundantSizeWrites": 496,
+      "pageHeight": [
+        1238,
+        1279
+      ],
+      "resultHeight": [
+        181.875,
+        236.359375
+      ],
+      "scrollY": [
+        0,
+        0
+      ],
+      "layoutShifts": 18
+    }
+  },
+  {
+    "date": "2026-10-10T09:59:34.054Z",
+    "commit": "1a01eac18f389e7933be9937ad7fa4aa8be476b7",
+    "platform": "darwin",
+    "os": "27.0.0",
+    "browser": "151.0.7922.34",
+    "summary": {
+      "viewport": {
+        "width": 960,
+        "height": 1080
+      },
+      "columns": 9,
+      "keys": 15,
+      "boardDraws": 43,
+      "legendDraws": 205,
+      "canvasSizeWrites": 496,
+      "redundantSizeWrites": 496,
+      "pageHeight": [
+        1218,
+        1272
+      ],
+      "resultHeight": [
+        181.875,
+        236.359375
+      ],
+      "scrollY": [
+        0,
+        0
+      ],
+      "layoutShifts": 18
+    }
+  },
+  {
+    "date": "2026-10-10T09:59:35.841Z",
+    "commit": "1a01eac18f389e7933be9937ad7fa4aa8be476b7",
+    "platform": "darwin",
+    "os": "27.0.0",
+    "browser": "151.0.7922.34",
+    "summary": {
+      "viewport": {
+        "width": 960,
+        "height": 1080
+      },
+      "columns": 30,
+      "keys": 15,
+      "boardDraws": 43,
+      "legendDraws": 205,
+      "canvasSizeWrites": 496,
+      "redundantSizeWrites": 496,
+      "pageHeight": [
+        1799,
+        1832
+      ],
+      "resultHeight": [
+        181.875,
+        214.265625
+      ],
+      "scrollY": [
+        0,
+        0
+      ],
+      "layoutShifts": 0
+    }
+  }
+]
