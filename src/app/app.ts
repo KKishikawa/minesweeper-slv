@@ -7,6 +7,7 @@ import { mountBoardSettings } from '../ui/board-settings';
 import { mountBoardEditor } from '../ui/board-editor';
 import { computeLayout } from '../ui/layout';
 import { statusText } from '../ui/status';
+import { renderLegend } from '../ui/board-legend';
 
 export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions> = {}): { dispose(): void } {
   root.innerHTML = `
@@ -29,9 +30,10 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
           <p class="policy-note">地雷として扱う設定では、成立する誤った旗は検出できません。すべての旗を評価し直す場合は再検討を選んでください。</p>
           <p class="effective-policy"></p>
           <section class="legend" aria-label="凡例"><h3>表示の見方</h3>
-            <p><span class="legend-flag">⚑</span> 入力旗 <span class="legend-safe">Ⓢ</span> 提案: 安全</p>
-            <p><span class="legend-mine">◇ M</span> 提案: 地雷 <span class="legend-guess">[?]</span> 推測候補</p>
-            <p class="legend-note">提案は入力を変更しません。青い枠は操作中のセルです。</p>
+            <p class="legend-items"><span><canvas data-symbol="flag" aria-hidden="true"></canvas> 入力旗</span><span><canvas data-symbol="safe" aria-hidden="true"></canvas> 提案: 安全 S</span></p>
+            <p class="legend-items"><span><canvas data-symbol="mine" aria-hidden="true"></canvas> 提案: 地雷 M</span><span><canvas data-symbol="guess" aria-hidden="true"></canvas> 推測候補 ?</span></p>
+            <p class="legend-items"><span><canvas data-symbol="flag-safe" aria-hidden="true"></canvas> 入力旗と提案が両方ある例</span></p>
+            <p class="legend-note">再検討中も左の旗は入力として残り、右に解析の提案を表示します。提案は入力を変更しません。青い枠は操作中のセルです。</p>
           </section>
         </aside>
       </div>
@@ -55,6 +57,7 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
     workspace.dataset.placement = layout.placement;
     editorRoot.style.setProperty('--board-cell-size', String(layout.cellSize));
     editor.update(state.board, state.proposal, state.validation);
+    renderLegend(get('.legend'));
     get('.status').textContent = statusText(state);
     get('.result-card').dataset.phase = state.phase;
     get('.proposal-counts').textContent = state.proposal ? `安全 ${state.proposal.safe.length} · 地雷 ${state.proposal.mines.length} · 推測候補 ${state.proposal.guesses.length}` : '';
