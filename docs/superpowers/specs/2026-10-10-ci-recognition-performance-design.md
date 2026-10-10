@@ -80,20 +80,34 @@ Pagesは比較実験のために公開しない。repository-foundationと既存
 
 Vitestのファイル単位時間・テスト数・成否と、利用可能なprocessピークRSSを機械可読artifactとして保存する。成功・失敗時とも保存を試みる。Actions APIからworkflow作成、job開始/終了、step開始/終了、結論を取得する。測定失敗は検証成功を意味しない。
 
-比較用baseline workflowと変更後workflowは同じテスト対象・commitの製品コード、Node、lockfile、Chromium、runnerラベルで実行する。baselineは分割前の直列構成を再現し、手動の測定専用workflowで実行可能にする。通常PRの必須チェックやPages公開経路へbaselineの二重実行を追加しない。
+比較は次の3条件で行う。変更前refは本Issueの実装前の `1a01eac18f389e7933be9937ad7fa4aa8be476b7` に固定し、変更後refは測定対象の実装commitの完全SHAに固定する。branch名や変動するHEADを測定対象に使わない。
 
-最低3回ずつ、可能ならbaseline/変更後を交互に実行し、意図的に並走させない。実行回数を揃え、成功だけを選別して失敗を隠さない。GitHub-hosted runnerの物理性能差は完全には統制できないため、runner metadataと範囲も残す。
+| 条件 | checkoutするコード | 実行構成 | 測る効果 |
+| --- | --- | --- | --- |
+| A: 変更前・直列（baseline） | 変更前refの製品・評価実装・テスト | 変更前の単一qualityジョブ、全通常テスト直列 | 変更前の基準 |
+| B: 変更後・直列 | 変更後refの製品・評価実装・テスト | Aと同じセットアップ・コマンド順・直列構成 | A→Bで再計算削減等の実装変更の効果 |
+| C: 変更後・分割 | Bと同じ変更後ref | 本設計の5グループと集約quality | B→Cでジョブ分割の効果、A→Cで変更全体の効果 |
+
+Aは変更前の `scripts/recognition/`、`test/recognition/`、`src/recognition/` と関連する入力生成・共通コードをそのまま使用する。変更後の評価実装や共有helperをAへ持ち込まない。B/Cは同じコード・assertionを使用し、異なるのはworkflow構成とグループ選択のみ。全条件でNode、lockfile、Chromium、runnerラベル、Actionsの固定revisionを一致させる。
+
+測定専用の手動workflowは、制御用workflowのrefと実際にcheckoutする測定対象refを分けて記録する。A/Bは同じ直列テンプレートを使い、typecheck → root build → 全通常テストの順序を固定する。通常PRの必須チェックやPages公開経路へ比較条件の追加実行を入れない。
+
+ref間で許容する差分は、本IssueのCI設定・グループmanifest・計測/記録処理・ドキュメント・repository-foundation等の構成検証と、レビュー済みの再計算削減実装・その回帰テストだけ。製品機能、認識アルゴリズムの意味、採用閾値、fixtures/正解データ、既存assertion、matrixと反復数、依存関係は固定する。構成検証や追加回帰によるテスト集合の差は一覧と時間を報告し、変更前から存在する同じ検証対象のファイル時間も別に比較する。集合差を隠して同一対象と呼ばない。
+
+計測処理は可能な限りworkflow外側の時間採取と同じVitest reporter設定で行う。変更前コードへの測定フックが不可欠なら、計測だけのpatchを保存し、挙動・再利用・入力・反復を変えないことをレビューする。同じ測定フックを対応する変更後経路にも適用し、各runに対象refとpatchのhashを残す。Aに再計算削減が混入していないことをdiffで確認する。許容範囲外の変更が必要なら測定を進めず、比較設計を更新する。
+
+最低3回ずつ、A→B→Cを1組として可能なら交互に実行し、意図的に並走させない。実行回数を揃え、成功だけを選別して失敗を隠さない。GitHub-hosted runnerの物理性能差は完全には統制できないため、runner metadataと範囲も残す。
 
 各runについて次を記録する。
 
-- workflow/run ID、commit、runtime・Chromium・runner情報、テスト数とファイル集合。
+- workflow/run ID、比較条件A/B/C、制御用workflowと対象コードの完全SHA、計測patchのhash（適用時）、runtime・Chromium・runner情報、テスト数とファイル集合・差分一覧。
 - queue時間（workflow作成から最初の検証job開始）と、各jobの待ち時間。
 - CI wall time（最初の検証job開始からquality終了）。queue込みの所要時間も別に記録する。
 - 各job/step/重い6ファイルの時間、全テスト時間と総runner分数（集約を含むjob実行秒数合計/60）。
 - 各グループのピークRSS。OS/process計測の対象を明記し、子Chromium込みの値と誤認させない。
 - 失敗・timeout・再実行・flakyとartifact欠落の有無。
 
-比較報告は同条件baseline中央値に対する短縮率と、歴史的中央値12分35秒に対する値を併記する。8分48秒以下であっても同条件比較で30%短縮が確認できない場合は目標達成と断定しない。総runner分数増加も明記する。未計測や失敗runは省略せず記録し、測定未完了ならIssueを完了扱いにしない。
+比較報告はA→B、B→C、A→Cの中央値と短縮率をそれぞれ示す。変更全体の30%以上短縮はA→Cで判定し、B→Cだけの結果を変更全体の改善率と呼ばない。歴史的中央値12分35秒に対する値も併記する。8分48秒以下であってもA→Cで30%短縮が確認できない場合は目標達成と断定しない。総runner分数増加も明記する。未計測や失敗runは省略せず記録し、測定未完了ならIssueを完了扱いにしない。
 
 ## ドキュメントと検証
 
