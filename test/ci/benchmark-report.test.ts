@@ -22,12 +22,61 @@ describe("benchmark report", () => {
   it("separates queue, preparation, wall and all executed runner minutes", () => {
     const summary = summarizeRuns(nine());
     expect(summary.comparable).toBe(true);
-    expect(summary.conditions.C.queueSeconds.median).toBe(5);
+    expect(summary.conditions.C.queueSeconds.median).toBe(20);
     expect(summary.conditions.C.preparationSeconds.median).toBe(15);
     expect(summary.conditions.C.wallSeconds.median).toBe(100);
     expect(summary.conditions.C.runnerMinutes.median).toBeCloseTo(460 / 60);
     expect(summary.reductions.AtoC).toBeCloseTo((190 - 100) / 190 * 100);
     expect(summary.conditions.C.files[0]?.elapsedMs.median).toBe(1000);
+  });
+  it("reports queue-inclusive total and dependency-ready waiting estimates for every job", () => {
+    const result = summarizeRuns(nine());
+    expect(result.conditions.C.totalSeconds.median).toBe(120);
+    expect(result.conditions.C.workflowStartDelaySeconds.median).toBe(5);
+    const waits = result.runs.find(r => r.condition === "C")!.jobWaits;
+    expect(waits.find(job => job.name === "validate")).toMatchObject({ readyAt: iso(0), waitSeconds: 5, readyBasis: "workflow created_at", estimated: true });
+    expect(waits.find(job => job.name === "Grouped / recognition")).toMatchObject({ readyAt: iso(10), waitSeconds: 10, readyBasis: "validate completed_at" });
+    expect(waits.find(job => job.name === "Benchmark / quality")).toMatchObject({ readyAt: iso(110), waitSeconds: 5, readyBasis: "all regression completed_at" });
+    expect(renderComparison(result)).toContain("quality | 2026-10-10T00:01:50.000Z");
+    expect(renderComparison(result)).toContain("queue込み総秒");
+  });
+  it("uses the latest regression completion and leaves missing dependencies/skipped jobs unmeasured", () => {
+    const r = run("C"); r.jobs.find(job => job.name === "Grouped / recognition")!.completedAt = iso(114);
+    expect(summarizeRuns([r]).runs[0]!.jobWaits.at(-1)?.waitSeconds).toBe(1);
+    r.jobs.find(job => job.name === "Grouped / formal")!.completedAt = null;
+    const result = summarizeRuns([r]);
+    expect(result.runs[0]!.jobWaits.at(-1)?.waitSeconds).toBeNull();
+    expect(result.reasons.join("\n")).toContain("quality: dependency wait unmeasured");
+    const a = run("A"); a.jobs.push({ name: "Benchmark / quality", conclusion: "skipped", startedAt: null, completedAt: null, steps: [], labels: [] });
+    expect(summarizeRuns([a]).runs[0]!.jobWaits.at(-1)).toMatchObject({ waitSeconds: null, readyAt: null, readyBasis: "not executed" });
+  });
+  it("computes the historical 755-second reference separately from A-to-C", () => {
+    const result = summarizeRuns(nine());
+    expect(result.historicalReference.C).toEqual({ measuredWallSeconds: 100, savedSeconds: 655, reductionPercent: 655 / 755 * 100 });
+    expect(result.reductions.AtoC).not.toBe(result.historicalReference.C.reductionPercent);
+    expect(renderComparison(result)).toContain("655.00");
+    const empty = summarizeRuns([]);
+    expect(empty.historicalReference.C).toEqual({ measuredWallSeconds: null, savedSeconds: null, reductionPercent: null });
+    const failed = nine(); failed[0]!.conclusion = "failure";
+    expect(summarizeRuns(failed).historicalReference.C.savedSeconds).toBeNull();
+  });
+  it("always reports the six specified heavy files, including missing values, regardless of rank", () => {
+    const runs = nine();
+    for (const r of runs) {
+      r.files[0]!.elapsedMs = 999999;
+      r.files.push({ path: "test/recognition/formal-runner.test.ts", elapsedMs: 1, assertionMs: 0.5, tests: ["formal"], statuses: ["passed"] });
+    }
+    const result = summarizeRuns(runs);
+    expect(result.conditions.C.heavyFiles.map(file => file.path)).toEqual([
+      "test/recognition/formal-runner.test.ts", "test/recognition/folds.test.ts", "test/recognition/generated-bank.test.ts",
+      "test/recognition/browser-grid-resample.test.ts", "test/recognition/browser-grid-fallback.test.ts", "test/recognition/evaluate-grid-fallback.test.ts",
+    ]);
+    expect(result.conditions.C.heavyFiles[0]?.elapsedMs.median).toBe(1);
+    expect(result.conditions.C.heavyFiles[1]?.elapsedMs.median).toBeNull();
+    expect(result.conditions.C.heavyFiles[1]?.unavailableReason).toContain("file missing in runs");
+    const report = renderComparison(result);
+    expect(report).toContain("test/recognition/folds.test.ts | 未測定");
+    expect(report).not.toContain("test/a.test.ts | 999999");
   });
   it.each([
     ["insufficient", (runs: BenchmarkRun[]) => runs.pop(), "at least 3"],

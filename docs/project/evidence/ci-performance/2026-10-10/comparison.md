@@ -2,13 +2,13 @@
 
 比較状態: 比較不可 / 未測定条件あり。異常runも全件保持。
 
-条件別の値は中央値 (最小–最大)。queueはAPI created_at→run_started_at、準備はrun_started_at→最初の選択検証job開始、wallはA/B serial開始→終了、C最初のgroup開始→quality終了。runner分数はvalidateとqualityを含む、実行した全job時間の合計。
+条件別の値は中央値 (最小–最大)。canonical queueはAPI created_at→最初の選択検証job開始。workflow開始遅延はcreated_at→run_started_at、準備はrun_started_at→最初の検証開始で、queueの細分値。wallはA/B serial開始→終了、C最初のgroup開始→quality終了。queue込み総時間はcreated_at→その検証終了。runner分数はvalidateとqualityを含む、実行した全job時間の合計。
 
-| 条件 | run数 | queue秒 | 準備秒 | 検証wall秒 | 総runner分数 |
-| --- | ---: | --- | --- | --- | --- |
-| A | 0 | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) |
-| B | 0 | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) |
-| C | 0 | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) |
+| 条件 | run数 | canonical queue秒 | workflow開始遅延秒 | 準備秒 | 検証wall秒 | queue込み総秒 | 総runner分数 |
+| --- | ---: | --- | --- | --- | --- | --- | --- |
+| A | 0 | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) |
+| B | 0 | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) |
+| C | 0 | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) |
 
 AtoB: 未測定 / 比較不可
 BtoC: 未測定 / 比較不可
@@ -30,21 +30,54 @@ Vitest testResults[].endTime-startTimeは最早assertion開始→最終assertion
 
 ### A
 
-| ファイル | elapsed ms 中央値 (範囲) | assertion ms 中央値 (範囲) |
-| --- | --- | --- |
-| 未測定 | 未測定 | 未測定 |
+| 固定ファイル | elapsed ms 中央値 (範囲) | assertion ms 中央値 (範囲) | 計測run数 | 欠測理由 |
+| --- | --- | --- | --- | --- |
+| test/recognition/formal-runner.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/folds.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/generated-bank.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/browser-grid-resample.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/browser-grid-fallback.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/evaluate-grid-fallback.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
 
 ### B
 
-| ファイル | elapsed ms 中央値 (範囲) | assertion ms 中央値 (範囲) |
-| --- | --- | --- |
-| 未測定 | 未測定 | 未測定 |
+| 固定ファイル | elapsed ms 中央値 (範囲) | assertion ms 中央値 (範囲) | 計測run数 | 欠測理由 |
+| --- | --- | --- | --- | --- |
+| test/recognition/formal-runner.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/folds.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/generated-bank.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/browser-grid-resample.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/browser-grid-fallback.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/evaluate-grid-fallback.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
 
 ### C
 
-| ファイル | elapsed ms 中央値 (範囲) | assertion ms 中央値 (範囲) |
-| --- | --- | --- |
-| 未測定 | 未測定 | 未測定 |
+| 固定ファイル | elapsed ms 中央値 (範囲) | assertion ms 中央値 (範囲) | 計測run数 | 欠測理由 |
+| --- | --- | --- | --- | --- |
+| test/recognition/formal-runner.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/folds.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/generated-bank.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/browser-grid-resample.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/browser-grid-fallback.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+| test/recognition/evaluate-grid-fallback.test.ts | 未測定 (未測定–未測定) | 未測定 (未測定–未測定) | 0/0 | no runs |
+
+## 歴史的755秒に対する参考比較
+
+対象は条件別の検証wall中央値。差秒=755−wall、率=(755−wall)/755×100。別環境・過去runの参考比較で、A→C判定から独立する。未測定または比較不可ならnull/未測定とし、成功runだけを選別しない。
+
+| 条件 | 実測wall中央値 秒 | 歴史値との差秒 | 歴史値に対する短縮率 |
+| --- | --- | --- | --- |
+| A | 未測定 | 未測定 | 未測定 |
+| B | 未測定 | 未測定 | 未測定 |
+| C | 未測定 | 未測定 | 未測定 |
+
+## 各jobの依存待ち時間（推定）
+
+Actions APIはdependency-ready/enqueued時刻を提供しないため、依存ready推定→started_atを保存する。validate ready=workflow created_at（初期workflow schedulingを含む）、serial/regression ready=validate completed_at、quality ready=全5regressionの最遅completed_at。scheduleとrunner待ちを含むelapsed推定であり、純粋なrunner queue実測ではない。欠落/矛盾する依存時刻はnull/未測定、意図的skipは未実行。
+
+| run:attempt | job | ready推定 UTC | start UTC | 待ち秒 | ready根拠 |
+| --- | --- | --- | --- | --- | --- |
+| 未測定 | 未測定 | 未測定 | 未測定 | 未測定 | no runs |
 
 ## 共通既存ファイルと構成検証の時間
 
@@ -87,6 +120,8 @@ API/zipの正常・異常経路はsynthetic unit testで検証した。未登録
 
 
 ## ローカル最終検証（Actions比較とは別）
+
+以下は初回candidate `781035f` の検証記録。review修正ではcollectorテストを24→28件へ追加しfocused/typecheck/buildを再検証した。評価/runner不変のためfull/group/productは再実行しておらず、下表の実測値・集合を更新後の全suite実行と呼ばない。
 
 同一macOS上でfull→5groupsを直列実行。新しいcollectorテスト4件をfull完了後に追加してfocused/productを再検証した。評価コードは不変のため、controller裁定により重いfullは再実行していない。
 

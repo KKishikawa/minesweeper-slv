@@ -11,12 +11,19 @@ export interface JobTiming { name: string; conclusion: string | null; startedAt:
 export interface ArtifactTiming { group: string; durationMs: number; maxRssKiB: number | null; rssScope: string; rssUnavailableReason: string | null; nodeVersion: string; chromiumVersion: string | null; exitCode: number; signal: string | null; reportMissing: boolean }
 export interface BenchmarkRun { condition: Condition | null; runId: number; attempt: number; controlSha: string | null; targetSha: string | null; conclusion: string | null; createdAt: string | null; startedAt: string | null; finishedAt: string | null; jobs: JobTiming[]; files: FileTiming[]; artifacts: ArtifactTiming[]; missingArtifacts: string[]; issues: string[] }
 export interface Statistics { median: number | null; min: number | null; max: number | null }
-export interface RunMetrics { queueSeconds: number | null; preparationSeconds: number | null; wallSeconds: number | null; runnerMinutes: number | null }
-export interface ConditionSummary { count: number; queueSeconds: Statistics; preparationSeconds: Statistics; wallSeconds: Statistics; runnerMinutes: Statistics; files: { path: string; elapsedMs: Statistics; assertionMs: Statistics }[]; commonFileElapsedMs: Statistics; configurationElapsedMs: Statistics }
-export interface BenchmarkComparison { comparable: boolean; reasons: string[]; runs: (BenchmarkRun & { metrics: RunMetrics })[]; conditions: Record<Condition, ConditionSummary>; reductions: { AtoB: number | null; BtoC: number | null; AtoC: number | null }; testSetDifferences: { runId: number; attempt: number; added: string[]; removed: string[]; addedFiles: string[]; removedFiles: string[]; allowedConfigurationDifference: boolean }[]; commonFilePaths: string[] }
+export interface RunMetrics { queueSeconds: number | null; workflowStartDelaySeconds: number | null; preparationSeconds: number | null; wallSeconds: number | null; totalSeconds: number | null; runnerMinutes: number | null }
+export interface JobWait { name: string; readyAt: string | null; startedAt: string | null; waitSeconds: number | null; readyBasis: string; estimated: true }
+export interface HeavyFileSummary { path: string; elapsedMs: Statistics; assertionMs: Statistics; presentRuns: number; missingRuns: number; unavailableReason: string | null }
+export interface ConditionSummary { count: number; workflowStartDelaySeconds: Statistics; totalSeconds: Statistics; heavyFiles: HeavyFileSummary[]; queueSeconds: Statistics; preparationSeconds: Statistics; wallSeconds: Statistics; runnerMinutes: Statistics; files: { path: string; elapsedMs: Statistics; assertionMs: Statistics }[]; commonFileElapsedMs: Statistics; configurationElapsedMs: Statistics }
+export interface BenchmarkComparison { comparable: boolean; reasons: string[]; runs: (BenchmarkRun & { metrics: RunMetrics; jobWaits: JobWait[] })[]; historicalReference: Record<Condition, { measuredWallSeconds: number | null; savedSeconds: number | null; reductionPercent: number | null }>; conditions: Record<Condition, ConditionSummary>; reductions: { AtoB: number | null; BtoC: number | null; AtoC: number | null }; testSetDifferences: { runId: number; attempt: number; added: string[]; removed: string[]; addedFiles: string[]; removedFiles: string[]; allowedConfigurationDifference: boolean }[]; commonFilePaths: string[] }
 export interface Transport { json(endpoint: string, paginate: boolean): Promise<unknown>; artifact(repository: string, id: number, entry: "metadata.json" | "vitest.json"): Promise<string> }
 const BASELINE = "1a01eac18f389e7933be9937ad7fa4aa8be476b7";
 const CONDITIONS = ["A", "B", "C"] as const;
+const HISTORICAL_SECONDS = 755;
+const HEAVY_FILES = [
+  "test/recognition/formal-runner.test.ts", "test/recognition/folds.test.ts", "test/recognition/generated-bank.test.ts",
+  "test/recognition/browser-grid-resample.test.ts", "test/recognition/browser-grid-fallback.test.ts", "test/recognition/evaluate-grid-fallback.test.ts",
+] as const;
 // Issue-approved configuration changes; evaluation/test paths are never broadly exempted.
 const ADDED_CI_FILES = new Set(["test-groups", "quality-result", "run-tests", "benchmark-report"].map(name => `test/ci/${name}.test.ts`));
 const FOUNDATION_FILE = "test/repository-foundation.test.ts";
@@ -40,11 +47,27 @@ function metrics(run: BenchmarkRun): RunMetrics {
   const last = run.condition === "C" ? run.jobs.find(job => job.name === "Benchmark / quality")?.completedAt : selected[0]?.completedAt;
   const executed = run.jobs.filter(job => job.conclusion !== "skipped");
   const durations = executed.map(job => seconds(job.startedAt, job.completedAt));
-  return { queueSeconds: seconds(run.createdAt, run.startedAt), preparationSeconds: seconds(run.startedAt, first), wallSeconds: seconds(first, last), runnerMinutes: durations.some(d => d === null) || !durations.length ? null : durations.reduce<number>((sum, d) => sum + d!, 0) / 60 };
+  return { queueSeconds: seconds(run.createdAt, first), workflowStartDelaySeconds: seconds(run.createdAt, run.startedAt), totalSeconds: seconds(run.createdAt, last), preparationSeconds: seconds(run.startedAt, first), wallSeconds: seconds(first, last), runnerMinutes: durations.some(d => d === null) || !durations.length ? null : durations.reduce<number>((sum, d) => sum + d!, 0) / 60 };
+}
+// The API exposes starts/completions, not dependency-ready/enqueued timestamps.
+// These are elapsed dependency-ready-to-start estimates, not pure runner queue telemetry.
+function jobWaits(run: BenchmarkRun): JobWait[] {
+  const validateEnd = run.jobs.find(job => job.name === "validate")?.completedAt ?? null;
+  const regressionEnds = TEST_GROUPS.map(group => run.jobs.find(job => job.name === `Grouped / ${group}`)?.completedAt ?? null);
+  const qualityReady = regressionEnds.every(end => end !== null) ? [...regressionEnds].sort().at(-1) ?? null : null;
+  return run.jobs.map((job): JobWait => {
+    let readyAt: string | null = null;
+    let readyBasis = "unknown workflow dependency";
+    if (job.conclusion === "skipped") readyBasis = "not executed";
+    else if (job.name === "validate") { readyAt = run.createdAt; readyBasis = "workflow created_at"; }
+    else if (job.name.startsWith("Serial / ") || job.name.startsWith("Grouped / ")) { readyAt = validateEnd; readyBasis = "validate completed_at"; }
+    else if (job.name === "Benchmark / quality") { readyAt = qualityReady; readyBasis = "all regression completed_at"; }
+    return { name: job.name, readyAt, startedAt: job.startedAt, waitSeconds: seconds(readyAt, job.startedAt), readyBasis, estimated: true };
+  });
 }
 function testSet(run: BenchmarkRun): string[] { return run.files.flatMap(file => file.tests.map(test => `${file.path} :: ${test}`)).sort(); }
 export function summarizeRuns(input: readonly BenchmarkRun[]): BenchmarkComparison {
-  const runs = input.map(run => ({ ...run, metrics: metrics(run) }));
+  const runs = input.map(run => ({ ...run, metrics: metrics(run), jobWaits: jobWaits(run) }));
   const reasons: string[] = [];
   const testSetDifferences: BenchmarkComparison["testSetDifferences"] = [];
   const reference = runs.find(run => run.condition === "A") ?? runs[0];
@@ -71,6 +94,7 @@ export function summarizeRuns(input: readonly BenchmarkRun[]): BenchmarkComparis
       for (const job of jobs) if (job.conclusion !== "success") issue(`${name}: ${job.conclusion ?? "pending"}`);
     }
     for (const [key, value] of Object.entries(run.metrics)) if (value === null) issue(`missing/invalid ${key} timestamps`);
+    for (const wait of run.jobWaits) if (wait.readyBasis !== "not executed" && wait.waitSeconds === null) issue(`${wait.name}: dependency wait unmeasured`);
     if (!selected.length || !run.files.length || !run.artifacts.length) issue("missing regression results");
     for (const group of run.condition === "C" ? TEST_GROUPS : ["all"]) {
       if (!run.artifacts.some(artifact => artifact.group === group)) issue(`missing ${group} metadata`);
@@ -119,14 +143,23 @@ export function summarizeRuns(input: readonly BenchmarkRun[]): BenchmarkComparis
       const durations = subset.flatMap(run => run.files.filter(file => file.path === path));
       return { path, elapsedMs: statistics(durations.map(file => file.elapsedMs)), assertionMs: statistics(durations.map(file => file.assertionMs)) };
     }).sort((a, b) => (b.elapsedMs.median ?? 0) - (a.elapsedMs.median ?? 0));
-    return [condition, { count: subset.length, queueSeconds: statistics(subset.map(run => run.metrics.queueSeconds)), preparationSeconds: statistics(subset.map(run => run.metrics.preparationSeconds)), wallSeconds: statistics(subset.map(run => run.metrics.wallSeconds)), runnerMinutes: statistics(subset.map(run => run.metrics.runnerMinutes)), files, commonFileElapsedMs: statistics(subset.map(run => run.files.filter(file => commonFilePaths.includes(file.path)).reduce((sum, file) => sum + file.elapsedMs, 0))), configurationElapsedMs: statistics(subset.map(run => run.files.filter(file => configurationFile(file.path)).reduce((sum, file) => sum + file.elapsedMs, 0))) }];
+    const heavyFiles = HEAVY_FILES.map(path => {
+      const timings = subset.map(run => run.files.find(file => file.path === path));
+      const missingRuns = timings.filter(file => file === undefined).length;
+      return { path, presentRuns: subset.length - missingRuns, missingRuns, unavailableReason: !subset.length ? "no runs" : missingRuns ? `file missing in runs ${subset.filter((_, index) => timings[index] === undefined).map(run => `${run.runId}:${run.attempt}`).join(", ")}` : null, elapsedMs: statistics(missingRuns ? [] : timings.map(file => file?.elapsedMs ?? null)), assertionMs: statistics(missingRuns ? [] : timings.map(file => file?.assertionMs ?? null)) };
+    });
+    return [condition, { count: subset.length, heavyFiles, workflowStartDelaySeconds: statistics(subset.map(run => run.metrics.workflowStartDelaySeconds)), totalSeconds: statistics(subset.map(run => run.metrics.totalSeconds)), queueSeconds: statistics(subset.map(run => run.metrics.queueSeconds)), preparationSeconds: statistics(subset.map(run => run.metrics.preparationSeconds)), wallSeconds: statistics(subset.map(run => run.metrics.wallSeconds)), runnerMinutes: statistics(subset.map(run => run.metrics.runnerMinutes)), files, commonFileElapsedMs: statistics(subset.map(run => run.files.filter(file => commonFilePaths.includes(file.path)).reduce((sum, file) => sum + file.elapsedMs, 0))), configurationElapsedMs: statistics(subset.map(run => run.files.filter(file => configurationFile(file.path)).reduce((sum, file) => sum + file.elapsedMs, 0))) }];
   })) as Record<Condition, ConditionSummary>;
   const comparable = !reasons.length;
   const reduction = (from: Condition, to: Condition) => {
     const a = conditions[from].wallSeconds.median; const b = conditions[to].wallSeconds.median;
     return comparable && a !== null && b !== null && a > 0 ? (a - b) / a * 100 : null;
   };
-  return { comparable, reasons, runs, conditions, reductions: { AtoB: reduction("A", "B"), BtoC: reduction("B", "C"), AtoC: reduction("A", "C") }, testSetDifferences, commonFilePaths };
+  const historicalReference = Object.fromEntries(CONDITIONS.map(condition => {
+    const measuredWallSeconds = comparable ? conditions[condition].wallSeconds.median : null;
+    return [condition, { measuredWallSeconds, savedSeconds: measuredWallSeconds === null ? null : HISTORICAL_SECONDS - measuredWallSeconds, reductionPercent: measuredWallSeconds === null ? null : (HISTORICAL_SECONDS - measuredWallSeconds) / HISTORICAL_SECONDS * 100 }];
+  })) as BenchmarkComparison["historicalReference"];
+  return { comparable, reasons, runs, conditions, historicalReference, reductions: { AtoB: reduction("A", "B"), BtoC: reduction("B", "C"), AtoC: reduction("A", "C") }, testSetDifferences, commonFilePaths };
 }
 function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Expected JSON object");
@@ -216,14 +249,22 @@ export async function collectRun(repository: string, id: string, transport: Tran
 function shown(value: number | null): string { return value === null ? "未測定" : value.toFixed(2); }
 function range(stat: Statistics): string { return `${shown(stat.median)} (${shown(stat.min)}–${shown(stat.max)})`; }
 export function renderComparison(comparison: BenchmarkComparison): string {
-  const lines = ["# CI performance comparison", "", `比較状態: ${comparison.comparable ? "比較可能" : "比較不可 / 未測定条件あり"}。異常runも全件保持。`, "", "条件別の値は中央値 (最小–最大)。queueはAPI created_at→run_started_at、準備はrun_started_at→最初の選択検証job開始、wallはA/B serial開始→終了、C最初のgroup開始→quality終了。runner分数はvalidateとqualityを含む、実行した全job時間の合計。", "", "| 条件 | run数 | queue秒 | 準備秒 | 検証wall秒 | 総runner分数 |", "| --- | ---: | --- | --- | --- | --- |"];
-  for (const condition of CONDITIONS) { const s = comparison.conditions[condition]; lines.push(`| ${condition} | ${s.count} | ${range(s.queueSeconds)} | ${range(s.preparationSeconds)} | ${range(s.wallSeconds)} | ${range(s.runnerMinutes)} |`); }
+  const lines = ["# CI performance comparison", "", `比較状態: ${comparison.comparable ? "比較可能" : "比較不可 / 未測定条件あり"}。異常runも全件保持。`, "", "条件別の値は中央値 (最小–最大)。canonical queueはAPI created_at→最初の選択検証job開始。workflow開始遅延はcreated_at→run_started_at、準備はrun_started_at→最初の検証開始で、queueの細分値。wallはA/B serial開始→終了、C最初のgroup開始→quality終了。queue込み総時間はcreated_at→その検証終了。runner分数はvalidateとqualityを含む、実行した全job時間の合計。", "", "| 条件 | run数 | canonical queue秒 | workflow開始遅延秒 | 準備秒 | 検証wall秒 | queue込み総秒 | 総runner分数 |", "| --- | ---: | --- | --- | --- | --- | --- | --- |"];
+  for (const condition of CONDITIONS) { const s = comparison.conditions[condition]; lines.push(`| ${condition} | ${s.count} | ${range(s.queueSeconds)} | ${range(s.workflowStartDelaySeconds)} | ${range(s.preparationSeconds)} | ${range(s.wallSeconds)} | ${range(s.totalSeconds)} | ${range(s.runnerMinutes)} |`); }
   lines.push("", ...Object.entries(comparison.reductions).map(([key, value]) => `${key}: ${value === null ? "未測定 / 比較不可" : `${shown(value)}%`}`), "", "歴史的記録: 12分35秒 (755秒)。別環境・過去runの参考値でありAの代用にはしない。目安8分48秒 (528秒) だけで完了判定しない。A→Cの3回以上の同条件比較が必要。", "", "A/B評価実装は同一（Task 4で安全な再計算削減なし）。B/Cは同じtarget SHA。許容する差分はこのIssueの4既知CI unit testファイルの追加とfoundation構成assertionの追加/置換のみ。同一target SHA内の差は許容しない。全差分へ記録し、既存評価assertionの固定は別途diffで確認する。", "", "## 比較を妨げる条件", "", ...(comparison.reasons.length ? comparison.reasons.map(reason => `- ${reason}`) : ["- なし"]), "", "## 重い6ファイル (elapsedとassertion合計を分離)", "", "Vitest testResults[].endTime-startTimeは最早assertion開始→最終assertion終了のミリ秒（module import/transformや前後setup全体を含まない）。assertionResults[].duration合計はassertion時間でありelapsedの代用にしない。絶対checkoutパスはtest/から正規化。numTotalTestSuitesはファイル数として使用しない。");
-  for (const condition of CONDITIONS) { lines.push("", `### ${condition}`, "", "| ファイル | elapsed ms 中央値 (範囲) | assertion ms 中央値 (範囲) |", "| --- | --- | --- |"); const files = comparison.conditions[condition].files.slice(0, 6); lines.push(...files.map(f => `| ${f.path} | ${range(f.elapsedMs)} | ${range(f.assertionMs)} |`)); if (!files.length) lines.push("| 未測定 | 未測定 | 未測定 |"); }
+  for (const condition of CONDITIONS) {
+    lines.push("", `### ${condition}`, "", "| 固定ファイル | elapsed ms 中央値 (範囲) | assertion ms 中央値 (範囲) | 計測run数 | 欠測理由 |", "| --- | --- | --- | --- | --- |");
+    lines.push(...comparison.conditions[condition].heavyFiles.map(f => `| ${f.path} | ${range(f.elapsedMs)} | ${range(f.assertionMs)} | ${f.presentRuns}/${comparison.conditions[condition].count} | ${f.unavailableReason ?? "none"} |`));
+  }
+  lines.push("", "## 歴史的755秒に対する参考比較", "", "対象は条件別の検証wall中央値。差秒=755−wall、率=(755−wall)/755×100。別環境・過去runの参考比較で、A→C判定から独立する。未測定または比較不可ならnull/未測定とし、成功runだけを選別しない。", "", "| 条件 | 実測wall中央値 秒 | 歴史値との差秒 | 歴史値に対する短縮率 |", "| --- | --- | --- | --- |");
+  for (const condition of CONDITIONS) { const h = comparison.historicalReference[condition]; lines.push(`| ${condition} | ${shown(h.measuredWallSeconds)} | ${shown(h.savedSeconds)} | ${h.reductionPercent === null ? "未測定" : `${shown(h.reductionPercent)}%`} |`); }
+  lines.push("", "## 各jobの依存待ち時間（推定）", "", "Actions APIはdependency-ready/enqueued時刻を提供しないため、依存ready推定→started_atを保存する。validate ready=workflow created_at（初期workflow schedulingを含む）、serial/regression ready=validate completed_at、quality ready=全5regressionの最遅completed_at。scheduleとrunner待ちを含むelapsed推定であり、純粋なrunner queue実測ではない。欠落/矛盾する依存時刻はnull/未測定、意図的skipは未実行。", "", "| run:attempt | job | ready推定 UTC | start UTC | 待ち秒 | ready根拠 |", "| --- | --- | --- | --- | --- | --- |");
+  for (const run of comparison.runs) for (const wait of run.jobWaits) lines.push(`| ${run.runId}:${run.attempt} | ${wait.name} | ${wait.readyAt ?? "未測定"} | ${wait.startedAt ?? "未測定"} | ${shown(wait.waitSeconds)} | ${wait.readyBasis} |`);
+  if (!comparison.runs.length) lines.push("| 未測定 | 未測定 | 未測定 | 未測定 | 未測定 | no runs |");
   lines.push("", "## 共通既存ファイルと構成検証の時間", "", `全runに共通する既存ファイル ${comparison.commonFilePaths.length}件（foundationと4既知CI unit testを除外）。各file時間は上記とJSONへ保持。合計はassertion-spanの和であり並列wall timeではない。`, "", "| 条件 | 共通file elapsed ms 合計 中央値 (範囲) | 構成検証 elapsed ms 合計 中央値 (範囲) |", "| --- | --- | --- |");
   for (const condition of CONDITIONS) { const summary = comparison.conditions[condition]; lines.push(`| ${condition} | ${range(summary.commonFileElapsedMs)} | ${range(summary.configurationElapsedMs)} |`); }
   lines.push("", "## run別の記録", "", "JSON詳細には全job/step UTC時刻、結論、再実行attempt、欠落artifact、ファイル時間/全assertion集合、RSS値とscopeを保存。RSSはGNU timeのcommandとwaited-for descendantsの最大値であり、全processの同時RSS合計ではない。", "");
-  for (const run of comparison.runs) { lines.push(`- run ${run.runId}:${run.attempt}, ${run.condition ?? "unknown"}, ${run.conclusion ?? "pending"}; control=${run.controlSha ?? "unknown"}; target=${run.targetSha ?? "unknown"}; queue=${shown(run.metrics.queueSeconds)}s; preparation=${shown(run.metrics.preparationSeconds)}s; wall=${shown(run.metrics.wallSeconds)}s; runner=${shown(run.metrics.runnerMinutes)}min`); for (const a of run.artifacts) lines.push(`  - ${a.group}: child=${a.durationMs}ms, RSS=${a.maxRssKiB ?? "未測定"}KiB; scope=${a.rssScope}; unavailable=${a.rssUnavailableReason ?? "none"}`); }
+  for (const run of comparison.runs) { lines.push(`- run ${run.runId}:${run.attempt}, ${run.condition ?? "unknown"}, ${run.conclusion ?? "pending"}; control=${run.controlSha ?? "unknown"}; target=${run.targetSha ?? "unknown"}; queue=${shown(run.metrics.queueSeconds)}s; preparation=${shown(run.metrics.preparationSeconds)}s; wall=${shown(run.metrics.wallSeconds)}s; queue-inclusive total=${shown(run.metrics.totalSeconds)}s; workflow-start delay=${shown(run.metrics.workflowStartDelaySeconds)}s; runner=${shown(run.metrics.runnerMinutes)}min`); for (const a of run.artifacts) lines.push(`  - ${a.group}: child=${a.durationMs}ms, RSS=${a.maxRssKiB ?? "未測定"}KiB; scope=${a.rssScope}; unavailable=${a.rssUnavailableReason ?? "none"}`); }
   if (!comparison.runs.length) lines.push("- 未測定。Actions run IDは未取得。remote failure/cancel/timeout/flaky検証、Linux GNU time測定、A/B/C最低各3回は保留。");
   lines.push("", "## 検証集合差", "");
   if (!comparison.testSetDifferences.length) lines.push(comparison.runs.length ? "差分なし。" : "未測定。baselineとの差分は実run取得後に照合する。");

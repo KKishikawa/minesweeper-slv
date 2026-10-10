@@ -9,6 +9,114 @@
   "conditions": {
     "A": {
       "count": 0,
+      "heavyFiles": [
+        {
+          "path": "test/recognition/formal-runner.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/folds.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/generated-bank.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/browser-grid-resample.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/browser-grid-fallback.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/evaluate-grid-fallback.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        }
+      ],
+      "workflowStartDelaySeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "totalSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
       "queueSeconds": {
         "median": null,
         "min": null,
@@ -43,6 +151,114 @@
     },
     "B": {
       "count": 0,
+      "heavyFiles": [
+        {
+          "path": "test/recognition/formal-runner.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/folds.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/generated-bank.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/browser-grid-resample.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/browser-grid-fallback.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/evaluate-grid-fallback.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        }
+      ],
+      "workflowStartDelaySeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "totalSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
       "queueSeconds": {
         "median": null,
         "min": null,
@@ -77,6 +293,114 @@
     },
     "C": {
       "count": 0,
+      "heavyFiles": [
+        {
+          "path": "test/recognition/formal-runner.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/folds.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/generated-bank.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/browser-grid-resample.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/browser-grid-fallback.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        },
+        {
+          "path": "test/recognition/evaluate-grid-fallback.test.ts",
+          "presentRuns": 0,
+          "missingRuns": 0,
+          "unavailableReason": "no runs",
+          "elapsedMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          },
+          "assertionMs": {
+            "median": null,
+            "min": null,
+            "max": null
+          }
+        }
+      ],
+      "workflowStartDelaySeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "totalSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
       "queueSeconds": {
         "median": null,
         "min": null,
@@ -108,6 +432,23 @@
         "min": null,
         "max": null
       }
+    }
+  },
+  "historicalReference": {
+    "A": {
+      "measuredWallSeconds": null,
+      "savedSeconds": null,
+      "reductionPercent": null
+    },
+    "B": {
+      "measuredWallSeconds": null,
+      "savedSeconds": null,
+      "reductionPercent": null
+    },
+    "C": {
+      "measuredWallSeconds": null,
+      "savedSeconds": null,
+      "reductionPercent": null
     }
   },
   "reductions": {
