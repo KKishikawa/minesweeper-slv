@@ -26,6 +26,14 @@
 - version `0.1.0-dev.1`。開発版として公開済みです。
 - 検証結果と公開記録は[手動MVPリリース確認](docs/project/manual-mvp-release.md)を参照してください。
 
+## 通信・保存・不具合報告
+
+盤面の入力と解析はブラウザ内で行い、アプリは盤面を外部へ送信しません。ページ表示や解析に必要な静的ファイル（HTML・CSS・JavaScript・Worker）の取得には通信が発生します。GitHub Pagesでは、GitHubがアクセス時のIPアドレスをセキュリティ目的で記録します（[GitHub公式説明](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection)）。
+
+盤面はページ内のメモリに保持し、ブラウザの保存領域へ自動保存しません。再読み込みで初期化されます。開発者向け診断は既定でOFFです。有効化後の解析を直近100件までメモリ内に保持し、JSONをダウンロードできます。OFFで取得を停止し、実行中の記録を除外します。完了済み履歴は削除するか再読み込みするまで残り、再読み込みで設定も消えます。アプリから診断データを自動送信する機能はありません。
+
+不具合の報告は利用者自身が内容を確認し、[GitHub Issue](https://github.com/KKishikawa/minesweeper-slv/issues)へ投稿するか選べます。公開Issueの本文・添付ファイルは公開されます。現在の通信・保存・診断機能の詳細は[通信・保存・診断報告の説明](docs/project/privacy.md)を参照してください。
+
 ## 動作環境
 
 - 開発・CI基準: `.node-version`で22.12.0に固定

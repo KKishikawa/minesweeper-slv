@@ -16,6 +16,14 @@
 - 画像入力・認識統合・数値確率・自動クリック・バックエンドなし。
 - 自動保存なし。localStorage/sessionStorage/IndexedDBを使用せず、再読み込みで初期化。
 
+## 今後の公開で確認する説明（Issue #33）
+
+現在の説明は[通信・保存・診断報告](privacy.md)を正本とします。UIとREADMEも、静的ファイル取得、ページ内メモリでの保持、ブラウザ保存領域への保存、利用者によるダウンロードとIssue投稿を区別します。公開Issueの本文・添付ファイルが公開される案内も確認します。
+
+診断履歴・JSON出力を実装したため、取得の有効化、保持対象・範囲・期間、再読み込み・無効化時の挙動とJSONダウンロードを実装に合わせて検証し、アプリから自動送信しないことを確認します。GitHub側のIP記録はブラウザのNetwork検証だけでは検証できないため、[GitHub公式説明](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection)を案内します。
+
+以下の検証証跡と日付付き実施記録は、その対象commit・公開版についての過去の事実です。診断機能追加後の保持挙動を証明するものとして流用しません。保存済みの画像・JSON・manifestは変更しません。
+
 ## 検証証跡
 
 | 項目 | 結果 |
@@ -55,7 +63,7 @@ npm run preview
 3. `.js`（module Workerを含む）はJavaScript MIME（`text/javascript`または`application/javascript`）、CSSは`text/css`で返す。WorkerをHTML fallbackで返さない。
 4. `npm run build:pages`で`/minesweeper-slv/`向けにbuildする。`npm test -- test/browser/pages.test.ts`は別の一時出力先でこのbuildを実行し、サブパスから静的ファイルと実Workerを読み込み、solver提案まで確認する。通常の`dist/`を上書きしない。
 5. 本変更をmainへ統合し、Windows実機の過去記録とChromium補完の対象commitを区別し、Chromium補完と公開対象のアプリを一致させる。Actionsの「Publish GitHub Pages」をmainから手動実行し、`release_verified`（Windows実機記録＋Chromium補完による出荷確認と公開承認）をtrueにする。ワークフローは型検査・全テストを再実行し、versionとcommitを`release.json`へ記録してPages artifactを配信する。pushやPRでは公開しない。直前の成功runとcommitをロールバック用に記録する。
-6. 配信後に静的ファイル・Worker取得、3×1/1地雷/左0の安全・地雷提案、矛盾と再入力、キーボード、外部通信なしをsmoke確認する。
+6. 配信後に静的ファイル・Worker取得、3×1/1地雷/左0の安全・地雷提案、矛盾と再入力、キーボード、アプリによる盤面・画像・診断データの外部送信がないことをsmoke確認する。静的ファイル取得の通信は許容し、GitHub Pages側のIP記録とは区別する。
 7. 不具合時は直前の成功したPages workflow runを再実行して、そのrunのcommitを再build・配信する。再実行が利用できない場合は、mainを直前公開版の内容へ戻すrevert PRをレビュー・統合し、手動公開する。履歴の強制書換えはしない。配信後に`release.json`のcommitと同じsmokeを再確認する。自動保存がないためデータ移行は不要。
 
 初回配信と公開後smokeは下記の公開記録に保存しました。
