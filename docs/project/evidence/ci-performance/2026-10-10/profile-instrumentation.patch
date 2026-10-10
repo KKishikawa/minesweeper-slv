@@ -1,0 +1,325 @@
+--- /dev/null
++++ b/profile-timing.ts
+@@ -0,0 +1,10 @@
++import { writeFileSync } from "node:fs";
++import { performance } from "node:perf_hooks";
++const metrics: { name: string; value: number }[] = [];
++export function __profileMetric(name: string, value: number) { metrics.push({ name, value }); }
++const events: { name: string; start: number; end: number }[] = [];
++export function __profileEnter(name: string) { return { name, start: performance.now(), end: 0 }; }
++export function __profileExit(event: { name: string; start: number; end: number }) { event.end = performance.now(); events.push(event); }
++export async function __profileAsync<T>(name: string, action: () => Promise<T>): Promise<T> { const token = __profileEnter(name); try { return await action(); } finally { __profileExit(token); } }
++export function __profileSync<T>(name: string, action: () => T): T { const token = __profileEnter(name); try { return action(); } finally { __profileExit(token); } }
++process.on("exit", () => { if (process.env.PROFILE_TIMING_PREFIX) writeFileSync(process.env.PROFILE_TIMING_PREFIX + "-" + process.pid + ".json", JSON.stringify({ pid: process.pid, events, metrics })); });
+--- a/scripts/recognition/calibrate.ts
++++ b/scripts/recognition/calibrate.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -98,0 +100,2 @@
++const __profileToken = __profileEnter("scripts/recognition/calibrate.ts#evaluateThresholdPairs"); try {
++
+@@ -137,0 +141,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -143,0 +149,2 @@
++const __profileToken = __profileEnter("scripts/recognition/calibrate.ts#selectThresholdPair"); try {
++
+@@ -159,0 +167,2 @@
++
++} finally { __profileExit(__profileToken); }
+--- a/scripts/recognition/evaluate-folds.ts
++++ b/scripts/recognition/evaluate-folds.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -58,0 +60,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-folds.ts#calibrationCase"); try {
++
+@@ -76,0 +80,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -84,0 +90,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-folds.ts#evaluateCase"); try {
++
+@@ -136,0 +144,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -142,0 +152,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-folds.ts#evaluateLeaveOneScreenOut"); try {
++
+@@ -199 +210,3 @@
+-}
++
++} finally { __profileExit(__profileToken); }
++}
+--- a/scripts/recognition/evaluate-grid-fallback.ts
++++ b/scripts/recognition/evaluate-grid-fallback.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -153,0 +155,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-grid-fallback.ts#assertStablePixelHash"); try {
++
+@@ -158,0 +162,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -161,0 +167,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-grid-fallback.ts#decodeEvaluationCases"); try {
++
+@@ -173,0 +181,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -176,0 +186,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-grid-fallback.ts#measureStrictAttempt"); try {
++
+@@ -192,0 +204,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -195,0 +209,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-grid-fallback.ts#measureCompleteAttempt"); try {
++
+@@ -215,0 +231,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -331,0 +349,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-grid-fallback.ts#evaluateGridEvidence"); try {
++
+@@ -480,0 +500,2 @@
++
++} finally { __profileExit(__profileToken); }
+--- a/scripts/recognition/evaluate-grid-resample-compatibility.ts
++++ b/scripts/recognition/evaluate-grid-resample-compatibility.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync, __profileMetric } from "../../profile-timing.js";
+@@ -76,0 +78,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-grid-resample-compatibility.ts#hashBrowserOutputBytes"); try {
++
+@@ -93,0 +97,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -96,0 +102,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-grid-resample-compatibility.ts#transpiledResampleModule"); try {
++
+@@ -100,0 +108,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -103,0 +113,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-grid-resample-compatibility.ts#formalResampleCases"); try {
++
+@@ -136,0 +148,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -145,0 +159,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-grid-resample-compatibility.ts#browserResample"); try {
++
+@@ -151 +166 @@
+-      const output = await page.evaluate(async ({ moduleSource: source, input, inputScale, includeBytes: returnBytes, key }) => {
++      const output = await __profileAsync("browser.rpc", async () => page.evaluate(async ({ moduleSource: source, input, inputScale, includeBytes: returnBytes, key }) => {
+@@ -170,0 +186 @@
++          const __profileResampleStartedAt = performance.now();
+@@ -177,0 +194 @@
++            __profileResampleMs: performance.now() - __profileResampleStartedAt,
+@@ -195 +212,2 @@
+-      });
++      }));
++      __profileMetric("browser.resample.ms", output.__profileResampleMs);
+@@ -198 +216 @@
+-        async (offset, length) => page.evaluate(({ key, start, end }) => {
++        async (offset, length) => __profileAsync("browser.rpc", async () => page.evaluate(({ key, start, end }) => {
+@@ -202 +220 @@
+-        }, { key: outputKey, start: offset, end: offset + length }),
++        }, { key: outputKey, start: offset, end: offset + length })),
+@@ -206 +224 @@
+-      await page.evaluate((key) => Reflect.deleteProperty(globalThis, key), outputKey).catch(() => undefined);
++      await __profileAsync("browser.rpc", async () => page.evaluate((key) => Reflect.deleteProperty(globalThis, key), outputKey)).catch(() => undefined);
+@@ -210,0 +229,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -219,0 +240,2 @@
++const __profileToken = __profileEnter("scripts/recognition/evaluate-grid-resample-compatibility.ts#evaluateGridResampleCompatibility"); try {
++
+@@ -225 +247 @@
+-      const expected = resampleCanonicalGridImage(caseValue.image, caseValue.scale);
++      const expected = __profileSync("node.resample", () => resampleCanonicalGridImage(caseValue.image, caseValue.scale));
+@@ -275,0 +298,2 @@
++
++} finally { __profileExit(__profileToken); }
+--- a/scripts/recognition/generate-prototype-bank.ts
++++ b/scripts/recognition/generate-prototype-bank.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -100,0 +102,2 @@
++const __profileToken = __profileEnter("scripts/recognition/generate-prototype-bank.ts#buildCalibrationCase"); try {
++
+@@ -138,0 +142,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -144,0 +150,2 @@
++const __profileToken = __profileEnter("scripts/recognition/generate-prototype-bank.ts#evaluateCase"); try {
++
+@@ -190,0 +198,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -202,0 +212,2 @@
++const __profileToken = __profileEnter("scripts/recognition/generate-prototype-bank.ts#buildFinalBankEvaluation"); try {
++
+@@ -243,0 +255,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -264,0 +278,2 @@
++const __profileToken = __profileEnter("scripts/recognition/generate-prototype-bank.ts#generatePrototypeBank"); try {
++
+@@ -273,0 +289,2 @@
++
++} finally { __profileExit(__profileToken); }
+--- a/scripts/recognition/prototype-builder.ts
++++ b/scripts/recognition/prototype-builder.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -174,0 +176,2 @@
++const __profileToken = __profileEnter("scripts/recognition/prototype-builder.ts#buildPrototypeGeometry"); try {
++
+@@ -208 +211,3 @@
+-}
++
++} finally { __profileExit(__profileToken); }
++}
+--- a/scripts/run-multi-prototype-spike.ts
++++ b/scripts/run-multi-prototype-spike.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../profile-timing.js";
+@@ -266,0 +268,2 @@
++const __profileToken = __profileEnter("scripts/run-multi-prototype-spike.ts#writeJson"); try {
++
+@@ -271,0 +275,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -487,0 +493,2 @@
++const __profileToken = __profileEnter("scripts/run-multi-prototype-spike.ts#runSpike"); try {
++
+@@ -583,0 +591,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -698,0 +708,2 @@
++const __profileToken = __profileEnter("scripts/run-multi-prototype-spike.ts#writeTextAtomically"); try {
++
+@@ -702,0 +714,2 @@
++
++} finally { __profileExit(__profileToken); }
+--- a/src/recognition/grid-fallback.ts
++++ b/src/recognition/grid-fallback.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -102,0 +104,2 @@
++const __profileToken = __profileEnter("src/recognition/grid-fallback.ts#detectGridDirectFirst"); try {
++
+@@ -180,0 +184,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -193,0 +199,2 @@
++const __profileToken = __profileEnter("src/recognition/grid-fallback.ts#detectGridWithDiagnostics"); try {
++
+@@ -200 +207,3 @@
+-}
++
++} finally { __profileExit(__profileToken); }
++}
+--- a/src/recognition/grid-strict.ts
++++ b/src/recognition/grid-strict.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -1076,0 +1078,2 @@
++const __profileToken = __profileEnter("src/recognition/grid-strict.ts#detectStrictGridAttempt"); try {
++
+@@ -1193 +1196,3 @@
+-}
++
++} finally { __profileExit(__profileToken); }
++}
+--- a/src/recognition/grid.ts
++++ b/src/recognition/grid.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -10,0 +12,2 @@
++const __profileToken = __profileEnter("src/recognition/grid.ts#detectGrid"); try {
++
+@@ -11,0 +15,2 @@
++
++} finally { __profileExit(__profileToken); }
+--- a/src/recognition/multi-recognize.ts
++++ b/src/recognition/multi-recognize.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -30,0 +32,2 @@
++const __profileToken = __profileEnter("src/recognition/multi-recognize.ts#recognizeBoardWithBank"); try {
++
+@@ -72,0 +76,2 @@
++
++} finally { __profileExit(__profileToken); }
+--- a/test/recognition/browser-derive.ts
++++ b/test/recognition/browser-derive.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync, __profileMetric } from "../../profile-timing.js";
+@@ -37,0 +39 @@
++  const __profileGenerateStartedAt = performance.now();
+@@ -80,2 +82,2 @@
+-      return [
+-        { name: "source", scale: 1, encoding: "source", image: sourceImage },
++      const derivatives = [
++        { name: "source", scale: 1, encoding: "source", image: sourceImage, __profileGenerateMs: 0 },
+@@ -85,0 +88,2 @@
++      derivatives[0].__profileGenerateMs = performance.now() - __profileGenerateStartedAt;
++      return derivatives;
+@@ -115,0 +120,2 @@
++const __profileToken = __profileEnter("test/recognition/browser-derive.ts#decodeRgbaDataUrl"); try {
++
+@@ -118,0 +125,2 @@
++
++} finally { __profileExit(__profileToken); }
+@@ -124,0 +133,2 @@
++const __profileToken = __profileEnter("test/recognition/browser-derive.ts#deriveBrowserImages"); try {
++
+@@ -131 +141 @@
+-    const derivatives = await page.evaluate<BrowserDerivative[]>(
++    const derivatives = await __profileAsync("browser.rpc", async () => page.evaluate<BrowserDerivative[]>(
+@@ -133 +143 @@
+-    );
++    ));
+@@ -134,0 +145 @@
++    __profileMetric("browser.generate.ms", (derivatives[0] as BrowserDerivative & { __profileGenerateMs: number }).__profileGenerateMs);
+@@ -149,0 +161,2 @@
++
++} finally { __profileExit(__profileToken); }
+--- a/test/recognition/fixture-manifest.ts
++++ b/test/recognition/fixture-manifest.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -68,0 +70,2 @@
++const __profileToken = __profileEnter("test/recognition/fixture-manifest.ts#loadFixtureCases"); try {
++
+@@ -81,0 +85,2 @@
++
++} finally { __profileExit(__profileToken); }
+--- a/test/recognition/generated-bank.test.ts
++++ b/test/recognition/generated-bank.test.ts
+@@ -30 +30 @@
+-    const child = spawn(process.execPath, [tsxCliPath, generatorPath], { cwd });
++    const child = spawn(process.execPath, ["--cpu-prof", `--cpu-prof-dir=${process.env.PROFILE_CPU_DIR}`, tsxCliPath, generatorPath], { cwd });
+--- a/test/recognition/image-io.ts
++++ b/test/recognition/image-io.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -5,0 +7,2 @@
++const __profileToken = __profileEnter("test/recognition/image-io.ts#decodeImage"); try {
++
+@@ -12,0 +16,2 @@
++
++} finally { __profileExit(__profileToken); }
+--- a/test/recognition/samples.ts
++++ b/test/recognition/samples.ts
+@@ -0,0 +1 @@
++import { __profileEnter, __profileExit, __profileAsync, __profileSync } from "../../profile-timing.js";
+@@ -16,0 +18,2 @@
++const __profileToken = __profileEnter("test/recognition/samples.ts#buildFixtureSamples"); try {
++
+@@ -37,0 +41,2 @@
++
++} finally { __profileExit(__profileToken); }
