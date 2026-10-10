@@ -1,0 +1,159 @@
+{
+  "deployed": {
+    "version": "0.1.0-dev.1",
+    "commit": "d292654d98e90a277582f2e1e0bf844d043ca970"
+  },
+  "date": "2026-10-10T06:22:14.868Z",
+  "browser": "151.0.7922.34",
+  "platform": "darwin",
+  "osRelease": "27.0.0",
+  "node": "v22.12.0",
+  "url": "https://kkishikawa.github.io/minesweeper-slv/",
+  "requests": [
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/",
+      "method": "GET",
+      "type": "document",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/index-CCbEXxGJ.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/index-DmXLGdqU.css",
+      "method": "GET",
+      "type": "stylesheet",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/",
+      "method": "GET",
+      "type": "document",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/index-CCbEXxGJ.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/index-DmXLGdqU.css",
+      "method": "GET",
+      "type": "stylesheet",
+      "hasBody": false
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    }
+  ],
+  "responses": [
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/",
+      "status": 200,
+      "mime": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/index-DmXLGdqU.css",
+      "status": 200,
+      "mime": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/index-CCbEXxGJ.js",
+      "status": 200,
+      "mime": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/",
+      "status": 200,
+      "mime": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/index-CCbEXxGJ.js",
+      "status": 200,
+      "mime": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/index-DmXLGdqU.css",
+      "status": 200,
+      "mime": "text/css; charset=utf-8"
+    },
+    {
+      "url": "https://kkishikawa.github.io/minesweeper-slv/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "application/javascript; charset=utf-8"
+    }
+  ],
+  "failed": [],
+  "sockets": [],
+  "errors": [],
+  "storage": {
+    "local": 0,
+    "session": 0,
+    "databases": 0,
+    "workers": 0,
+    "beacons": []
+  }
+}

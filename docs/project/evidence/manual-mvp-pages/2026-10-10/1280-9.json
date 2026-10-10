@@ -1,0 +1,28 @@
+{
+  "deployed": {
+    "version": "0.1.0-dev.1",
+    "commit": "d292654d98e90a277582f2e1e0bf844d043ca970"
+  },
+  "date": "2026-10-10T06:22:14.868Z",
+  "browser": "151.0.7922.34",
+  "platform": "darwin",
+  "osRelease": "27.0.0",
+  "node": "v22.12.0",
+  "url": "https://kkishikawa.github.io/minesweeper-slv/",
+  "columns": 9,
+  "geometry": {
+    "width": 40,
+    "height": 40,
+    "surfaceScroll": 360,
+    "surfaceWidth": 360,
+    "documentScroll": 1280,
+    "viewport": 1280,
+    "viewportHeight": 800,
+    "dpr": 2,
+    "placement": "right",
+    "available": 1182,
+    "canvasWidth": 720,
+    "cssCanvasWidth": 360,
+    "focus": "solid"
+  }
+}

@@ -4,7 +4,7 @@
 
 ## 判定
 
-手動入力からローカルsolver提案まで実装済み。**出荷確認は未完了**です。2026-10-10にWindows Chromeで実機確認を実施しました。当時W1の凡例とW5の入力旗の視認性に指摘がありました。#22の修正はChromiumで検証済みです（確認者の合意によりWindows Chrome再確認は本件の完了条件から除外）。表示・通信の不足記録は確認者の合意によりMac上のChromiumで補完済みです（[証跡](evidence/manual-mvp-chromium/2026-10-10/README.md)）。公開先はGitHub Pagesに決定しました。実際の配信と配信後smokeは未実施です。実装はPR #20でmainへ統合済みです。
+手動入力からローカルsolver提案まで実装済み。**出荷確認は完了**しました（2026-10-10、開発版 `0.1.0-dev.1`）。2026-10-10にWindows Chromeで実機確認を実施しました。当時W1の凡例とW5の入力旗の視認性に指摘がありました。#22の修正はChromiumで検証済みです（確認者の合意によりWindows Chrome再確認は本件の完了条件から除外）。表示・通信の不足記録は確認者の合意によりMac上のChromiumで補完済みです（[証跡](evidence/manual-mvp-chromium/2026-10-10/README.md)）。公開先はGitHub Pagesに決定しました。GitHub Pagesへの初回配信と公開後smokeも成功しました（[公開証跡](evidence/manual-mvp-pages/2026-10-10/README.md)）。実装はPR #20でmainへ統合済みです。
 
 ## 実装範囲と制限
 
@@ -48,7 +48,7 @@ npm run preview
 
 `npm run test:browser`も生成済み`dist`が前提です。通常CIはtypecheck → build → testの順で、ブラウザテストを別stepで重複実行しません。不採用認識spikeの専用テストは通常CIの対象外です。
 
-## 配信手順（未実施）
+## 配信手順
 
 1. [Windows確認票](manual-mvp-windows-checklist.md)に沿って、Windows Chromeで設定→入力→提案、矛盾→修正、旗policy、キーボード、3画面サイズを確認する。初回実施の結果は記録済み。#22の表示指摘はChromiumで検証済み。残る表示・通信記録は合意済みのMac上Chromiumで補完し、対象commit・OS・ブラウザversion・日付・結果を記録する。
 2. GitHubのSettings → Pages → Build and deploymentでSourceをGitHub Actionsに設定する。HTTPSのプロジェクトサイトを使い、配信対象は`dist/`のみとする。APIサーバーは不要。
@@ -58,7 +58,7 @@ npm run preview
 6. 配信後に静的ファイル・Worker取得、3×1/1地雷/左0の安全・地雷提案、矛盾と再入力、キーボード、外部通信なしをsmoke確認する。
 7. 不具合時は直前の成功したPages workflow runを再実行して、そのrunのcommitを再build・配信する。再実行が利用できない場合は、mainを直前公開版の内容へ戻すrevert PRをレビュー・統合し、手動公開する。履歴の強制書換えはしない。配信後に`release.json`のcommitと同じsmokeを再確認する。自動保存がないためデータ移行は不要。
 
-公開先への実配信はこの作業では実行していません。
+初回配信と公開後smokeは下記の公開記録に保存しました。
 
 ## Windows Chrome実機確認（2026-10-10）
 
@@ -68,7 +68,7 @@ W2〜W4・W6〜W12は確認者の記録でOK。W1の凡例と盤面の記号の�
 
 利用上の指摘と改善仮説は[検証整理](manual-mvp-windows-feedback-2026-10-10.md)にまとめ、[#23](https://github.com/KKishikawa/minesweeper-slv/issues/23)（フォーカス復帰時の誤入力）、[#24](https://github.com/KKishikawa/minesweeper-slv/issues/24)（ちらつき調査）、[#25](https://github.com/KKishikawa/minesweeper-slv/issues/25)（解析限界の診断）、[#26](https://github.com/KKishikawa/minesweeper-slv/issues/26)（旗policyの説明）を起票しました。30×16・99地雷での限界到達は確認者報告であり、停止盤面と原因は未確定です。
 
-#16はopenを維持します。Windows実機記録と合意済みChromium補完による公開前の必須検証は完了しました。GitHub Pages実配信、公開後のHTTPS/サブパスでのsmokeは未完了です。改善でcommitが変わる場合は、影響ケースを新commitで再検証します。
+#16の出荷確認は完了しました。Windows実機記録と合意済みChromium補完による必須検証、GitHub Pages実配信、公開後のHTTPS/サブパスでのsmokeが成功しています。改善でcommitが変わる場合は、影響ケースを新commitで再検証します。
 
 ## 依存関係の監査（2026-10-09）
 
@@ -108,3 +108,13 @@ npm test -- test/browser/release.test.ts
 ### 今回の補完検証（2026-10-10）
 
 アプリ対象`9b08c5fa8df3aea28d94b4635c70322f79deefc4`。アプリソース・依存に差分なし。型検査、通常production build、全43ファイル369テスト（388.66秒）、Pages build、actionlintが成功しました。公開URL向けテストは一時ディレクトリのPagesサブパス配信でも5件成功し、異なる`RELEASE_COMMIT`を指定した場合は失敗することを確認しました。[寸法・画像・通信の保存証跡](evidence/manual-mvp-chromium/2026-10-10/README.md)を参照してください。
+
+## 初回公開と出荷判定（2026-10-10）
+
+公開URL: [手動盤面入力型MVP](https://kkishikawa.github.io/minesweeper-slv/)。開発版 `0.1.0-dev.1`、公開commit `d292654d98e90a277582f2e1e0bf844d043ca970`。[公開workflow run](https://github.com/KKishikawa/minesweeper-slv/actions/runs/38021268430)のbuild・deployが成功し、GitHub Actions上でも型検査・全43ファイル369テスト（740.15秒）・Pages buildを通過しました。PR #28とmainの通常CIも成功しています。
+
+2026-10-10 15:22 JST、Mac上のChromiumで実際のHTTPS URLに対する5テストが成功しました（4.78秒）。`release.json`のcommit・version照合、実Workerによる安全／地雷提案、矛盾→再入力、キーボード、6通りの表示・寸法、通信・保存境界を確認しました。[公開後smokeの証跡](evidence/manual-mvp-pages/2026-10-10/README.md)に環境、寸法、画像、HTTP記録、release.json、workflow情報、SHA-256を保存しています。
+
+Windows実機の過去記録、#22の修正後Chromium確認、合意済みの表示・通信補完、実配信・公開後smokeにより#16の条件を満たします。初回公開のため直前公開版はなく、今後のロールバック基準は上記成功runとcommitです。
+
+開発版の既知制限は継続します。入力UX（#23）、ちらつき調査（#24）、解析限界の診断（#25）、旗policyの説明（#26）は後続改善として管理します。
