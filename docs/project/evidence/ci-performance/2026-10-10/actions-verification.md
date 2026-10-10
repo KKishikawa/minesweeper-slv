@@ -15,7 +15,9 @@
 
 修正後の wall は最初の regression job 開始 12:58:03 → quality 終了 13:02:14 の **251秒**。全6実行 job（5 regression + quality）の `completed_at - started_at` 合計は **15.3833 runner-minutes**。これは API job の setup・upload を含む区間で、workflow 作成前後の待ち時間を含む全体時間ではない。
 
-通常 CI の checkout は PR merge ref（初回 `732379ae3a50d9cc87cf5c1e0c9469271e6dbc16`、修正後 `91ddb717b51067936c6c91ad598dfe131fd94e0e`）であり、candidate 単独の checkout ではない。current main 由来の追加8 files / 37 tests が含まれる。差分一覧は `test/app/diagnostic-history.test.ts`、`test/app/solver-diagnostics.test.ts`、`test/browser/diagnostic-failures.test.ts`、`test/browser/diagnostics.test.ts`、`test/browser/input-stability.test.ts`、`test/browser/privacy.test.ts`、`test/solver/diagnostics.test.ts`、`test/solver/replay.test.ts`。
+通常 CI の checkout は PR merge ref（初回 `732379ae3a50d9cc87cf5c1e0c9469271e6dbc16`、修正後 `91ddb717b51067936c6c91ad598dfe131fd94e0e`）であり、candidate 単独の checkout ではない。current main 由来の追加8 files / 32 tests と、既存 `test/browser/solver-worker.test.ts` の追加1 test（2→3）が含まれる。追加ファイルと test 数は `test/app/diagnostic-history.test.ts` (2)、`test/app/solver-diagnostics.test.ts` (4)、`test/browser/diagnostic-failures.test.ts` (3)、`test/browser/diagnostics.test.ts` (1)、`test/browser/input-stability.test.ts` (12)、`test/browser/privacy.test.ts` (2)、`test/solver/diagnostics.test.ts` (2)、`test/solver/replay.test.ts` (6)。既存ファイルの追加 assertion は `receives checkpoints and exact node-exhaustion statistics from the real Worker`。
+
+candidate の最新テスト集合は48 files / 457 tests、PR merge ref の実 JSON は56 files / 490 tests（net +33）。457は旧ローカル group 和集合453に candidate の collector tests 追加4（24→28）を反映した集合上の数であり、candidate 最新版の full 再実行結果ではない。ローカル group JSON と actual JSON の共通ファイルの assertion 差は collector追加4と上記Worker追加1のみ（削除なし）。candidate source は collector修正と foundation の一時出力ファイル修正を含み、collector追加4は current main 由来の差に数えない。根拠 JSON は local `task-5-local-verification.json` / `test/artifacts/ci/*/vitest.json` と `actions-38053904218/ci-*/vitest.json`、照合結果は `actions-testset-correction.json`。
 
 ## 故意失敗と取消の scope
 
