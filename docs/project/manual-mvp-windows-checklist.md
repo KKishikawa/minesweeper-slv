@@ -1,6 +1,6 @@
 # 手動入力MVP Windows実機確認票
 
-Issue #16のWindows Chrome実機検証記録です。2026-10-10にKKishikawaが操作・確認し、結果と証跡を記録しました。当時W1・W5に表示上の指摘がありました。#22の修正後は下記のChromium確認で表示指摘を解消していますが、出荷確認全体は未完了です。結果の整理、証跡の限界、改善仮説は[検証整理](manual-mvp-windows-feedback-2026-10-10.md)を参照してください。
+Issue #16のWindows Chrome実機検証記録です。2026-10-10にKKishikawaが操作・確認し、結果と証跡を記録しました。当時W1・W5に表示上の指摘がありました。#22の修正後は下記のChromium確認で表示指摘を解消しています。出荷確認全体も、合意済みのChromium補完とGitHub Pages公開後smokeを含めて完了しました。結果の整理、証跡の限界、改善仮説は[検証整理](manual-mvp-windows-feedback-2026-10-10.md)を参照してください。
 
 ## 対象と実行環境
 
@@ -74,11 +74,11 @@ Mac上のPlaywright Chromiumで、`test/browser/legend.test.ts`の4ケースが�
 - W5の表示指摘: 3×1・1地雷、列1に0、列2にFを入力して再検討へ切り替え、旗と安全Sが共存することを確認。選択中・キーボードフォーカス中・別セル選択中でも旗の竿と三角形が残り、枠に隠れないことをスクリーンショットで比較。
 - WV2に対応する表示検証: 24 CSS px、DPR 1と2で上記を確認。表示領域1130×1080・30列の実際のレスポンシブ配置でもセル幅24pxと旗・Sの併記を確認。
 
-スクリーンショットは`test/artifacts/issue-22/`に出力します（テストで再生成、Git管理外）。型検査・production build・全43ファイル369テストも成功しました。#22の表示指摘はこの検証で解消として扱います。表示・通信の残記録は後述のChromium補完で確認済みです。出荷確認全体には実配信・公開後smokeが残ります。
+スクリーンショットは`test/artifacts/issue-22/`に出力します（テストで再生成、Git管理外）。型検査・production build・全43ファイル369テストも成功しました。#22の表示指摘はこの検証で解消として扱います。表示・通信の残記録は後述のChromium補完で確認済みです。実配信・公開後smokeも下記の記録で完了しています。
 
 ## 結果の扱い
 
-実施済みの検証結果と、[証跡対応表](evidence/manual-mvp-windows/2026-10-10/README.md)を保存しました。改善課題は[#22〜#26](manual-mvp-windows-feedback-2026-10-10.md)に整理しました。#22のW1/W5の表示指摘は上記のChromium確認で解消しています。#16は表示・通信記録の補完を完了し、実配信・公開後smokeが残るためopenを維持します。
+実施済みの検証結果と、[証跡対応表](evidence/manual-mvp-windows/2026-10-10/README.md)を保存しました。改善課題は[#22〜#26](manual-mvp-windows-feedback-2026-10-10.md)に整理しました。#22のW1/W5の表示指摘は上記のChromium確認で解消しています。#16は表示・通信記録の補完、実配信・公開後smokeまで完了しています。
 
 失敗時はID、操作、実際の結果、Console / Networkの情報、スクリーンショットを記録します。実行しなかったケースは未実施のまま残します。Windows実機記録と合意済みのMac上Chromium補完で必須ケースを満たし、公開・公開後smokeが完了するまで#16の出荷確認を完了扱いにしません。Edgeの参考結果はChromeと別に記録します。
 
@@ -111,3 +111,5 @@ Mac上のPlaywright Chromiumで、`test/browser/legend.test.ts`の4ケースが�
 公開判定は、既存のWindows実機記録、#22のChromium確認、今回のChromium補完、公開後smokeを組み合わせます。公開workflowの申告項目もこの判定に合わせます。
 
 補完結果: [Chromium証跡](evidence/manual-mvp-chromium/2026-10-10/README.md)。6通りの実測・画像、通信・保存記録、キーボードを含む5テストが成功しました。
+
+公開後確認: [GitHub Pages証跡](evidence/manual-mvp-pages/2026-10-10/README.md)。2026-10-10 15:22 JST、Mac上Chromiumで実URLの5テストが成功しました。公開commitは`d292654d98e90a277582f2e1e0bf844d043ca970`です。
