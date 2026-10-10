@@ -1,0 +1,120 @@
+{
+  "comparable": false,
+  "reasons": [
+    "A: at least 3 runs required (0)",
+    "B: at least 3 runs required (0)",
+    "C: at least 3 runs required (0)"
+  ],
+  "runs": [],
+  "conditions": {
+    "A": {
+      "count": 0,
+      "queueSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "preparationSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "wallSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "runnerMinutes": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "files": [],
+      "commonFileElapsedMs": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "configurationElapsedMs": {
+        "median": null,
+        "min": null,
+        "max": null
+      }
+    },
+    "B": {
+      "count": 0,
+      "queueSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "preparationSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "wallSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "runnerMinutes": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "files": [],
+      "commonFileElapsedMs": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "configurationElapsedMs": {
+        "median": null,
+        "min": null,
+        "max": null
+      }
+    },
+    "C": {
+      "count": 0,
+      "queueSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "preparationSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "wallSeconds": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "runnerMinutes": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "files": [],
+      "commonFileElapsedMs": {
+        "median": null,
+        "min": null,
+        "max": null
+      },
+      "configurationElapsedMs": {
+        "median": null,
+        "min": null,
+        "max": null
+      }
+    }
+  },
+  "reductions": {
+    "AtoB": null,
+    "BtoC": null,
+    "AtoC": null
+  },
+  "testSetDifferences": [],
+  "commonFilePaths": []
+}
