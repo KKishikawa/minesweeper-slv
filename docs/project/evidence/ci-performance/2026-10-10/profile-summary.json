@@ -1,0 +1,1253 @@
+{
+  "baselineSha": "1a01eac18f389e7933be9937ad7fa4aa8be476b7",
+  "afterSha": "eb7a326c54089a39b0cfbb2d6dc217cab64c69f6",
+  "node": "v22.12.0",
+  "platform": "darwin",
+  "arch": "arm64",
+  "chromium": "151.0.7922.34",
+  "os": "Darwin 27.0.0",
+  "cpu": "Apple M3 Pro",
+  "scriptHashes": {
+    "runner": "e670beae5601f688ec1c5f8cb0092393a894567eb3c3585002b8245e4ef739b1",
+    "summary": "d64aaf56511ef419d2d20ada08251f94933fcfd9020c327ccf70fcfc6b1a14ca"
+  },
+  "lockHash": "daf7fca2d9faa43e3a3631cacc6ba54628f2120061449a49d650de8e3a43beea",
+  "patchHash": "3a01054a6328e6efb82692271661de96f007758cb3e88f70668c898c8e3124ba",
+  "baselineJsonHash": "37e5221ad3bb8adf6afe60babe8be4181a16871b0f6b65c2e69892f9e07683b9",
+  "files": [
+    {
+      "name": "formal-runner",
+      "run": {
+        "file": "formal-runner",
+        "mode": "instrumented",
+        "elapsedMs": 88675.00575,
+        "status": 0,
+        "signal": null
+      },
+      "tests": 1,
+      "passed": 1,
+      "baselineTestMs": 83716.31201171875,
+      "profileTestMs": 87823.28149414062,
+      "profileVsBaselinePercent": 4.9058174968899415,
+      "stages": {
+        "test/recognition/fixture-manifest.ts#loadFixtureCases": {
+          "count": 2,
+          "inclusiveMs": 0.09649999999999181,
+          "exclusiveMs": 0.09649999999999181
+        },
+        "test/recognition/image-io.ts#decodeImage": {
+          "count": 8,
+          "inclusiveMs": 80.66891599999894,
+          "exclusiveMs": 80.66891599999894
+        },
+        "src/recognition/grid-strict.ts#detectStrictGridAttempt": {
+          "count": 113,
+          "inclusiveMs": 32569.50162500006,
+          "exclusiveMs": 32569.50162500006
+        },
+        "src/recognition/grid-fallback.ts#detectGridDirectFirst": {
+          "count": 88,
+          "inclusiveMs": 35117.896500999996,
+          "exclusiveMs": 2548.3948759999403
+        },
+        "src/recognition/grid-fallback.ts#detectGridWithDiagnostics": {
+          "count": 88,
+          "inclusiveMs": 35118.96282999996,
+          "exclusiveMs": 1.0663289999574772
+        },
+        "src/recognition/grid.ts#detectGrid": {
+          "count": 88,
+          "inclusiveMs": 35119.21770400002,
+          "exclusiveMs": 0.2548740000606813
+        },
+        "test/recognition/samples.ts#buildFixtureSamples": {
+          "count": 2,
+          "inclusiveMs": 3218.956125000001,
+          "exclusiveMs": 511.7465840000036
+        },
+        "scripts/recognition/prototype-builder.ts#buildPrototypeGeometry": {
+          "count": 5,
+          "inclusiveMs": 8430.720999,
+          "exclusiveMs": 8430.720999
+        },
+        "browser.rpc": {
+          "count": 8,
+          "inclusiveMs": 5877.536373999998,
+          "exclusiveMs": 5877.536373999998
+        },
+        "test/recognition/browser-derive.ts#decodeRgbaDataUrl": {
+          "count": 32,
+          "inclusiveMs": 141.4734180000014,
+          "exclusiveMs": 141.4734180000014
+        },
+        "test/recognition/browser-derive.ts#deriveBrowserImages": {
+          "count": 8,
+          "inclusiveMs": 7139.506958000001,
+          "exclusiveMs": 1120.497166000001
+        },
+        "src/recognition/multi-recognize.ts#recognizeBoardWithBank": {
+          "count": 80,
+          "inclusiveMs": 68657.48245600004,
+          "exclusiveMs": 36164.805377000026
+        },
+        "scripts/recognition/generate-prototype-bank.ts#buildCalibrationCase": {
+          "count": 16,
+          "inclusiveMs": 14087.324416999998,
+          "exclusiveMs": 2.194916999999805
+        },
+        "scripts/recognition/calibrate.ts#evaluateThresholdPairs": {
+          "count": 2,
+          "inclusiveMs": 15.435708000000886,
+          "exclusiveMs": 15.435708000000886
+        },
+        "scripts/recognition/calibrate.ts#selectThresholdPair": {
+          "count": 1,
+          "inclusiveMs": 6.221416999997018,
+          "exclusiveMs": 0.09445899999627727
+        },
+        "scripts/recognition/generate-prototype-bank.ts#evaluateCase": {
+          "count": 16,
+          "inclusiveMs": 87.12208299998383,
+          "exclusiveMs": 87.12208299998383
+        },
+        "scripts/recognition/generate-prototype-bank.ts#buildFinalBankEvaluation": {
+          "count": 1,
+          "inclusiveMs": 21536.25275,
+          "exclusiveMs": 18.752583000019513
+        },
+        "scripts/run-multi-prototype-spike.ts#writeJson": {
+          "count": 22,
+          "inclusiveMs": 95.15758400004052,
+          "exclusiveMs": 95.15758400004052
+        },
+        "scripts/recognition/evaluate-folds.ts#calibrationCase": {
+          "count": 48,
+          "inclusiveMs": 40959.361499999985,
+          "exclusiveMs": 4.006791999974666
+        },
+        "scripts/recognition/evaluate-folds.ts#evaluateCase": {
+          "count": 16,
+          "inclusiveMs": 13617.388124000005,
+          "exclusiveMs": 0.3898759999719914
+        },
+        "scripts/recognition/evaluate-folds.ts#evaluateLeaveOneScreenOut": {
+          "count": 1,
+          "inclusiveMs": 66087.2195,
+          "exclusiveMs": 48.78041900001699
+        },
+        "scripts/run-multi-prototype-spike.ts#writeTextAtomically": {
+          "count": 1,
+          "inclusiveMs": 0.8450840000004973,
+          "exclusiveMs": 0.8450840000004973
+        },
+        "scripts/run-multi-prototype-spike.ts#runSpike": {
+          "count": 1,
+          "inclusiveMs": 87739.758958,
+          "exclusiveMs": 20.284039999954985
+        }
+      },
+      "metrics": {
+        "browser.generate.ms": {
+          "count": 8,
+          "sum": 1109.5999999977648
+        }
+      },
+      "cpuCoverage": {
+        "timingPids": [
+          67943
+        ],
+        "cpuProfilePids": [
+          67943
+        ],
+        "unprofiledTimingPids": []
+      },
+      "cpu": {
+        "sampledMs": 88418.25000000231,
+        "resampleCpuSelfMs": 2444.57999999999,
+        "resampleCpuInclusiveMs": 2445.82999999999,
+        "topSelfMs": [
+          [
+            "assertFiniteVector @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/prototype-bank.ts",
+            9484.71000000008
+          ],
+          [
+            "meanSquaredDistance @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/multi-classify.ts",
+            8333.739000000187
+          ],
+          [
+            "(idle) @ (runtime)",
+            6321.919000000083
+          ],
+          [
+            "buildEdgeProfiles @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            5231.543000000048
+          ],
+          [
+            "intersectionSupportRatio @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            5230.867000000039
+          ],
+          [
+            "refinementPositions @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            4572.963000000014
+          ],
+          [
+            " @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/features.ts",
+            4248.374999999995
+          ],
+          [
+            "gridRangeScore @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            4088.583999999992
+          ],
+          [
+            "classifyCellWithBank @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/multi-classify.ts",
+            3777.4959999999865
+          ],
+          [
+            "outerBoundaryMetrics @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            3436.000999999989
+          ],
+          [
+            "squaredDistance @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/scripts/recognition/prototype-builder.ts",
+            3393.4959999999887
+          ],
+          [
+            "pixelLuminance @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            3102.3259999999887
+          ],
+          [
+            "cropImage @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/pixels.ts",
+            2999.711999999988
+          ],
+          [
+            "recognizeBoardWithBank @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/multi-recognize.ts",
+            2589.6419999999907
+          ],
+          [
+            "validatePrototypeGeometry @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/prototype-bank.ts",
+            2494.9599999999905
+          ]
+        ]
+      },
+      "artifacts": [
+        {
+          "file": "CPU.20261010.205259.67943.0.001.cpuprofile",
+          "sha256": "dce0c5e8ff73e2e0a5b2ad36c69032c3c2a9777be6b5090968feb2235f092ab0",
+          "bytes": 1097490
+        },
+        {
+          "file": "run.json",
+          "sha256": "010c60e101bc686f25bdf3f8431771b36446b26feb958ad41dd7f9ba76e1e910",
+          "bytes": 116
+        },
+        {
+          "file": "stderr.txt",
+          "sha256": "3ee86d956865b2a1aa1eecd3f6c50570f720dc27ef33c2345a9eafb63afbefd4",
+          "bytes": 979
+        },
+        {
+          "file": "stdout.txt",
+          "sha256": "b45bd2c2adffee04b8dbace2997632c567e4a6c84d6a99df001c1a94d5b94402",
+          "bytes": 545
+        },
+        {
+          "file": "timing-67943.json",
+          "sha256": "4d7d01ed4182eb550310dbf91cc2e53ad1217059afb4477ba1404ef101bc9ea2",
+          "bytes": 66889
+        },
+        {
+          "file": "vitest.json",
+          "sha256": "6a167318cf05c06539ab880b74fac3fd465d98ec6d3f95900343feb3953f1089",
+          "bytes": 968
+        }
+      ]
+    },
+    {
+      "name": "folds",
+      "run": {
+        "file": "folds",
+        "mode": "instrumented",
+        "elapsedMs": 66180.351375,
+        "status": 0,
+        "signal": null
+      },
+      "tests": 1,
+      "passed": 1,
+      "baselineTestMs": 64251.27880859375,
+      "profileTestMs": 65421.74951171875,
+      "profileVsBaselinePercent": 1.8217080264065544,
+      "stages": {
+        "test/recognition/fixture-manifest.ts#loadFixtureCases": {
+          "count": 1,
+          "inclusiveMs": 0.07787500000006276,
+          "exclusiveMs": 0.07787500000006276
+        },
+        "test/recognition/image-io.ts#decodeImage": {
+          "count": 4,
+          "inclusiveMs": 40.938541999999984,
+          "exclusiveMs": 40.938541999999984
+        },
+        "src/recognition/grid-strict.ts#detectStrictGridAttempt": {
+          "count": 88,
+          "inclusiveMs": 24468.890040999955,
+          "exclusiveMs": 24468.890040999955
+        },
+        "src/recognition/grid-fallback.ts#detectGridDirectFirst": {
+          "count": 68,
+          "inclusiveMs": 26516.76783400004,
+          "exclusiveMs": 2047.8777930000842
+        },
+        "src/recognition/grid-fallback.ts#detectGridWithDiagnostics": {
+          "count": 68,
+          "inclusiveMs": 26517.369413000004,
+          "exclusiveMs": 0.601578999967046
+        },
+        "src/recognition/grid.ts#detectGrid": {
+          "count": 68,
+          "inclusiveMs": 26517.520747999984,
+          "exclusiveMs": 0.15133499998046318
+        },
+        "test/recognition/samples.ts#buildFixtureSamples": {
+          "count": 1,
+          "inclusiveMs": 1570.476834,
+          "exclusiveMs": 246.43162500000017
+        },
+        "browser.rpc": {
+          "count": 4,
+          "inclusiveMs": 2926.899665999999,
+          "exclusiveMs": 2926.899665999999
+        },
+        "test/recognition/browser-derive.ts#decodeRgbaDataUrl": {
+          "count": 16,
+          "inclusiveMs": 73.0677080000005,
+          "exclusiveMs": 73.0677080000005
+        },
+        "test/recognition/browser-derive.ts#deriveBrowserImages": {
+          "count": 4,
+          "inclusiveMs": 3554.6724170000007,
+          "exclusiveMs": 554.7050430000013
+        },
+        "scripts/recognition/prototype-builder.ts#buildPrototypeGeometry": {
+          "count": 4,
+          "inclusiveMs": 6352.145917000004,
+          "exclusiveMs": 6352.145917000004
+        },
+        "src/recognition/multi-recognize.ts#recognizeBoardWithBank": {
+          "count": 64,
+          "inclusiveMs": 53882.894293999976,
+          "exclusiveMs": 28648.480212999988
+        },
+        "scripts/recognition/evaluate-folds.ts#calibrationCase": {
+          "count": 48,
+          "inclusiveMs": 40437.93991900002,
+          "exclusiveMs": 5.772416000022531
+        },
+        "scripts/recognition/evaluate-folds.ts#evaluateCase": {
+          "count": 16,
+          "inclusiveMs": 13450.998000999993,
+          "exclusiveMs": 0.27121000001352513
+        },
+        "scripts/recognition/evaluate-folds.ts#evaluateLeaveOneScreenOut": {
+          "count": 1,
+          "inclusiveMs": 65417.645792,
+          "exclusiveMs": 51.41270399998757
+        }
+      },
+      "metrics": {
+        "browser.generate.ms": {
+          "count": 4,
+          "sum": 556
+        }
+      },
+      "cpuCoverage": {
+        "timingPids": [
+          68362
+        ],
+        "cpuProfilePids": [
+          68362
+        ],
+        "unprofiledTimingPids": []
+      },
+      "cpu": {
+        "sampledMs": 65945.45800000253,
+        "resampleCpuSelfMs": 1962.9989999999902,
+        "resampleCpuInclusiveMs": 1964.2909999999902,
+        "topSelfMs": [
+          [
+            "assertFiniteVector @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/prototype-bank.ts",
+            7007.332000000135
+          ],
+          [
+            "meanSquaredDistance @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/multi-classify.ts",
+            6846.957000000119
+          ],
+          [
+            "intersectionSupportRatio @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            4125.881999999994
+          ],
+          [
+            "buildEdgeProfiles @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            3688.276999999992
+          ],
+          [
+            "refinementPositions @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            3514.994999999992
+          ],
+          [
+            " @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/features.ts",
+            3281.67099999999
+          ],
+          [
+            "(idle) @ (runtime)",
+            3163.1699999999887
+          ],
+          [
+            "gridRangeScore @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            3034.379999999993
+          ],
+          [
+            "classifyCellWithBank @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/multi-classify.ts",
+            2958.4629999999906
+          ],
+          [
+            "outerBoundaryMetrics @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            2639.4979999999923
+          ],
+          [
+            "squaredDistance @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/scripts/recognition/prototype-builder.ts",
+            2570.9519999999898
+          ],
+          [
+            "validatePrototypeGeometry @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/prototype-bank.ts",
+            2467.7949999999887
+          ],
+          [
+            "cropImage @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/pixels.ts",
+            2340.5859999999893
+          ],
+          [
+            "resampleCanonicalGridImage @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-resample.ts",
+            1962.9989999999902
+          ],
+          [
+            "pixelLuminance @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            1949.9259999999917
+          ]
+        ]
+      },
+      "artifacts": [
+        {
+          "file": "CPU.20261010.205427.68362.0.001.cpuprofile",
+          "sha256": "e43c1018c086728f041e5fb313e6a0b45993ee406829992331f2a4cc3f7167b2",
+          "bytes": 816645
+        },
+        {
+          "file": "run.json",
+          "sha256": "daa9b45a05212583548583f5eb8fdbd30732ea08eda515da834c129cb24ee685",
+          "bytes": 109
+        },
+        {
+          "file": "stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "file": "stdout.txt",
+          "sha256": "10bfc309c887ff2c8b27fab0e36a74a4ac190ecaee85b82cc3c484eaffa5efa7",
+          "bytes": 542
+        },
+        {
+          "file": "timing-68362.json",
+          "sha256": "27b38dd72941d3ddb329c630969b5b59ceb11b552006861e871b5a235473115c",
+          "bytes": 46892
+        },
+        {
+          "file": "vitest.json",
+          "sha256": "ff98a7622cb81dd75f59e897042819d738b5e1fb89772007f64a251bb13bcf74",
+          "bytes": 1025
+        }
+      ]
+    },
+    {
+      "name": "browser-grid-resample",
+      "run": {
+        "file": "browser-grid-resample",
+        "mode": "instrumented",
+        "elapsedMs": 57046.704958999995,
+        "status": 0,
+        "signal": null
+      },
+      "tests": 3,
+      "passed": 3,
+      "baselineTestMs": 52762.044677734375,
+      "profileTestMs": 56408.5693359375,
+      "profileVsBaselinePercent": 6.911264869426037,
+      "stages": {
+        "scripts/recognition/evaluate-grid-resample-compatibility.ts#hashBrowserOutputBytes": {
+          "count": 5,
+          "inclusiveMs": 54004.704499,
+          "exclusiveMs": 40.2307010001723
+        },
+        "test/recognition/fixture-manifest.ts#loadFixtureCases": {
+          "count": 1,
+          "inclusiveMs": 0.05054100000000972,
+          "exclusiveMs": 0.05054100000000972
+        },
+        "scripts/recognition/evaluate-grid-resample-compatibility.ts#transpiledResampleModule": {
+          "count": 1,
+          "inclusiveMs": 1.0739580000000046,
+          "exclusiveMs": 1.023416999999995
+        },
+        "browser.rpc": {
+          "count": 458,
+          "inclusiveMs": 55579.129049999836,
+          "exclusiveMs": 55579.129049999836
+        },
+        "test/recognition/browser-derive.ts#decodeRgbaDataUrl": {
+          "count": 4,
+          "inclusiveMs": 24.313293000000158,
+          "exclusiveMs": 24.313293000000158
+        },
+        "test/recognition/browser-derive.ts#deriveBrowserImages": {
+          "count": 1,
+          "inclusiveMs": 944.692916,
+          "exclusiveMs": 149.0531229999999
+        },
+        "scripts/recognition/evaluate-grid-resample-compatibility.ts#formalResampleCases": {
+          "count": 1,
+          "inclusiveMs": 945.832125,
+          "exclusiveMs": 1.0886679999999842
+        },
+        "node.resample": {
+          "count": 3,
+          "inclusiveMs": 201.72308400000134,
+          "exclusiveMs": 201.72308400000134
+        },
+        "scripts/recognition/evaluate-grid-resample-compatibility.ts#browserResample": {
+          "count": 3,
+          "inclusiveMs": 55247.215125,
+          "exclusiveMs": 399.5319989999905
+        },
+        "scripts/recognition/evaluate-grid-resample-compatibility.ts#evaluateGridResampleCompatibility": {
+          "count": 1,
+          "inclusiveMs": 56405.797583,
+          "exclusiveMs": 10.967333000000508
+        }
+      },
+      "metrics": {
+        "browser.generate.ms": {
+          "count": 1,
+          "sum": 146.40000000037253
+        },
+        "browser.resample.ms": {
+          "count": 3,
+          "sum": 138.40000000223517
+        }
+      },
+      "cpuCoverage": {
+        "timingPids": [
+          68699
+        ],
+        "cpuProfilePids": [
+          68699
+        ],
+        "unprofiledTimingPids": []
+      },
+      "cpu": {
+        "sampledMs": 56805.54200000237,
+        "resampleCpuSelfMs": 192.542,
+        "resampleCpuInclusiveMs": 192.542,
+        "topSelfMs": [
+          [
+            " @ file:///Users/kkishikawa/orca/workspaces/minesweeper-slv/ci/node_modules/playwright-core/lib/coreBundle.js",
+            41939.482000002296
+          ],
+          [
+            "(garbage collector) @ (runtime)",
+            6566.436000000109
+          ],
+          [
+            "(idle) @ (runtime)",
+            4839.956000000019
+          ],
+          [
+            "innerParseSerializedValue @ file:///Users/kkishikawa/orca/workspaces/minesweeper-slv/ci/node_modules/playwright-core/lib/coreBundle.js",
+            760.124000000001
+          ],
+          [
+            "innerSerializeValue @ file:///Users/kkishikawa/orca/workspaces/minesweeper-slv/ci/node_modules/playwright-core/lib/coreBundle.js",
+            697.4070000000004
+          ],
+          [
+            "parseEvaluationResultValue @ file:///Users/kkishikawa/orca/workspaces/minesweeper-slv/ci/node_modules/playwright-core/lib/coreBundle.js",
+            276.085
+          ],
+          [
+            "serializeValue @ file:///Users/kkishikawa/orca/workspaces/minesweeper-slv/ci/node_modules/playwright-core/lib/coreBundle.js",
+            206.21300000000002
+          ],
+          [
+            "resampleCanonicalGridImage @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-resample.ts",
+            192.542
+          ],
+          [
+            "parseSerializedValue @ file:///Users/kkishikawa/orca/workspaces/minesweeper-slv/ci/node_modules/playwright-core/lib/coreBundle.js",
+            170.67000000000002
+          ],
+          [
+            "tFloat @ file:///Users/kkishikawa/orca/workspaces/minesweeper-slv/ci/node_modules/playwright-core/lib/coreBundle.js",
+            168.961
+          ],
+          [
+            "send @ file:///Users/kkishikawa/orca/workspaces/minesweeper-slv/ci/node_modules/playwright-core/lib/coreBundle.js",
+            96.541
+          ],
+          [
+            "(program) @ (runtime)",
+            94.54200000000003
+          ],
+          [
+            "readFileUtf8 @ (runtime)",
+            65.125
+          ],
+          [
+            "wrapSafe @ node:internal/modules/cjs/loader",
+            48.917
+          ],
+          [
+            "update @ node:internal/crypto/hash",
+            30.041
+          ]
+        ]
+      },
+      "artifacts": [
+        {
+          "file": "CPU.20261010.205533.68699.0.001.cpuprofile",
+          "sha256": "39828b1103fea4ec4ef31ec45d1f977d6c47c293b35444b7d5c77491372bbcf6",
+          "bytes": 686719
+        },
+        {
+          "file": "run.json",
+          "sha256": "f8381e1f2ca223220d70d62a03880ef1a1e5cc778242d6e4e7d7393a98bdf55f",
+          "bytes": 131
+        },
+        {
+          "file": "stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "file": "stdout.txt",
+          "sha256": "e6f21228e7a794d51da684c50aafe98b6d6bfaced6cb0ad0076e37b0bd305285",
+          "bytes": 569
+        },
+        {
+          "file": "timing-68699.json",
+          "sha256": "9ef3000fc08e0a9b138a32feeb8fbf1a8a0557a175f29485dc2e2e185774fc46",
+          "bytes": 30926
+        },
+        {
+          "file": "vitest.json",
+          "sha256": "449ab7e9887acfe525de79c38505aee7b0b230c80a394d766923a8e4cfb4b993",
+          "bytes": 1681
+        }
+      ]
+    },
+    {
+      "name": "evaluate-grid-fallback",
+      "run": {
+        "file": "evaluate-grid-fallback",
+        "mode": "instrumented",
+        "elapsedMs": 50113.511375,
+        "status": 0,
+        "signal": null
+      },
+      "tests": 16,
+      "passed": 16,
+      "baselineTestMs": 46792.54150390625,
+      "profileTestMs": 49459.4560546875,
+      "profileVsBaselinePercent": 5.699443682832683,
+      "stages": {
+        "scripts/recognition/evaluate-grid-fallback.ts#assertStablePixelHash": {
+          "count": 257,
+          "inclusiveMs": 1365.5862399999655,
+          "exclusiveMs": 1365.5862399999655
+        },
+        "test/recognition/fixture-manifest.ts#loadFixtureCases": {
+          "count": 1,
+          "inclusiveMs": 0.07341600000000881,
+          "exclusiveMs": 0.07341600000000881
+        },
+        "browser.rpc": {
+          "count": 4,
+          "inclusiveMs": 2937.907751,
+          "exclusiveMs": 2937.907751
+        },
+        "test/recognition/browser-derive.ts#decodeRgbaDataUrl": {
+          "count": 16,
+          "inclusiveMs": 78.44633400000066,
+          "exclusiveMs": 78.44633400000066
+        },
+        "test/recognition/browser-derive.ts#deriveBrowserImages": {
+          "count": 4,
+          "inclusiveMs": 3579.138875,
+          "exclusiveMs": 562.7847899999991
+        },
+        "scripts/recognition/evaluate-grid-fallback.ts#decodeEvaluationCases": {
+          "count": 1,
+          "inclusiveMs": 3667.942916,
+          "exclusiveMs": 88.73062499999969
+        },
+        "src/recognition/grid-strict.ts#detectStrictGridAttempt": {
+          "count": 148,
+          "inclusiveMs": 42262.479373999995,
+          "exclusiveMs": 42262.479373999995
+        },
+        "scripts/recognition/evaluate-grid-fallback.ts#measureStrictAttempt": {
+          "count": 64,
+          "inclusiveMs": 19290.84312499997,
+          "exclusiveMs": 4.908511999996335
+        },
+        "src/recognition/grid-fallback.ts#detectGridDirectFirst": {
+          "count": 64,
+          "inclusiveMs": 25697.700669000005,
+          "exclusiveMs": 2037.692584000013
+        },
+        "src/recognition/grid-fallback.ts#detectGridWithDiagnostics": {
+          "count": 64,
+          "inclusiveMs": 25698.104289999996,
+          "exclusiveMs": 0.4036209999885614
+        },
+        "scripts/recognition/evaluate-grid-fallback.ts#measureCompleteAttempt": {
+          "count": 64,
+          "inclusiveMs": 26482.683662999974,
+          "exclusiveMs": 102.48733199998424
+        },
+        "scripts/recognition/evaluate-grid-fallback.ts#evaluateGridEvidence": {
+          "count": 1,
+          "inclusiveMs": 49452.549834000005,
+          "exclusiveMs": 11.080130000060308
+        }
+      },
+      "metrics": {
+        "browser.generate.ms": {
+          "count": 4,
+          "sum": 558.4000000003725
+        }
+      },
+      "cpuCoverage": {
+        "timingPids": [
+          68982
+        ],
+        "cpuProfilePids": [
+          68982
+        ],
+        "unprofiledTimingPids": []
+      },
+      "cpu": {
+        "sampledMs": 49880.62500000236,
+        "resampleCpuSelfMs": 1956.206999999991,
+        "resampleCpuInclusiveMs": 1957.4569999999908,
+        "topSelfMs": [
+          [
+            "buildEdgeProfiles @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            7063.628000000134
+          ],
+          [
+            "intersectionSupportRatio @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            7035.57200000013
+          ],
+          [
+            "refinementPositions @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            6175.087000000103
+          ],
+          [
+            "gridRangeScore @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            5077.160000000051
+          ],
+          [
+            "outerBoundaryMetrics @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            4527.438000000009
+          ],
+          [
+            "pixelLuminance @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            3398.510999999988
+          ],
+          [
+            "(idle) @ (runtime)",
+            3128.0369999999934
+          ],
+          [
+            "resampleCanonicalGridImage @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-resample.ts",
+            1956.206999999991
+          ],
+          [
+            "update @ node:internal/crypto/hash",
+            1532.1709999999955
+          ],
+          [
+            "selectAxisCandidates @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            1319.864999999999
+          ],
+          [
+            "(garbage collector) @ (runtime)",
+            1275.9629999999986
+          ],
+          [
+            " @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/pixels.ts",
+            1267.5359999999994
+          ],
+          [
+            " @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            1146.9589999999996
+          ],
+          [
+            "detectStrictGridAttempt @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            1034.1220000000017
+          ],
+          [
+            "medianNumber @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            688.5370000000007
+          ]
+        ]
+      },
+      "artifacts": [
+        {
+          "file": "CPU.20261010.205631.68982.0.001.cpuprofile",
+          "sha256": "478db5312667306aaa90ec6e82c40c68983c8ddbd65e0d70619aa05c6be2161e",
+          "bytes": 644433
+        },
+        {
+          "file": "run.json",
+          "sha256": "7132b41f0df7838e93bffba866541251a9ec7e09c3ef9937f80c4fb596827849",
+          "bytes": 126
+        },
+        {
+          "file": "stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "file": "stdout.txt",
+          "sha256": "6b08bde9058e38e7666a0d596e64db38045144d4a09b22b4c370cd1802ac7fb7",
+          "bytes": 575
+        },
+        {
+          "file": "timing-68982.json",
+          "sha256": "201343d5bb94d62eaf729601320dffa2018d71f68670fe6044347fa0ef509196",
+          "bytes": 77549
+        },
+        {
+          "file": "vitest.json",
+          "sha256": "e5e40892dc6e2e06ec47de8723dea08406491bb5329c4240f0c3ceaca3ecb6fd",
+          "bytes": 5562
+        }
+      ]
+    },
+    {
+      "name": "browser-grid-fallback",
+      "run": {
+        "file": "browser-grid-fallback",
+        "mode": "instrumented",
+        "elapsedMs": 43598.66633400001,
+        "status": 0,
+        "signal": null
+      },
+      "tests": 1,
+      "passed": 1,
+      "baselineTestMs": 40720.05322265625,
+      "profileTestMs": 42950.156982421875,
+      "profileVsBaselinePercent": 5.476672016049378,
+      "stages": {
+        "test/recognition/fixture-manifest.ts#loadFixtureCases": {
+          "count": 1,
+          "inclusiveMs": 0.07749999999998636,
+          "exclusiveMs": 0.07749999999998636
+        },
+        "browser.rpc": {
+          "count": 4,
+          "inclusiveMs": 2905.5721249999992,
+          "exclusiveMs": 2905.5721249999992
+        },
+        "test/recognition/browser-derive.ts#decodeRgbaDataUrl": {
+          "count": 16,
+          "inclusiveMs": 77.30629399999953,
+          "exclusiveMs": 77.30629399999953
+        },
+        "test/recognition/browser-derive.ts#deriveBrowserImages": {
+          "count": 4,
+          "inclusiveMs": 3551.9415820000004,
+          "exclusiveMs": 569.0631630000015
+        },
+        "src/recognition/grid-strict.ts#detectStrictGridAttempt": {
+          "count": 126,
+          "inclusiveMs": 35666.613457000065,
+          "exclusiveMs": 35666.613457000065
+        },
+        "src/recognition/grid-fallback.ts#detectGridDirectFirst": {
+          "count": 96,
+          "inclusiveMs": 38716.91550699998,
+          "exclusiveMs": 3050.30204999992
+        },
+        "src/recognition/grid-fallback.ts#detectGridWithDiagnostics": {
+          "count": 96,
+          "inclusiveMs": 38717.44062499999,
+          "exclusiveMs": 0.5251180000036584
+        },
+        "src/recognition/grid.ts#detectGrid": {
+          "count": 48,
+          "inclusiveMs": 19381.24721000001,
+          "exclusiveMs": 0.1290000000180953
+        }
+      },
+      "metrics": {
+        "browser.generate.ms": {
+          "count": 4,
+          "sum": 554.9999999981374
+        }
+      },
+      "cpuCoverage": {
+        "timingPids": [
+          69237
+        ],
+        "cpuProfilePids": [
+          69237
+        ],
+        "unprofiledTimingPids": []
+      },
+      "cpu": {
+        "sampledMs": 43365.70900000271,
+        "resampleCpuSelfMs": 2931.91699999999,
+        "resampleCpuInclusiveMs": 2933.41699999999,
+        "topSelfMs": [
+          [
+            "buildEdgeProfiles @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            6081.839000000081
+          ],
+          [
+            "intersectionSupportRatio @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            5781.68700000008
+          ],
+          [
+            "refinementPositions @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            4922.673000000031
+          ],
+          [
+            "gridRangeScore @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            4338.742
+          ],
+          [
+            "outerBoundaryMetrics @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            3911.94999999999
+          ],
+          [
+            "(idle) @ (runtime)",
+            3108.547999999989
+          ],
+          [
+            "pixelLuminance @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            3035.86899999999
+          ],
+          [
+            "resampleCanonicalGridImage @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-resample.ts",
+            2931.91699999999
+          ],
+          [
+            "(garbage collector) @ (runtime)",
+            1135.871000000001
+          ],
+          [
+            "selectAxisCandidates @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            1086.245000000002
+          ],
+          [
+            "detectStrictGridAttempt @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            1038.0420000000022
+          ],
+          [
+            " @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/pixels.ts",
+            949.9180000000017
+          ],
+          [
+            " @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            937.1600000000022
+          ],
+          [
+            "update @ node:internal/crypto/hash",
+            674.4160000000002
+          ],
+          [
+            "medianNumber @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            542.9599999999995
+          ]
+        ]
+      },
+      "artifacts": [
+        {
+          "file": "CPU.20261010.205721.69237.0.001.cpuprofile",
+          "sha256": "e15b021d6aa1fad3e5338af315b5eef7185cbc52cdadc72918372f45e1bec0e0",
+          "bytes": 476465
+        },
+        {
+          "file": "run.json",
+          "sha256": "48bc1f9e97cc077057d5832631a63ea5355a665d043368b665fec06395576b02",
+          "bytes": 130
+        },
+        {
+          "file": "stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "file": "stdout.txt",
+          "sha256": "76f9a3a9488d25468259c562d217935024d29f100769cd05b18a6ad7a46892c8",
+          "bytes": 573
+        },
+        {
+          "file": "timing-69237.json",
+          "sha256": "381c68b2e4f5e1f2d1885864c7421bb586c195bef4de1b09392c3708fd6ba95e",
+          "bytes": 40558
+        },
+        {
+          "file": "vitest.json",
+          "sha256": "cdb36a68c411f8b7756fd424d9283211bfa5933eb6070903ab772d2d2e09ac7e",
+          "bytes": 1064
+        }
+      ]
+    },
+    {
+      "name": "generated-bank",
+      "run": {
+        "file": "generated-bank",
+        "mode": "instrumented",
+        "elapsedMs": 38841.95504099998,
+        "status": 0,
+        "signal": null
+      },
+      "tests": 2,
+      "passed": 2,
+      "baselineTestMs": 37346.599853515625,
+      "profileTestMs": 38108.651123046875,
+      "profileVsBaselinePercent": 2.040483665233883,
+      "stages": {
+        "test/recognition/fixture-manifest.ts#loadFixtureCases": {
+          "count": 2,
+          "inclusiveMs": 0.1471250000019495,
+          "exclusiveMs": 0.1471250000019495
+        },
+        "test/recognition/image-io.ts#decodeImage": {
+          "count": 8,
+          "inclusiveMs": 79.91162499999427,
+          "exclusiveMs": 79.91162499999427
+        },
+        "src/recognition/grid-strict.ts#detectStrictGridAttempt": {
+          "count": 50,
+          "inclusiveMs": 13675.506250000002,
+          "exclusiveMs": 13675.506250000002
+        },
+        "src/recognition/grid-fallback.ts#detectGridDirectFirst": {
+          "count": 40,
+          "inclusiveMs": 14787.317829999993,
+          "exclusiveMs": 1111.8115799999887
+        },
+        "src/recognition/grid-fallback.ts#detectGridWithDiagnostics": {
+          "count": 40,
+          "inclusiveMs": 14788.154500000004,
+          "exclusiveMs": 0.8366700000121341
+        },
+        "src/recognition/grid.ts#detectGrid": {
+          "count": 40,
+          "inclusiveMs": 14788.293748999999,
+          "exclusiveMs": 0.1392489999963118
+        },
+        "test/recognition/samples.ts#buildFixtureSamples": {
+          "count": 2,
+          "inclusiveMs": 3029.0505839999996,
+          "exclusiveMs": 513.2632910000052
+        },
+        "scripts/recognition/prototype-builder.ts#buildPrototypeGeometry": {
+          "count": 2,
+          "inclusiveMs": 2759.4938760000014,
+          "exclusiveMs": 2759.4938760000014
+        },
+        "browser.rpc": {
+          "count": 8,
+          "inclusiveMs": 5877.307914000005,
+          "exclusiveMs": 5877.307914000005
+        },
+        "test/recognition/browser-derive.ts#decodeRgbaDataUrl": {
+          "count": 32,
+          "inclusiveMs": 140.29299699999683,
+          "exclusiveMs": 140.29299699999683
+        },
+        "test/recognition/browser-derive.ts#deriveBrowserImages": {
+          "count": 8,
+          "inclusiveMs": 7163.976376,
+          "exclusiveMs": 1146.375464999997
+        },
+        "src/recognition/multi-recognize.ts#recognizeBoardWithBank": {
+          "count": 32,
+          "inclusiveMs": 24458.202961000006,
+          "exclusiveMs": 12105.784880000008
+        },
+        "scripts/recognition/generate-prototype-bank.ts#buildCalibrationCase": {
+          "count": 32,
+          "inclusiveMs": 24462.244584000004,
+          "exclusiveMs": 4.04162300000371
+        },
+        "scripts/recognition/calibrate.ts#evaluateThresholdPairs": {
+          "count": 4,
+          "inclusiveMs": 29.026207999995677,
+          "exclusiveMs": 29.026207999995677
+        },
+        "scripts/recognition/calibrate.ts#selectThresholdPair": {
+          "count": 2,
+          "inclusiveMs": 10.58641699999498,
+          "exclusiveMs": 0.1709999999984575
+        },
+        "scripts/recognition/generate-prototype-bank.ts#evaluateCase": {
+          "count": 32,
+          "inclusiveMs": 170.68662799999584,
+          "exclusiveMs": 170.68662799999584
+        },
+        "scripts/recognition/generate-prototype-bank.ts#buildFinalBankEvaluation": {
+          "count": 2,
+          "inclusiveMs": 37651.16375000001,
+          "exclusiveMs": 36.36736900000324
+        },
+        "scripts/recognition/generate-prototype-bank.ts#generatePrototypeBank": {
+          "count": 2,
+          "inclusiveMs": 37651.415959000005,
+          "exclusiveMs": 0.25220899999840185
+        }
+      },
+      "metrics": {
+        "browser.generate.ms": {
+          "count": 8,
+          "sum": 1106.7000000011176
+        }
+      },
+      "cpuCoverage": {
+        "timingPids": [
+          69467,
+          69476
+        ],
+        "cpuProfilePids": [
+          69467,
+          69475
+        ],
+        "unprofiledTimingPids": [
+          69476
+        ]
+      },
+      "cpu": {
+        "sampledMs": 55503.708000002436,
+        "resampleCpuSelfMs": 506.2519999999992,
+        "resampleCpuInclusiveMs": 506.2519999999992,
+        "topSelfMs": [
+          [
+            "(idle) @ (runtime)",
+            36875.501000001954
+          ],
+          [
+            "validatePrototypeGeometry @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/prototype-bank.ts",
+            2392.09199999999
+          ],
+          [
+            "meanSquaredDistance @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/multi-classify.ts",
+            1858.1279999999913
+          ],
+          [
+            "intersectionSupportRatio @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            1171.0729999999999
+          ],
+          [
+            "buildEdgeProfiles @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            1042.463000000002
+          ],
+          [
+            "refinementPositions @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            985.034000000003
+          ],
+          [
+            "squaredDistance @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/scripts/recognition/prototype-builder.ts",
+            903.5820000000012
+          ],
+          [
+            " @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/features.ts",
+            882.4630000000013
+          ],
+          [
+            "gridRangeScore @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            868.7570000000018
+          ],
+          [
+            "classifyCellWithBank @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/multi-classify.ts",
+            803.3700000000011
+          ],
+          [
+            "outerBoundaryMetrics @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            726.9670000000002
+          ],
+          [
+            "pixelLuminance @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-strict.ts",
+            676.3720000000004
+          ],
+          [
+            "cropImage @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/pixels.ts",
+            647.9079999999999
+          ],
+          [
+            "resampleCanonicalGridImage @ file:///private/tmp/ci-recognition-profile-20261010/instrumented/src/recognition/grid-resample.ts",
+            506.2519999999992
+          ],
+          [
+            "(garbage collector) @ (runtime)",
+            500.5459999999992
+          ]
+        ]
+      },
+      "artifacts": [
+        {
+          "file": "CPU.20261010.205804.69467.0.001.cpuprofile",
+          "sha256": "a5addff54deda374ff40fc650f1578cd091ba859c7e94bf993192685310941d6",
+          "bytes": 506048
+        },
+        {
+          "file": "CPU.20261010.205805.69475.0.001.cpuprofile",
+          "sha256": "e0f835871f298463d0161bab06ce7eb36f6de6b711fe27fb48555036f6625a2d",
+          "bytes": 109307
+        },
+        {
+          "file": "run.json",
+          "sha256": "14c7138d217ef5da0f5f9a46d1f86f50336861cc444d4cb31c0e836e0ff449e9",
+          "bytes": 123
+        },
+        {
+          "file": "stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "file": "stdout.txt",
+          "sha256": "4aeba5167d24aa546c164ce10e153adedf55e1085e4bc7ab70697671e89150c0",
+          "bytes": 654
+        },
+        {
+          "file": "timing-69467.json",
+          "sha256": "d92fd5bc99e5f9ce7efc7dab4152c32acfc8eb8243498c1247790ef057b94178",
+          "bytes": 17866
+        },
+        {
+          "file": "timing-69476.json",
+          "sha256": "0c93f1e73273a14ddb7baec657be8e8a88a24ea62fc4b33d288a5c79193d69e1",
+          "bytes": 17697
+        },
+        {
+          "file": "vitest.json",
+          "sha256": "a4a2c88bebfa19afb99bc46f166f01dd5d085641bb7b19e0102ba53e080df533",
+          "bytes": 1407
+        }
+      ]
+    }
+  ]
+}
