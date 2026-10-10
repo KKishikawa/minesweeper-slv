@@ -101,6 +101,7 @@ npm run test:spike-evidence
 - [全体設計](docs/superpowers/specs/2026-08-16-minesweeper-solver-design.md)
 - [初期セル認識spike報告](docs/superpowers/spikes/2026-08-16-image-recognition-report.md)
 - [multi-prototypeセル認識spike報告](docs/superpowers/spikes/2026-08-23-multi-prototype-recognition-report.md)
+- [次期セル認識方式・評価契約の設計提案（Issue #5）](docs/superpowers/specs/2026-10-11-next-cell-recognition-design.md)
 - [canonical grid fallback採用報告](docs/superpowers/spikes/2026-08-24-canonical-grid-fallback-report.md)
 
 全体設計と初期セル認識spike報告には、当時のnative scale / original encoding限定の採用判断が記録されています。この判断は後続の正式評価によって置換され、現在のセル認識は不採用です。現在の製品範囲と順序は`docs/project`、有効な判断と置換関係はADR log、各実験の測定結果はspike報告を参照してください。

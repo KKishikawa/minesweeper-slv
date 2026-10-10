@@ -23,7 +23,7 @@ Windows実機フィードバックから[#22〜#26](manual-mvp-windows-feedback-
 
 実行順序は `#5 -> #6 -> #7 -> #8` です。
 
-- #5: 認識方式と採用条件を設計する。
+- #5: 認識方式と採用条件を設計する。[設計提案](../superpowers/specs/2026-10-11-next-cell-recognition-design.md)を作成済み、レビュー待ち。
 - #6: 評価fixtureとブラウザ変換マトリクスを整備する。
 - #7: 境界を定めたfeasibility spikeを実施する。
 - #8: 評価結果にもとづき、認識器を採用するか判断する。
