@@ -19,6 +19,7 @@
 ## 現在の正本
 
 - [製品定義](product.md)
+- [通信・保存・診断報告](privacy.md)
 - [ロードマップ](roadmap.md)
 - [ADR log](../decisions/README.md)
 

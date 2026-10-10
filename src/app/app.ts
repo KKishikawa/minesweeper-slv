@@ -14,7 +14,7 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
     <header class="page-header"><p class="eyebrow">LOCAL MINE FINDER</p>
       <h1>マインスイーパー ソルバー</h1>
       <p class="intro">盤面を入力して、次の一手を確かめる。</p>
-      <p class="privacy-badge">端末内で解析 · 保存・送信なし</p>
+      <button class="privacy-badge" type="button" aria-haspopup="dialog" aria-controls="privacy-dialog">端末内で解析 · 盤面の外部送信なし <span aria-hidden="true">ⓘ</span></button>
     </header>
     <section class="settings-card" aria-labelledby="settings-heading"><h2 id="settings-heading"><span class="step">01</span> 盤面の設定</h2><div class="settings-mount"></div></section>
     <section class="workbench" aria-labelledby="board-heading">
@@ -38,12 +38,23 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
         </aside>
       </div>
     </section>
+    <dialog id="privacy-dialog" class="privacy-dialog" aria-labelledby="privacy-heading">
+      <h2 id="privacy-heading" tabindex="-1" autofocus>通信・保存・不具合報告</h2>
+      <p>盤面の入力と解析はブラウザ内で行い、アプリは盤面を外部へ送信しません。画像入力には対応していません。盤面はページ内のメモリに保持し、再読み込みすると初期化されます。ブラウザの保存領域への自動保存はありません。</p>
+      <p>ページ表示や解析に必要な静的ファイル（HTML・CSS・JavaScript・Worker）の取得には通信が発生します。GitHub Pagesでは、GitHubがアクセス時のIPアドレスをセキュリティ目的で記録します。<a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection">GitHub Pagesのデータ収集について</a></p>
+      <p>診断履歴の取得・保持とJSONダウンロードは現在未対応です。アプリから診断データを自動送信する機能はありません。不具合の報告は、利用者自身が内容を確認して<a href="https://github.com/KKishikawa/minesweeper-slv/issues">GitHub Issue</a>へ投稿するか選べます。公開Issueの本文・添付ファイルは公開されます。</p>
+      <form method="dialog"><button type="submit">閉じる</button></form>
+    </dialog>
     <footer>画像入力には対応していません。再読み込みすると盤面は初期化されます。</footer>`;
   const get = <T extends HTMLElement>(selector: string) => root.querySelector<T>(selector)!;
   const workspace = get<HTMLDivElement>('.workspace');
   const editorRoot = get<HTMLDivElement>('.editor-mount');
   let state = createAppState(createBoard(9, 9, 10, 0));
   const controller = new AbortController();
+  const privacyDialog = get<HTMLDialogElement>('.privacy-dialog');
+  const privacyTrigger = get<HTMLButtonElement>('.privacy-badge');
+  privacyTrigger.addEventListener('click', () => privacyDialog.showModal(), { signal: controller.signal });
+  privacyDialog.addEventListener('close', () => privacyTrigger.focus(), { signal: controller.signal });
   const client = createSolverClient(response => dispatch({ type: 'response', response }), { workerFactory: options.workerFactory ?? createModuleSolverWorker,
     ...(options.timeoutMs === undefined ? {} : { timeoutMs: options.timeoutMs }) });
   const settings = mountBoardSettings(get('.settings-mount'), (width, height, totalMines) =>
