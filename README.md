@@ -51,14 +51,20 @@ production版は`npm run build`の後に`npm run preview`で確認できます�
 
 ## 検証
 
-Pull Requestと`main`へのpushでは、`CI / quality`が同じNode.js・Chromium条件で通常の回帰テストと型チェックを実行します。
+全Pull Requestと`main`へのpushでは、同じNode.js・Chromium条件で通常テスト全体を5グループに分けて実行します。各グループ内は直列実行し、製品グループでは型チェックとbuildも行います。必須チェック`CI / quality`は、すべてのグループの成功だけを受け入れます。
 
-productionブラウザテストは生成済み`dist`を使うため、`npm test`の前にbuildが必要です。通常CIもtypecheck → build → testの順です。
+productionブラウザテストは生成済み`dist`を使うため、`npm test`の前にbuildが必要です。ローカルの完全検証はtypecheck → build → npm testの順で行います。`npm test`は通常テスト全体の完全直列回帰です。Pages公開workflowでもこの完全検証を維持し、公開は`main`の対象commitの出荷確認と明示的承認後に手動で実行します。
 
 ```sh
 npm run typecheck
 npm run build
 npm test
+```
+
+`test:ci`はグループを選んで実行するコマンドです。グループは`product`、`formal`、`holdout`、`grid-compatibility`、`recognition`です。製品グループはすべての製品ブラウザテストを含むため、先にbuildしてください。
+
+```sh
+npm run test:ci -- product
 ```
 
 `npm run test:browser`でブラウザテストだけを実行できます。この場合も先に`npm run build`を実行してください。

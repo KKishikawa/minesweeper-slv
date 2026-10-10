@@ -14,10 +14,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  quality:
-    name: CI / quality
+  regression:
+    name: Regression / ${{ matrix.group }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [product, formal, holdout, grid-compatibility, recognition]
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -33,8 +37,33 @@ jobs:
       - name: Install Chromium
         run: npx --no-install playwright install --with-deps chromium
       - name: Run type checking
+        if: matrix.group == 'product'
         run: npm run typecheck
       - name: Build production app
+        if: matrix.group == 'product'
         run: npm run build
-      - name: Run ordinary regression and production browser tests
-        run: npm test
+      - name: Run isolated regression group
+        run: npm run test:ci -- ${{ matrix.group }}
+
+  quality:
+    name: CI / quality
+    if: always()
+    needs: regression
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Require every regression job to succeed
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+        run: npx --no-install tsx scripts/ci/quality-result.ts
