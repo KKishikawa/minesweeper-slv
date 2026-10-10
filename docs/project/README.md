@@ -6,14 +6,14 @@
 
 ## 現在の状態
 
-- 手動盤面入力型MVP: 設計・[実装計画](../superpowers/plans/2026-09-13-manual-board-mvp.md)に沿って単位1〜8を実装済み。単位9の自動検証とリリース手順も整備。Windows実機・公開確認は未実施
+- 手動盤面入力型MVP: 設計・[実装計画](../superpowers/plans/2026-09-13-manual-board-mvp.md)に沿って単位1〜8を実装済み。単位9の自動検証とリリース手順も整備。Windows Chrome実機確認は実施・指摘あり。公開確認は未実施
 - 盤面グリッド検出: Chromium正式評価16ケース中14ケースをfail-closedで部分採用
 - セル認識: 現在評価済みの候補は不採用。認識研究トラックで再設計する
-- ブラウザ製品: PR #20で手動入力版をmainへ統合済み。Windows実機確認・公開は未実施
+- ブラウザ製品: PR #20で手動入力版をmainへ統合済み。2026-10-10のWindows実機結果・証跡と改善課題#22〜#26を記録。出荷確認は未完了
 
 ## 次の作業
 
-[Issue #9](https://github.com/KKishikawa/minesweeper-slv/issues/9)の計画に沿う実装は、盤面モデル、solver、手動入力、日本語UIまで追加済みです。[リリース確認](manual-mvp-release.md)の未実施事項（Windows Chrome実機確認、GitHub Pagesへの配信・公開後smoke）を進めます。PR #20はmainへ統合済みです。#10・#11・#14・#15のIssueはclosedです。#16はWindows実機確認・公開が残るため未完了です。具体的な実機確認と記録には[Windows確認票](manual-mvp-windows-checklist.md)を使用します。#10の基盤がmainへ統合されたため、画像取得の#12も着手可能です。認識研究は[Issue #5](https://github.com/KKishikawa/minesweeper-slv/issues/5)から独立して進められます。
+[Issue #9](https://github.com/KKishikawa/minesweeper-slv/issues/9)の計画に沿う実装は、盤面モデル、solver、手動入力、日本語UIまで追加済みです。Windows Chrome実機確認の結果は[Windows確認票](manual-mvp-windows-checklist.md)と[検証整理・改善仮説](manual-mvp-windows-feedback-2026-10-10.md)に記録しました。次は#22の表示指摘の修正・再確認、表示・通信記録の補完、GitHub Pagesへの配信・公開後smokeです。#23〜#26で入力UX・ちらつき・solver診断・旗policyの説明改善を管理します。PR #20はmainへ統合済み、#10・#11・#14・#15はclosed、#16は出荷確認未完了のためopenです。#10の基盤がmainへ統合されたため、画像取得の#12も着手可能です。認識研究は[Issue #5](https://github.com/KKishikawa/minesweeper-slv/issues/5)から独立して進められます。
 
 ## 現在の正本
 

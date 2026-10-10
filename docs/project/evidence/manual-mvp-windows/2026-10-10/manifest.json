@@ -1,0 +1,210 @@
+{
+  "date": "2026-10-10",
+  "verified_commit": "ba4aea80faac9214ad57a829dd8ff0dc0fc6c210",
+  "source": "確認者提供のWindows Chromeスクリーンショット（元ファイル名・バイト列を保持）",
+  "files": [
+    {
+      "file": "w1.png",
+      "sha256": "575b5bbde2bd1b24fb68481b72cf49c44b221b5b07473f14287b133218fef69d",
+      "bytes": 185258,
+      "width": 1905,
+      "height": 1211
+    },
+    {
+      "file": "w10-1.png",
+      "sha256": "efd3eb38a4adf370a9b2afa87563446a5d6c3e60d185615271211711e6b74dd9",
+      "bytes": 192692,
+      "width": 1905,
+      "height": 1236
+    },
+    {
+      "file": "w10-2.png",
+      "sha256": "194d5c76ab8efd1a025aedd3e868dfd81b821a22d6c211656a01df3702b15ad2",
+      "bytes": 204014,
+      "width": 1905,
+      "height": 1268
+    },
+    {
+      "file": "w11-1.png",
+      "sha256": "c982dd233449d73f6ed0eac23b7ba25fa9ba4a65dee8b59f9373801eff48221c",
+      "bytes": 211569,
+      "width": 1905,
+      "height": 1303
+    },
+    {
+      "file": "w11-2.png",
+      "sha256": "c42eab5574ceca4a9897c91574e1d1c93a677e51bc6b2914bc6fe98fa3f79ba2",
+      "bytes": 211845,
+      "width": 1905,
+      "height": 1303
+    },
+    {
+      "file": "w11-3.png",
+      "sha256": "aafd114e0722a22a6fe340fba4bff057fb4194a49ecacf7f8bebb2473b27f2d6",
+      "bytes": 211576,
+      "width": 1905,
+      "height": 1303
+    },
+    {
+      "file": "w11-4.png",
+      "sha256": "876d0230b06c1743f54220875690dfc8d3647a36487097551ccb7b118349035e",
+      "bytes": 211560,
+      "width": 1905,
+      "height": 1303
+    },
+    {
+      "file": "w11-5.png",
+      "sha256": "ca30fdc8c4741ec995eaf2d5b6ec9e83e93ba45731718b28167eb34d33829d5e",
+      "bytes": 212361,
+      "width": 1905,
+      "height": 1303
+    },
+    {
+      "file": "w12.png",
+      "sha256": "7ef27a45768f0ec3c4423686cb4f9c528ef100c5201d5ebec0cf39814e3ecc0c",
+      "bytes": 195758,
+      "width": 1905,
+      "height": 1233
+    },
+    {
+      "file": "w2.png",
+      "sha256": "7ef27a45768f0ec3c4423686cb4f9c528ef100c5201d5ebec0cf39814e3ecc0c",
+      "bytes": 195758,
+      "width": 1905,
+      "height": 1233
+    },
+    {
+      "file": "w3-1.png",
+      "sha256": "66c259d9d1e5c61b4ccc5d610cecdd60aca408b0ce8e820bc09fa7d6b0ac8eaa",
+      "bytes": 182131,
+      "width": 1905,
+      "height": 1201
+    },
+    {
+      "file": "w3-2.png",
+      "sha256": "b7639e2846a221f2c1e263dc54b98d5f0ef879ceb536a8e28f60a5d3f627bba7",
+      "bytes": 185498,
+      "width": 1905,
+      "height": 1211
+    },
+    {
+      "file": "w4.png",
+      "sha256": "ef252ee5f1f21ffdfc9a81043c2743ed2d02e7e2efb60c154bce79658e619f1a",
+      "bytes": 189721,
+      "width": 1905,
+      "height": 1233
+    },
+    {
+      "file": "w5-1.png",
+      "sha256": "afb75dae0cc01e35c6facf51b2d04daedfbdaadd4d162043cd78f1fd590bc6f3",
+      "bytes": 182281,
+      "width": 1905,
+      "height": 1201
+    },
+    {
+      "file": "w5-2.png",
+      "sha256": "809d028836a56281c78a9bc73e4c264f972f6c31e9591892c81f955dfd4ffc51",
+      "bytes": 192809,
+      "width": 1905,
+      "height": 1246
+    },
+    {
+      "file": "w6.png",
+      "sha256": "173720bf4eb1ccd01228819efa4baabe269d3c014c926b9817bea532b38c9c10",
+      "bytes": 192988,
+      "width": 1905,
+      "height": 1246
+    },
+    {
+      "file": "w7.png",
+      "sha256": "e40663a7fe276a2a2fe32e15ccafee5a3ba958bc3d1e2e834d20eb38e8a00214",
+      "bytes": 195010,
+      "width": 1905,
+      "height": 1211
+    },
+    {
+      "file": "w8.png",
+      "sha256": "705c505ce25a17c1b4708a9e682b9ebfff428db19e7531349887e870fab9c4e8",
+      "bytes": 190860,
+      "width": 1905,
+      "height": 1236
+    },
+    {
+      "file": "w9.png",
+      "sha256": "a2ae7dcf2fad94a37ec2b396fbf5ee5cc2e46a671ca876594ea9c112fc3eb354",
+      "bytes": 189955,
+      "width": 1905,
+      "height": 1211
+    },
+    {
+      "file": "wv1-l.png",
+      "sha256": "666ef49fae6e9451653c8bb1337fef93b64f6d8cf4ce15e69599f80794dc58e9",
+      "bytes": 169878,
+      "width": 2560,
+      "height": 1392
+    },
+    {
+      "file": "wv1-m.png",
+      "sha256": "640857739ba07b305dc51964fab029100507c4494110078f122d1c5ea6ca3dcb",
+      "bytes": 147956,
+      "width": 2560,
+      "height": 1392
+    },
+    {
+      "file": "wv1-s.png",
+      "sha256": "8de8f49c40c3fa593534138e2cf27413b014f179e1f4d57197eaa6c651d6c521",
+      "bytes": 141258,
+      "width": 2560,
+      "height": 1392
+    },
+    {
+      "file": "wv3-l.png",
+      "sha256": "ee5dd554c62dfc06da87453c4d54048a94ff370a6c9f628334dddaf34eba89d9",
+      "bytes": 42678,
+      "width": 1414,
+      "height": 800
+    },
+    {
+      "file": "wv4.png",
+      "sha256": "c151e7de817537b2f03c71ceedbd44c9d82c47812dc9bd293fb228c9f635d7d7",
+      "bytes": 206146,
+      "width": 1920,
+      "height": 1233
+    },
+    {
+      "file": "wv5-1.png",
+      "sha256": "be60b650c4cd12fe9319dbfd16bd3c56b8844f0bc1475d13c9bf145d1a0c105a",
+      "bytes": 79417,
+      "width": 1414,
+      "height": 800
+    },
+    {
+      "file": "wv5-2.png",
+      "sha256": "45d567c6be2f31103061d525d0bb345568c301f79e64781256f40aeee6dee534",
+      "bytes": 81892,
+      "width": 1414,
+      "height": 800
+    },
+    {
+      "file": "wv5-3.png",
+      "sha256": "749291ccc5e1ed137558b3f662fa898427140644664502e86afa6beb7ef795c5",
+      "bytes": 79183,
+      "width": 1414,
+      "height": 800
+    },
+    {
+      "file": "wv5-4.png",
+      "sha256": "3b2739263c897ba2e4c248b1dceed3676161e7bc234d2c9a55e14dbcab54a15d",
+      "bytes": 79770,
+      "width": 1414,
+      "height": 800
+    },
+    {
+      "file": "wv5-5.png",
+      "sha256": "aaa03a4ff725dbc88a96bbb9e9bd2d8c64642d02c1e86517f27d9875cd55176a",
+      "bytes": 78835,
+      "width": 1414,
+      "height": 800
+    }
+  ]
+}

@@ -4,7 +4,7 @@
 
 ## 判定
 
-手動入力からローカルsolver提案まで実装済み。**出荷確認は未完了**です。Windowsの最新Chromeによる実機確認は未実施です。公開先はGitHub Pagesに決定しました。実際の配信と配信後smokeは未実施です。実装はPR #20でmainへ統合済みです。GitHub Issueのcloseや公開を表しません。
+手動入力からローカルsolver提案まで実装済み。**出荷確認は未完了**です。2026-10-10にWindows Chromeで実機確認を実施しました。W1の凡例とW5の入力旗の視認性に指摘があり、表示・通信の一部記録も補完が必要です。公開先はGitHub Pagesに決定しました。実際の配信と配信後smokeは未実施です。実装はPR #20でmainへ統合済みです。
 
 ## 実装範囲と制限
 
@@ -30,7 +30,7 @@
 | ローカル処理 | 通信は同一originの静的JS/CSS/Workerのみ。WebSocket・beaconなし、storageなし、Service Worker登録なし |
 | 視覚確認 | `test/artifacts/manual-mvp/`の画像でS記号、選択枠、右/下情報欄を確認。画像はテストで再生成する |
 | クリーンソースでの全体検証 | 新規ソース展開（dist・node_modulesなし）→npm ci→Chromium install→typecheck→build→全体テスト成功。最終コードは41ファイル358件、372.74秒、終了コード0。レビュー指摘の修飾キー保護も含む。 |
-| Windows Chrome実機 | **未実施**。OS・browser versionと主要フローの結果を追記するまで出荷確認を完了しない |
+| Windows Chrome実機 | **実施・指摘あり**。2026-10-10、Windows 11 Pro 25H2 / Chrome 155.0.8059.40、対象ba4aea80faac9214ad57a829dd8ff0dc0fc6c210。W2〜W4・W6〜W12は確認者記録でOK。W1/W5に指摘、表示・通信の不足記録あり。[確認票](manual-mvp-windows-checklist.md)と[証跡対応表](evidence/manual-mvp-windows/2026-10-10/README.md)を参照 |
 | Windows Edge | 未実施 |
 
 ## 再現手順
@@ -50,7 +50,7 @@ npm run preview
 
 ## 配信手順（未実施）
 
-1. [Windows確認票](manual-mvp-windows-checklist.md)に沿って、Windows Chromeで設定→入力→提案、矛盾→修正、旗policy、キーボード、3画面サイズを確認する。対象commit・OS・ブラウザversion・日付・結果を記録する。
+1. [Windows確認票](manual-mvp-windows-checklist.md)に沿って、Windows Chromeで設定→入力→提案、矛盾→修正、旗policy、キーボード、3画面サイズを確認する。初回実施の結果は記録済み。#22の表示指摘の修正・再確認と、表示・通信の不足記録の補完を行い、対象commit・OS・ブラウザversion・日付・結果を記録する。
 2. GitHubのSettings → Pages → Build and deploymentでSourceをGitHub Actionsに設定する。HTTPSのプロジェクトサイトを使い、配信対象は`dist/`のみとする。APIサーバーは不要。
 3. `.js`（module Workerを含む）はJavaScript MIME（`text/javascript`または`application/javascript`）、CSSは`text/css`で返す。WorkerをHTML fallbackで返さない。
 4. `npm run build:pages`で`/minesweeper-slv/`向けにbuildする。`npm test -- test/browser/pages.test.ts`は別の一時出力先でこのbuildを実行し、サブパスから静的ファイルと実Workerを読み込み、solver提案まで確認する。通常の`dist/`を上書きしない。
@@ -59,6 +59,16 @@ npm run preview
 7. 不具合時は直前の成功したPages workflow runを再実行して、そのrunのcommitを再build・配信する。再実行が利用できない場合は、mainを直前公開版の内容へ戻すrevert PRをレビュー・統合し、手動公開する。履歴の強制書換えはしない。配信後に`release.json`のcommitと同じsmokeを再確認する。自動保存がないためデータ移行は不要。
 
 公開先への実配信はこの作業では実行していません。
+
+## Windows Chrome実機確認（2026-10-10）
+
+確認者はKKishikawa。非開発端末のWindows 11 Pro（25H2 26200.9457）でChrome 155.0.8059.40を使用し、MacBook Proから配信した`http://192.168.3.3:4172/`を操作しました。対象commitは`ba4aea80faac9214ad57a829dd8ff0dc0fc6c210`、versionは`0.1.0-dev.1`です。Windows上でのbuild・ホスト起動は確認範囲外です。
+
+W2〜W4・W6〜W12は確認者の記録でOK。W1の凡例と盤面の記号の不一致、W5の選択中の入力旗の識別しづらさは[#22](https://github.com/KKishikawa/minesweeper-slv/issues/22)で修正・再確認を管理します。29枚の画像を[証跡ディレクトリ](evidence/manual-mvp-windows/2026-10-10/README.md)へ保存しました。ファイル名のずれ、W2/W12の重複、30列の小サイズが900×1080である点、9列×3サイズ・960×1080・表示領域/セル寸法の実測・Network画像の不足を記録しています。Edgeはversionのみ記録され、結果は未記録です。
+
+利用上の指摘と改善仮説は[検証整理](manual-mvp-windows-feedback-2026-10-10.md)にまとめ、[#23](https://github.com/KKishikawa/minesweeper-slv/issues/23)（フォーカス復帰時の誤入力）、[#24](https://github.com/KKishikawa/minesweeper-slv/issues/24)（ちらつき調査）、[#25](https://github.com/KKishikawa/minesweeper-slv/issues/25)（解析限界の診断）、[#26](https://github.com/KKishikawa/minesweeper-slv/issues/26)（旗policyの説明）を起票しました。30×16・99地雷での限界到達は確認者報告であり、停止盤面と原因は未確定です。
+
+#16はopenを維持します。全必須条件の合格、GitHub Pages実配信、公開後のHTTPS/サブパスでのsmokeは未完了です。改善でcommitが変わる場合は、影響ケースを新commitで再検証します。
 
 ## 依存関係の監査（2026-10-09）
 
