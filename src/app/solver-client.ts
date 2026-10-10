@@ -1,4 +1,16 @@
 import type { SolverRequest, SolverResponse } from '../workers/protocol.js';
+import type { SolverStatistics } from '../solver/types.js';
+
+export interface SolverRunDiagnostic {
+  requestId: number;
+  revision: number;
+  outcome: 'solved' | 'guess-required' | 'inconsistent' | 'node-budget' | 'timeout' | 'worker-error' | 'cancelled' | 'limit-unknown';
+  elapsedMs: number;
+  timeoutMs: number;
+  statistics: SolverStatistics | null;
+  statisticsSource: 'final' | 'checkpoint' | 'unavailable';
+  error: string | null;
+}
 
 export interface SolverWorkerPort {
   postMessage(request: SolverRequest): void;
@@ -10,10 +22,25 @@ export interface SolverWorkerPort {
 export interface SolverClientOptions {
   workerFactory: () => SolverWorkerPort;
   timeoutMs?: number;
+  onDiagnostic?: (diagnostic: SolverRunDiagnostic) => void;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isStatistics(value: unknown, request: SolverRequest): value is SolverStatistics {
+  const count = (number: unknown): number is number => Number.isSafeInteger(number) && (number as number) >= 0;
+  if (!isRecord(value) || !['validation', 'reduction', 'enumeration', 'combination', 'complete'].includes(String(value.stage))
+    || !count(value.visitedNodes) || value.visitedNodes > request.options.maxNodes
+    || typeof value.elapsedMs !== 'number' || !Number.isFinite(value.elapsedMs) || value.elapsedMs < 0) return false;
+  if (value.components === null) return true;
+  const visitedNodes = value.visitedNodes;
+  return Array.isArray(value.components) && value.components.length <= request.board.cells.length
+    && value.components.every(component => isRecord(component) && count(component.cells)
+      && component.cells <= request.board.cells.length && count(component.constraints)
+      && count(component.visitedNodes) && component.visitedNodes <= visitedNodes
+      && ['pending', 'exploring', 'completed', 'limit-reached'].includes(String(component.status)));
 }
 
 function isProposal(value: unknown, request: SolverRequest, status: 'solved' | 'guess-required'): boolean {
@@ -32,16 +59,18 @@ function isProposal(value: unknown, request: SolverRequest, status: 'solved' | '
 
 function isResponse(value: unknown, request: SolverRequest): value is SolverResponse {
   if (!isRecord(value) || !Number.isInteger(value.requestId) || !Number.isInteger(value.revision)) return false;
+  if ('statistics' in value && !isStatistics(value.statistics, request)) return false;
   if (value.kind === 'error') return typeof value.message === 'string' && !('proposal' in value) && !('result' in value);
   if (value.kind !== 'result' || !isRecord(value.result)) return false;
   const result = value.result;
-  if (result.status === 'inconsistent' || result.status === 'limit-reached') return !('proposal' in result);
+  if (result.status === 'inconsistent') return !('proposal' in result);
+  if (result.status === 'limit-reached') return !('proposal' in result) && (!('reason' in result) || result.reason === 'node-budget');
   if (result.status === 'solved' || result.status === 'guess-required') return isProposal(result.proposal, request, result.status);
   return false;
 }
 
-function isEnvelope(value: unknown): value is { kind: 'result' | 'error'; requestId: number; revision: number } {
-  return isRecord(value) && (value.kind === 'result' || value.kind === 'error')
+function isEnvelope(value: unknown): value is { kind: 'result' | 'error' | 'progress'; requestId: number; revision: number } & Record<string, unknown> {
+  return isRecord(value) && (value.kind === 'result' || value.kind === 'error' || value.kind === 'progress')
     && Number.isInteger(value.requestId) && Number.isInteger(value.revision);
 }
 
@@ -49,17 +78,35 @@ export function createSolverClient(onResponse: (response: SolverResponse) => voi
   { run(request: SolverRequest): void; cancel(): void; dispose(): void } {
   const timeoutMs = options.timeoutMs ?? 5_000;
   if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) throw new RangeError('timeoutMs must be a positive finite number');
-  let current: { worker: SolverWorkerPort | null; timer: ReturnType<typeof setTimeout> | null; request: SolverRequest } | null = null;
+  let current: { worker: SolverWorkerPort | null; timer: ReturnType<typeof setTimeout> | null; request: SolverRequest;
+    started: number; statistics: SolverStatistics | null } | null = null;
   let disposed = false;
-  function cancel(): void {
+  function release(): void {
     if (!current) return;
     if (current.timer !== null) clearTimeout(current.timer);
     current.worker?.terminate();
     current = null;
   }
+  function record(outcome: SolverRunDiagnostic['outcome'], final?: SolverStatistics, error: string | null = null): void {
+    if (!current?.request.diagnostics) return;
+    options.onDiagnostic?.({ requestId: current.request.requestId, revision: current.request.revision,
+      outcome, elapsedMs: performance.now() - current.started, timeoutMs, error,
+      statistics: final ?? current.statistics,
+      statisticsSource: final ? 'final' : current.statistics ? 'checkpoint' : 'unavailable' });
+  }
+  function cancel(): void {
+    record('cancelled');
+    release();
+  }
   function finish(request: SolverRequest, response: SolverResponse): void {
     if (!current || current.request !== request || disposed) return;
-    cancel();
+    // An exception can occur between samples; its last sample is not an exact
+    // terminal count. Successful/limited solver returns carry final statistics.
+    if (response.kind === 'error' && response.statistics) current.statistics = response.statistics;
+    record(response.kind === 'error' ? 'worker-error' : response.result.status === 'limit-reached'
+      ? response.result.reason ?? 'limit-unknown' : response.result.status,
+    response.kind === 'result' ? response.statistics : undefined, response.kind === 'error' ? response.message : null);
+    release();
     onResponse(response);
   }
   function error(request: SolverRequest, message: string): void {
@@ -69,7 +116,7 @@ export function createSolverClient(onResponse: (response: SolverResponse) => voi
     run(request) {
       if (disposed) throw new Error('Solver client is disposed');
       cancel();
-      current = { worker: null, timer: null, request };
+      current = { worker: null, timer: null, request, started: performance.now(), statistics: null };
       try {
         const worker = options.workerFactory();
         if (!current || current.request !== request) { worker.terminate(); return; }
@@ -78,13 +125,20 @@ export function createSolverClient(onResponse: (response: SolverResponse) => voi
           if (!current || current.request !== request) return;
           if (!isEnvelope(event.data)) { error(request, 'Workerからの応答が不正です'); return; }
           if (event.data.requestId !== request.requestId || event.data.revision !== request.revision) return;
+          if (event.data.kind === 'progress') {
+            if (!request.diagnostics || !isStatistics(event.data.statistics, request) || 'proposal' in event.data || 'result' in event.data) {
+              error(request, 'Workerからの診断応答が不正です'); return;
+            }
+            current.statistics = event.data.statistics;
+            return;
+          }
           if (!isResponse(event.data, request)) { error(request, 'Workerからの応答が不正です'); return; }
           finish(request, event.data);
         };
         worker.onerror = event => error(request, event.message || 'Workerの実行に失敗しました');
         worker.onmessageerror = () => error(request, 'Workerメッセージを読み取れません');
         current.timer = setTimeout(() => finish(request, { kind: 'result', requestId: request.requestId,
-          revision: request.revision, result: { status: 'limit-reached' } }), timeoutMs);
+          revision: request.revision, result: { status: 'limit-reached', reason: 'timeout' } }), timeoutMs);
         worker.postMessage(request);
       } catch (cause) {
         error(request, cause instanceof Error ? cause.message : String(cause));

@@ -2,25 +2,50 @@ import { validateBoard } from '../board/validate';
 import { buildConstraints, reduceConstraints, splitComponents } from './constraints';
 import { enumerateComponent } from './enumerate';
 import { choose, convolve } from './combine';
-import type { Solver } from './types';
+import type { Solver, SolveResult, SolverStatistics } from './types';
 
-export const solve: Solver = (board, policy, options) => {
-  if (validateBoard(board, policy).status !== 'valid') return { status: 'inconsistent' };
-  if (!Number.isSafeInteger(options.maxNodes) || options.maxNodes <= 0) return { status: 'limit-reached' };
+export const solve: Solver = (board, policy, options, observe) => {
+  const started = observe ? performance.now() : 0;
+  const budget = { visited: 0, maxNodes: options.maxNodes };
+  const statistics: SolverStatistics = { stage: 'validation', visitedNodes: 0, elapsedMs: 0, components: null };
+  const sample = () => observe?.({ ...statistics, visitedNodes: budget.visited,
+    elapsedMs: performance.now() - started, components: statistics.components?.map(component => ({ ...component })) ?? null });
+  const finish = (result: SolveResult): SolveResult => { sample(); return result; };
+  sample();
+  if (validateBoard(board, policy).status !== 'valid') return finish({ status: 'inconsistent' });
+  if (!Number.isSafeInteger(options.maxNodes) || options.maxNodes <= 0) return finish({ status: 'limit-reached', reason: 'node-budget' });
+  statistics.stage = 'reduction';
+  sample();
   const reduced = reduceConstraints(buildConstraints(board, policy));
-  if (reduced.inconsistent) return { status: 'inconsistent' };
+  if (reduced.inconsistent) return finish({ status: 'inconsistent' });
   const candidates = board.cells.flatMap((cell, index) =>
     cell.value === 'closed' || (cell.value === 'flag' && policy === 'reconsidered') ? [index] : []);
   const flags = policy === 'trusted' ? board.cells.filter(cell => cell.value === 'flag').length : 0;
   const remaining = board.totalMines - flags - reduced.mines.length;
   const fixed = new Set([...reduced.safe, ...reduced.mines]);
-  const budget = { visited: 0, maxNodes: options.maxNodes };
   const components = [];
-  for (const constraints of splitComponents(reduced.constraints)) {
-    const component = enumerateComponent(constraints, budget);
-    if (component.limited) return { status: 'limit-reached' };
+  const groups = splitComponents(reduced.constraints);
+  if (observe) statistics.components = groups.map(constraints => ({
+    cells: new Set(constraints.flatMap(constraint => constraint.cells)).size,
+    constraints: constraints.length, visitedNodes: 0, status: 'pending',
+  }));
+  statistics.stage = 'enumeration';
+  sample();
+  for (const [index, constraints] of groups.entries()) {
+    const stats = statistics.components?.[index];
+    const before = budget.visited;
+    if (stats) stats.status = 'exploring';
+    sample();
+    const component = enumerateComponent(constraints, budget, observe ? () => {
+      if (stats) stats.visitedNodes = budget.visited - before;
+      sample();
+    } : undefined);
+    if (stats) { stats.visitedNodes = budget.visited - before; stats.status = component.limited ? 'limit-reached' : 'completed'; }
+    if (component.limited) return finish({ status: 'limit-reached', reason: 'node-budget' });
     components.push(component);
   }
+  statistics.stage = 'combination';
+  sample();
   const frontier = new Set(components.flatMap(component => [...component.mineWays.keys()]));
   const free = candidates.filter(cell => !fixed.has(cell) && !frontier.has(cell));
   const unit = () => new Map([[0, 1n]]);
@@ -35,7 +60,7 @@ export const solve: Solver = (board, policy, options) => {
     return result;
   };
   const total = weight(prefix.at(-1)!, free.length, remaining);
-  if (total === 0n) return { status: 'inconsistent' };
+  if (total === 0n) return finish({ status: 'inconsistent' });
   const mineCounts = new Map<number, bigint>();
   reduced.safe.forEach(cell => mineCounts.set(cell, 0n));
   reduced.mines.forEach(cell => mineCounts.set(cell, total));
@@ -49,10 +74,11 @@ export const solve: Solver = (board, policy, options) => {
   }
   const safe = candidates.filter(cell => mineCounts.get(cell) === 0n);
   const mines = candidates.filter(cell => mineCounts.get(cell) === total);
-  if (safe.length || mines.length || !candidates.length) return { status: 'solved', proposal: { safe, mines, guesses: [], primaryGuess: null } };
+  statistics.stage = 'complete';
+  if (safe.length || mines.length || !candidates.length) return finish({ status: 'solved', proposal: { safe, mines, guesses: [], primaryGuess: null } });
   // All candidates share the same denominator (total), so numerator comparison is exact.
   let minimum = total;
   for (const count of mineCounts.values()) if (count < minimum) minimum = count;
   const guesses = candidates.filter(cell => mineCounts.get(cell) === minimum);
-  return { status: 'guess-required', proposal: { safe: [], mines: [], guesses, primaryGuess: guesses[0]! } };
+  return finish({ status: 'guess-required', proposal: { safe: [], mines: [], guesses, primaryGuess: guesses[0]! } });
 };

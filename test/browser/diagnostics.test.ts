@@ -1,0 +1,54 @@
+import { afterAll, beforeAll, expect, it } from 'vitest';
+import { mkdir, readFile } from 'node:fs/promises';
+import { startBrowserHarness } from './harness';
+import type { BrowserHarness } from './harness';
+let harness: BrowserHarness;
+beforeAll(async () => { harness = await startBrowserHarness(true); });
+afterAll(async () => { await harness?.close(); });
+
+it('exports only opted-in runs through a quiet menu, retains them on OFF and resets on reload', async () => {
+  const page = await harness.browser.newPage();
+  page.setDefaultTimeout(3000);
+  await page.goto(harness.baseUrl);
+  await page.getByRole('status').filter({ hasText: '推測が必要です' }).waitFor();
+  const toggle = page.getByLabel('診断履歴を取得する', { exact: true });
+  expect(await toggle.isVisible()).toBe(false);
+  await page.getByText('開発者向け診断', { exact: true }).click();
+  expect(await toggle.isChecked()).toBe(false);
+  const download = page.getByRole('button', { name: '診断JSONをダウンロード', exact: true });
+  expect(await download.isDisabled()).toBe(true);
+  await toggle.check();
+  await mkdir('test/artifacts/issue-25', { recursive: true });
+  await page.screenshot({ path: 'test/artifacts/issue-25/diagnostics-menu.png', fullPage: true });
+  await page.getByRole('button', { name: '再解析する', exact: true }).click();
+  await page.getByRole('status').filter({ hasText: '推測が必要です' }).waitFor();
+  const event = page.waitForEvent('download');
+  await download.click();
+  const file = await event;
+  const exported = JSON.parse(await readFile((await file.path())!, 'utf8'));
+  expect(exported.schemaVersion).toBe(1);
+  expect(exported.build.commit).toMatch(/^[0-9a-f]{40}$/);
+  expect(exported.entries).toHaveLength(1);
+  expect(exported.entries[0]).toMatchObject({ board: { width: 9, height: 9, totalMines: 10 },
+    policy: 'trusted', effectivePolicy: 'trusted', maxNodes: 200_000, timeoutMs: 5000,
+    outcome: 'guess-required', statisticsSource: 'final', statistics: { visitedNodes: 0, components: [] } });
+  expect(exported.entries[0].board.cells).toHaveLength(81);
+  await toggle.uncheck();
+  await page.getByRole('button', { name: '再解析する', exact: true }).click();
+  await page.getByRole('status').filter({ hasText: '推測が必要です' }).waitFor();
+  expect(await download.isEnabled()).toBe(true);
+  const secondEvent = page.waitForEvent('download');
+  await download.click();
+  const second = await secondEvent;
+  expect(JSON.parse(await readFile((await second.path())!, 'utf8')).entries).toHaveLength(1);
+  await page.getByRole('button', { name: '診断履歴を削除', exact: true }).click();
+  expect(await download.isDisabled()).toBe(true);
+  const link = page.getByRole('link', { name: 'GitHubで不具合を報告' });
+  expect(await link.getAttribute('href')).toBe('https://github.com/KKishikawa/minesweeper-slv/issues/new');
+  await page.reload();
+  await page.getByText('開発者向け診断', { exact: true }).click();
+  expect(await toggle.isChecked()).toBe(false);
+  expect(await download.isDisabled()).toBe(true);
+  expect(await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length }))).toEqual({ local: 0, session: 0 });
+  await page.close();
+});

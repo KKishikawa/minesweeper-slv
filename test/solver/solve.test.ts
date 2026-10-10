@@ -30,7 +30,7 @@ it('reconsiders flags without modifying observations', () => {
   expect(board.cells[1]!.value).toBe('flag');
 });
 it('discards partial results when the shared budget is exhausted', () => {
-  expect(solve(createBoard(2, 1, 1, 0), 'trusted', { maxNodes: 0 })).toEqual({ status: 'limit-reached' });
+  expect(solve(createBoard(2, 1, 1, 0), 'trusted', { maxNodes: 0 })).toEqual({ status: 'limit-reached', reason: 'node-budget' });
   const budget = { visited: 0, maxNodes: 4 };
   expect(enumerateComponent([{ cells: [0, 1], mines: 1 }], budget).limited).toBe(true);
   expect(budget.visited).toBeLessThanOrEqual(4);

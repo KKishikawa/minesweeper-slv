@@ -5,7 +5,8 @@ export interface Enumeration {
   mineWays: Map<number, Map<number, bigint>>;
   limited: boolean;
 }
-export function enumerateComponent(constraints: Constraint[], budget: { visited: number; maxNodes: number }): Enumeration {
+export function enumerateComponent(constraints: Constraint[], budget: { visited: number; maxNodes: number },
+  checkpoint?: () => void): Enumeration {
   const cells = [...new Set(constraints.flatMap(constraint => constraint.cells))].sort((a, b) => a - b);
   const assignment = new Map<number, number>();
   const ways = new Map<number, bigint>();
@@ -15,6 +16,7 @@ export function enumerateComponent(constraints: Constraint[], budget: { visited:
     if (limited) return;
     if (budget.visited >= budget.maxNodes) { limited = true; return; }
     budget.visited++;
+    if (checkpoint && budget.visited % 4096 === 0) checkpoint();
     for (const constraint of constraints) {
       let assigned = 0;
       let open = 0;

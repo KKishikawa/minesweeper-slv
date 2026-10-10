@@ -11,5 +11,5 @@
     "lib": ["ES2023", "DOM", "WebWorker"],
     "skipLibCheck": true
   },
-  "include": ["src", "test", "scripts", "vitest.config.ts"]
+  "include": ["src", "test", "scripts", "vitest.config.ts", "vite.config.ts"]
 }

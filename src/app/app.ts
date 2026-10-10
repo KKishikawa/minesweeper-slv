@@ -8,6 +8,8 @@ import { mountBoardEditor } from '../ui/board-editor';
 import { computeLayout } from '../ui/layout';
 import { statusText } from '../ui/status';
 import { renderLegend } from '../ui/board-legend';
+import { createDiagnosticHistory } from './diagnostic-history';
+import { mountDiagnosticsMenu } from '../ui/diagnostics-menu';
 
 export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions> = {}): { dispose(): void } {
   root.innerHTML = `
@@ -38,13 +40,16 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
         </aside>
       </div>
     </section>
-    <footer>画像入力には対応していません。再読み込みすると盤面は初期化されます。</footer>`;
+    <footer>画像入力には対応していません。再読み込みすると盤面は初期化されます。<div class="diagnostics-mount"></div></footer>`;
   const get = <T extends HTMLElement>(selector: string) => root.querySelector<T>(selector)!;
   const workspace = get<HTMLDivElement>('.workspace');
   const editorRoot = get<HTMLDivElement>('.editor-mount');
   let state = createAppState(createBoard(9, 9, 10, 0));
   const controller = new AbortController();
+  const history = createDiagnosticHistory();
+  const diagnosticsMenu = mountDiagnosticsMenu(get('.diagnostics-mount'), history);
   const client = createSolverClient(response => dispatch({ type: 'response', response }), { workerFactory: options.workerFactory ?? createModuleSolverWorker,
+    onDiagnostic: diagnostic => { history.finish(diagnostic); diagnosticsMenu.update(); options.onDiagnostic?.(diagnostic); },
     ...(options.timeoutMs === undefined ? {} : { timeoutMs: options.timeoutMs }) });
   const settings = mountBoardSettings(get('.settings-mount'), (width, height, totalMines) =>
     dispatch({ type: 'board-changed', board: createBoard(width, height, totalMines, state.board.revision + 1) }));
@@ -63,7 +68,10 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
     get('.proposal-counts').textContent = state.proposal ? `安全 ${state.proposal.safe.length} · 地雷 ${state.proposal.mines.length} · 推測候補 ${state.proposal.guesses.length}` : '';
     get('.status-detail').textContent = state.phase === 'guess-required' ? '確定できる手がありません。? は地雷の可能性が最も低い同率の候補です。'
       : state.phase === 'inconsistent' ? '数字・入力旗・総地雷数を確認してください。'
-      : state.phase === 'limit-reached' ? '解析量または待機時間の上限に達しました。盤面を更新するか、再解析してください。'
+      : state.phase === 'limit-reached' ? state.limitReason === 'timeout'
+        ? 'Workerの待機時間の上限に達しました。盤面を更新するか、再解析してください。'
+        : state.limitReason === 'node-budget' ? '探索ノード数の上限に達しました。盤面を更新するか、再解析してください。'
+          : '解析量または待機時間の上限に達しました。盤面を更新するか、再解析してください。'
       : state.phase === 'error' ? '解析を完了できませんでした。再解析をお試しください。'
       : state.phase === 'needs-review' ? '要確認のセルと盤面の寸法を確認してください。'
       : '入力した情報をもとに解析します。';
@@ -71,7 +79,15 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
   }
   function dispatch(action: AppAction) {
     const next = transition(state, action); state = next.state; render();
-    for (const effect of next.effects) effect.type === 'cancel' ? client.cancel() : client.run(effect.request);
+    for (const effect of next.effects) {
+      if (effect.type === 'cancel') client.cancel();
+      else {
+        const request = { ...effect.request, diagnostics: history.enabled };
+        history.start(request, { policy: state.policy, autoReconsider: state.autoReconsider, timeoutMs: options.timeoutMs ?? 5000 });
+        diagnosticsMenu.update();
+        client.run(request);
+      }
+    }
   }
   const policy = () => dispatch({ type: 'settings-changed',
     policy: get<HTMLInputElement>('input[value="reconsidered"]').checked ? 'reconsidered' : 'trusted',
@@ -85,5 +101,5 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
   });
   observer.observe(workspace);
   dispatch({ type: 'solve' });
-  return { dispose() { observer.disconnect(); controller.abort(); client.dispose(); editor.dispose(); settings.dispose(); root.replaceChildren(); } };
+  return { dispose() { observer.disconnect(); controller.abort(); client.dispose(); diagnosticsMenu.dispose(); editor.dispose(); settings.dispose(); root.replaceChildren(); } };
 }

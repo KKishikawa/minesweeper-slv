@@ -64,4 +64,15 @@ input[aria-invalid="true"] { border-color: #b52e35; }
 .legend-items span { display: inline-flex; align-items: center; gap: 5px; }
 .legend canvas { width: 24px; height: 24px; flex-shrink: 0; }
 footer { font-size: 12px; color: #6c8185; padding: 4px 0 12px; }
+.diagnostics-menu { margin-top: 12px; color: #596b70; }
+.diagnostics-menu summary { cursor: pointer; width: fit-content; padding: 6px 0; }
+.diagnostics-menu summary:focus-visible, .diagnostics-menu a:focus-visible { outline: 3px solid #0075bd; outline-offset: 3px; }
+.diagnostics-content { max-width: 64ch; border: 1px solid #d5dfde; border-radius: 6px; padding: 12px; line-height: 1.7; }
+.diagnostics-content label { display: flex; align-items: center; gap: 6px; }
+.diagnostics-content input { accent-color: #687b80; }
+.diagnostics-content p { margin: 8px 0; }
+.diagnostics-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.diagnostics-actions button { color: #596b70; font-size: 12px; }
+.diagnostics-actions button:disabled { opacity: .55; cursor: default; }
+.diagnostics-content a { color: #526b77; }
 @media (max-width: 700px) { #app { padding: 24px 12px; } .settings-card, .workbench { padding: 16px; } }
