@@ -12,7 +12,9 @@
 - 入力旗の尊重・再検討、自動再検討、矛盾表示と再解析
 - Web Worker内でのローカル解析。入力を上書きせず、更新前の応答を破棄
 
-パレットを選んでセルをクリックします。キーボードは矢印で移動、0 / Spaceで空き、Fで旗、Deleteで閉じる、1〜8で数字です。リセットは盤面設定と旗policyを保ちます。
+入力方式は「キーボード中心」と「クリック・タップ中心」を切り替えられます。初期状態は主な入力デバイスがタッチならクリック・タップ中心、それ以外はキーボード中心です。端末の種類を完全に識別する判定ではありません。手動で選んだ方式は盤面の再作成やリセットでも維持し、再読み込み時は再判定します。
+
+キーボード中心では、セルのクリックは選択とフォーカス移動だけを行い、観測値を変更しません。矢印で移動、0 / Spaceで空き、Fで旗、Deleteで閉じる、1〜8で数字です。クリック・タップ中心では、パレットを選んでセルをクリック・タップします。リセットは盤面設定と旗policyを保ちます。
 
 ## 制限と現在地
 
@@ -77,6 +79,7 @@ npm run test:spike-evidence
 
 - [現在のプロジェクト情報](docs/project/README.md)
 - [現在の製品定義](docs/project/product.md)
+- [入力方式切替の検証と実機再検証手順](docs/project/input-mode-verification.md)
 - [現在のロードマップ](docs/project/roadmap.md)
 - [ADR log](docs/decisions/README.md)
 - [GitHub作業ダッシュボード（Issue #1）](https://github.com/KKishikawa/minesweeper-slv/issues/1)

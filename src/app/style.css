@@ -25,7 +25,12 @@ input[aria-invalid="true"] { border-color: #b52e35; }
 .workspace[data-placement="right"] { grid-template-columns: minmax(0, 1fr) 288px; }
 .workspace[data-placement="below"] { grid-template-columns: minmax(0, 1fr); }
 .editor-mount { min-width: 0; }
+.input-mode { display: flex; flex-wrap: wrap; gap: 8px 16px; border: 0; padding: 0; margin: 0 0 12px; font-size: 13px; }
+.input-mode legend { font-weight: 600; margin-bottom: 8px; }
+.input-mode label { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; cursor: pointer; }
+.input-mode input { accent-color: #255c4a; }
 .palette { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.palette[hidden] { display: none; }
 .palette button { min-width: 34px; padding: 6px 10px; }
 .palette button[aria-pressed="true"] { background: #173b51; border-color: #173b51; color: #fff; }
 .editor-help { max-width: 65ch; font-size: 12px; color: #687e86; line-height: 1.8; margin: 0 0 16px; }
