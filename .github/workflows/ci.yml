@@ -45,6 +45,14 @@ jobs:
       - name: Run isolated regression group
         run: npm run test:ci -- ${{ matrix.group }}
 
+      - name: Save regression timing records
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ci-${{ matrix.group }}
+          path: test/artifacts/ci/${{ matrix.group }}/
+          if-no-files-found: error
+
   quality:
     name: CI / quality
     if: always()

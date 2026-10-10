@@ -1,3 +1,5 @@
+import { execFileSync } from "node:child_process";
+
 import { readFile } from "node:fs/promises";
 
 import { describe, expect, it } from "vitest";
@@ -48,6 +50,88 @@ describe("repository foundation", () => {
     expect(workflow).not.toContain("test:spike-evidence");
     expect(workflow).not.toContain("continue-on-error");
     expect(workflow).not.toMatch(/\|\|\s*(true|echo)|--passWithNoTests/);
+  });
+
+  it("retains timing artifacts for every ordinary regression group even on failure", async () => {
+    const workflow = await readRepositoryFile(".github/workflows/ci.yml");
+    const upload = workflow.split("      - name: Save regression timing records\n")[1]?.split("\n  quality:")[0];
+    expect(upload).toContain("if: always()");
+    expect(upload).toContain("uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2");
+    expect(upload).toContain("test/artifacts/ci/${{ matrix.group }}/");
+    expect(upload).toContain("if-no-files-found: error");
+  });
+
+  it("benchmarks fixed targets without publishing or restricting the control branch", async () => {
+    const workflow = await readRepositoryFile(".github/workflows/ci-benchmark.yml");
+    expect(workflow).toContain("workflow_dispatch:");
+    expect(workflow).toContain("options: [A, B, C]");
+    expect(workflow).toContain("AFTER_SHA: ${{ inputs.after_sha }}");
+    expect(workflow).toContain("CONDITION: ${{ inputs.condition }}");
+    expect(workflow).toContain("1a01eac18f389e7933be9937ad7fa4aa8be476b7");
+    expect(workflow).not.toContain("refs/heads/main");
+    expect(workflow).not.toMatch(/pages|deploy|continue-on-error|test:spike-evidence/);
+    expect(workflow).not.toMatch(/run:.*\$\{\{ inputs\./);
+    const serial = workflow.split("  serial:\n")[1]?.split("\n  regression:")[0];
+    const regression = workflow.split("  regression:\n")[1]?.split("\n  quality:")[0];
+    const quality = workflow.split("  quality:\n")[1];
+    expect(serial).toContain("needs.validate.outputs.condition != 'C'");
+    expect(serial).toContain("ref: ${{ needs.validate.outputs.target_sha }}");
+    expect(serial).toContain("run: npm run typecheck");
+    expect(serial).toContain("run: npm run build");
+    expect(serial).toContain('"$GITHUB_WORKSPACE/control/scripts/ci/run-tests.ts" --external-all "$GITHUB_WORKSPACE/target"');
+    expect(serial).not.toMatch(/cp |copy|test:ci/);
+    expect(regression).toContain("needs.validate.outputs.condition == 'C'");
+    expect(regression).toContain("ref: ${{ needs.validate.outputs.target_sha }}");
+    expect(regression?.match(/group: \[([^\]]+)\]/)?.[1]?.split(",").map(group => group.trim())).toEqual([...TEST_GROUPS]);
+    expect(regression).toContain("run: npm run test:ci -- ${{ matrix.group }}");
+    expect(regression).toContain("if: matrix.group == 'product'");
+    expect(quality).toContain("always() && needs.validate.outputs.condition == 'C'");
+    expect(quality).toContain("CI_NEEDS: ${{ toJSON(needs) }}");
+    expect(quality).toContain("allJobsSucceeded(results, ['regression'])");
+    for (const job of [serial, regression]) {
+      expect(job).toContain("runs-on: ubuntu-24.04");
+      expect(job).toContain("run: npm ci");
+      expect(job).toContain("npx --no-install playwright install --with-deps chromium");
+      expect(job).toContain("CI_CONTROL_SHA: ${{ github.sha }}");
+      expect(job).toContain("if: always()");
+      expect(job).toContain("uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9");
+    }
+  });
+
+  it("rejects unsafe benchmark refs before any target checkout", async () => {
+    const workflow = await readRepositoryFile(".github/workflows/ci-benchmark.yml");
+    const validation = workflow.split("        run: |\n")[1]?.split("\n  serial:")[0];
+    expect(validation).toBeDefined();
+    const script = validation!.split("\n").map(line => line.replace(/^          /, "")).join("\n");
+    for (const afterSha of ["main", "a".repeat(39), "a".repeat(41), "g".repeat(40), "a".repeat(40) + "\n", "$(touch /tmp/unsafe)"]) {
+      expect(() => execFileSync("bash", ["-e", "-c", script], { env: { ...process.env, CONDITION: "B", AFTER_SHA: afterSha, GITHUB_OUTPUT: "/dev/null" }, stdio: "pipe" })).toThrow();
+    }
+    for (const condition of ["D", "AA", "A\n", ""]) {
+      expect(() => execFileSync("bash", ["-e", "-c", script], { env: { ...process.env, CONDITION: condition, AFTER_SHA: "a".repeat(40), GITHUB_OUTPUT: "/dev/null" }, stdio: "pipe" })).toThrow();
+    }
+    for (const condition of ["A", "B", "C"]) {
+      const output = execFileSync("bash", ["-e", "-c", script], { env: { ...process.env, CONDITION: condition, AFTER_SHA: "a".repeat(40), GITHUB_OUTPUT: "/dev/stdout" }, encoding: "utf8", stdio: "pipe" });
+      expect(output).toBe(`condition=${condition}\ntarget_sha=${condition === "A" ? "1a01eac18f389e7933be9937ad7fa4aa8be476b7" : "a".repeat(40)}\n`);
+    }
+  });
+
+  it.each([
+    ["success", "success", 0],
+    ["success", "failure", 1],
+    ["success", "cancelled", 1],
+    ["success", "skipped", 1],
+    ["failure", "success", 1],
+  ])("benchmark C aggregation requires successful selected jobs (%s/%s)", async (validationResult, regressionResult, expectedExit) => {
+    const workflow = await readRepositoryFile(".github/workflows/ci-benchmark.yml");
+    const script = workflow.split("      - name: Require every grouped regression job to succeed\n")[1]?.split("        run: |\n")[1]?.trim();
+    expect(script).toBeDefined();
+    let exitCode = 0;
+    try {
+      execFileSync("bash", ["-e", "-c", script!], { cwd: repositoryRoot, env: { ...process.env, CI_NEEDS: JSON.stringify({ validate: { result: validationResult }, regression: { result: regressionResult } }) }, stdio: "pipe" });
+    } catch (error) {
+      exitCode = (error as { status: number }).status;
+    }
+    expect(exitCode).toBe(expectedExit);
   });
 
   it("preserves full regression and explicit approval before publishing Pages", async () => {
