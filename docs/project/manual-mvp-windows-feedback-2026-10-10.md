@@ -4,7 +4,7 @@
 
 ## 判定
 
-Windows Chromeでの検証を実施済み。W2〜W4・W6〜W12は確認者がOKと記録。W1の凡例と盤面の記号、W5の選択中の入力旗の視認性には未解消の指摘がある。**全必須条件の合格・出荷確認完了とは扱わない**。#16はopenを維持し、#22の修正・再確認、表示・通信の不足記録の補完、GitHub Pages実配信と公開後smokeを残す。
+Windows Chromeでの検証を実施済み。W2〜W4・W6〜W12は確認者がOKと記録。当時W1の凡例と盤面の記号、W5の選択中の入力旗の視認性に指摘があった。#22の修正後は[Chromium確認](manual-mvp-windows-checklist.md)で解消を確認した。Windows固有ではないため、確認者の合意によりChromiumでの検証を本件の受け入れ条件とする。**全必須条件の合格・出荷確認完了とは扱わない**。#16はopenを維持し、表示・通信の不足記録の補完、GitHub Pages実配信と公開後smokeを残す。
 
 静止画は操作経路、連続編集、通信の不在を単独で証明しない。これらの合否は確認者の操作記録に基づく。記録がない実測値や未実施の項目を補って合格にしない。Edgeはversionの記録のみで、結果は未記録。
 
@@ -37,7 +37,8 @@ Windows Chromeでの検証を実施済み。W2〜W4・W6〜W12は確認者がOK�
 
 ## 出荷確認の残項目
 
-- #22を修正し、Windows ChromeでW1/W5/WV2を再確認する。
+#22の表示修正はChromiumで検証済み。修正版のWindows Chrome再確認は、本件の完了条件から外す。
+
 - 9列×3サイズ・960×1080の実施範囲、表示領域の実測、24 CSS px以上の条件を記録する。
 - Networkの同一originの静的JS/CSS/Worker、API送信・WebSocket・beaconなしの結果を追跡可能にする。
 - GitHub Pages公開対象commitを記録し、公開後のHTTPS・サブパスでW2/W3/W8、通信・Worker取得を再確認する。

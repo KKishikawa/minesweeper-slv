@@ -4,7 +4,7 @@
 
 ## 判定
 
-手動入力からローカルsolver提案まで実装済み。**出荷確認は未完了**です。2026-10-10にWindows Chromeで実機確認を実施しました。W1の凡例とW5の入力旗の視認性に指摘があり、表示・通信の一部記録も補完が必要です。公開先はGitHub Pagesに決定しました。実際の配信と配信後smokeは未実施です。実装はPR #20でmainへ統合済みです。
+手動入力からローカルsolver提案まで実装済み。**出荷確認は未完了**です。2026-10-10にWindows Chromeで実機確認を実施しました。当時W1の凡例とW5の入力旗の視認性に指摘がありました。#22の修正はChromiumで検証済みです（確認者の合意によりWindows Chrome再確認は本件の完了条件から除外）。表示・通信の一部記録は引き続き補完が必要です。公開先はGitHub Pagesに決定しました。実際の配信と配信後smokeは未実施です。実装はPR #20でmainへ統合済みです。
 
 ## 実装範囲と制限
 
@@ -50,7 +50,7 @@ npm run preview
 
 ## 配信手順（未実施）
 
-1. [Windows確認票](manual-mvp-windows-checklist.md)に沿って、Windows Chromeで設定→入力→提案、矛盾→修正、旗policy、キーボード、3画面サイズを確認する。初回実施の結果は記録済み。#22の表示指摘の修正・再確認と、表示・通信の不足記録の補完を行い、対象commit・OS・ブラウザversion・日付・結果を記録する。
+1. [Windows確認票](manual-mvp-windows-checklist.md)に沿って、Windows Chromeで設定→入力→提案、矛盾→修正、旗policy、キーボード、3画面サイズを確認する。初回実施の結果は記録済み。#22の表示指摘はChromiumで検証済み。表示・通信の不足記録の補完を行い、対象commit・OS・ブラウザversion・日付・結果を記録する。
 2. GitHubのSettings → Pages → Build and deploymentでSourceをGitHub Actionsに設定する。HTTPSのプロジェクトサイトを使い、配信対象は`dist/`のみとする。APIサーバーは不要。
 3. `.js`（module Workerを含む）はJavaScript MIME（`text/javascript`または`application/javascript`）、CSSは`text/css`で返す。WorkerをHTML fallbackで返さない。
 4. `npm run build:pages`で`/minesweeper-slv/`向けにbuildする。`npm test -- test/browser/pages.test.ts`は別の一時出力先でこのbuildを実行し、サブパスから静的ファイルと実Workerを読み込み、solver提案まで確認する。通常の`dist/`を上書きしない。

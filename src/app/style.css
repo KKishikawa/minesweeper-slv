@@ -51,9 +51,8 @@ input[aria-invalid="true"] { border-color: #b52e35; }
 .legend { border-top: 1px solid #e1e7e5; padding-top: 12px; margin-top: 20px; }
 .legend h3 { margin: 0 0 10px; font-size: 13px; }
 .legend p { margin: 6px 0; }
-.legend-flag { color: #ac4b2f; font-size: 20px; }
-.legend-safe { color: #146743; font-size: 18px; margin-left: 12px; }
-.legend-mine { color: #873c20; font-weight: 700; }
-.legend-guess { color: #7a6211; font-weight: 700; margin-left: 10px; }
+.legend-items { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+.legend-items span { display: inline-flex; align-items: center; gap: 5px; }
+.legend canvas { width: 24px; height: 24px; flex-shrink: 0; }
 footer { font-size: 12px; color: #6c8185; padding: 4px 0 12px; }
 @media (max-width: 700px) { #app { padding: 24px 12px; } .settings-card, .workbench { padding: 16px; } }
