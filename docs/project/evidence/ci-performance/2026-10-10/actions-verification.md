@@ -47,6 +47,8 @@ RSS は GNU time が記録した Vitest command と待機した子孫の maximum
 
 ## 登録と比較の保留
 
+この節は通常 CI・smoke 検証時点の履歴であり、その後に測定した固定 A/B/C 各3回の最新結果と改善目標の判定は [比較結果](comparison.md) を参照。
+
 [登録専用 Draft PR37](https://github.com/KKishikawa/minesweeper-slv/pull/37) の既存 serial CI は [run 38053655379](https://github.com/KKishikawa/minesweeper-slv/actions/runs/38053655379)、head `3176ecf770c812da59475a7378f231529d2ef59c`、created 12:53:55、quality 12:53:58 → 13:04:40（642秒）で success。これは既存 CI の配送検証であり、manual benchmark の実行ではない。
 
 main への benchmark 登録 merge と workflow dispatch は承認待ち。固定 A/B/C 各3回、計9 run は未測定。比較指標・historical 755秒との差・改善率は null、改善目標は未判定。上記251秒や serial642秒から改善率を算出しない。
