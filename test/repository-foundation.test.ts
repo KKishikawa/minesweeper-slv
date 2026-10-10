@@ -1,12 +1,19 @@
 import { execFileSync } from "node:child_process";
 
-import { readFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { TEST_GROUPS } from "../scripts/ci/test-groups.js";
 
 const repositoryRoot = new URL("../", import.meta.url);
+const directories: string[] = [];
+
+afterEach(async () => {
+  await Promise.all(directories.splice(0).map(root => rm(root, { recursive: true, force: true })));
+});
 
 async function readRepositoryFile(path: string): Promise<string> {
   return readFile(new URL(path, repositoryRoot), "utf8");
@@ -103,14 +110,22 @@ describe("repository foundation", () => {
     const validation = workflow.split("        run: |\n")[1]?.split("\n  serial:")[0];
     expect(validation).toBeDefined();
     const script = validation!.split("\n").map(line => line.replace(/^          /, "")).join("\n");
+    const root = await mkdtemp(path.join(tmpdir(), "benchmark-validation-"));
+    directories.push(root);
+    const githubOutput = path.join(root, "github-output");
+    await writeFile(githubOutput, "");
     for (const afterSha of ["main", "a".repeat(39), "a".repeat(41), "g".repeat(40), "a".repeat(40) + "\n", "$(touch /tmp/unsafe)"]) {
-      expect(() => execFileSync("bash", ["-e", "-c", script], { env: { ...process.env, CONDITION: "B", AFTER_SHA: afterSha, GITHUB_OUTPUT: "/dev/null" }, stdio: "pipe" })).toThrow();
+      expect(() => execFileSync("bash", ["-e", "-c", script], { env: { ...process.env, CONDITION: "B", AFTER_SHA: afterSha, GITHUB_OUTPUT: githubOutput }, stdio: "pipe" })).toThrow();
+      expect(await readFile(githubOutput, "utf8")).toBe("");
     }
     for (const condition of ["D", "AA", "A\n", ""]) {
-      expect(() => execFileSync("bash", ["-e", "-c", script], { env: { ...process.env, CONDITION: condition, AFTER_SHA: "a".repeat(40), GITHUB_OUTPUT: "/dev/null" }, stdio: "pipe" })).toThrow();
+      expect(() => execFileSync("bash", ["-e", "-c", script], { env: { ...process.env, CONDITION: condition, AFTER_SHA: "a".repeat(40), GITHUB_OUTPUT: githubOutput }, stdio: "pipe" })).toThrow();
+      expect(await readFile(githubOutput, "utf8")).toBe("");
     }
     for (const condition of ["A", "B", "C"]) {
-      const output = execFileSync("bash", ["-e", "-c", script], { env: { ...process.env, CONDITION: condition, AFTER_SHA: "a".repeat(40), GITHUB_OUTPUT: "/dev/stdout" }, encoding: "utf8", stdio: "pipe" });
+      await writeFile(githubOutput, "");
+      execFileSync("bash", ["-e", "-c", script], { env: { ...process.env, CONDITION: condition, AFTER_SHA: "a".repeat(40), GITHUB_OUTPUT: githubOutput }, stdio: "pipe" });
+      const output = await readFile(githubOutput, "utf8");
       expect(output).toBe(`condition=${condition}\ntarget_sha=${condition === "A" ? "1a01eac18f389e7933be9937ad7fa4aa8be476b7" : "a".repeat(40)}\n`);
     }
   });
