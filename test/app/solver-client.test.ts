@@ -35,7 +35,7 @@ describe('solver client', () => {
     client.run(request(1));
     worker.onmessage?.({ data: result(2) } as MessageEvent);
     vi.advanceTimersByTime(50);
-    expect(received).toEqual([{ kind: 'result', requestId: 1, revision: 1, result: { status: 'limit-reached' } }]);
+    expect(received).toEqual([{ kind: 'result', requestId: 1, revision: 1, result: { status: 'limit-reached', reason: 'timeout' } }]);
     expect(worker.terminated).toBe(true);
   });
   it('旧盤面では範囲内の別ID応答を現盤面検査前に無視し監視を続ける', () => {
@@ -53,7 +53,7 @@ describe('solver client', () => {
     expect(received).toEqual([]);
     expect(worker.terminated).toBe(false);
     vi.advanceTimersByTime(50);
-    expect(received).toEqual([{ kind: 'result', requestId: 1, revision: 1, result: { status: 'limit-reached' } }]);
+    expect(received).toEqual([{ kind: 'result', requestId: 1, revision: 1, result: { status: 'limit-reached', reason: 'timeout' } }]);
   });
   it('現requestの不正envelopeはerrorへ変換する', () => {
     const worker = fakeWorker();

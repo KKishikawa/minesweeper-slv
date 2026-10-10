@@ -8,6 +8,8 @@ import { mountBoardEditor } from '../ui/board-editor';
 import { computeLayout } from '../ui/layout';
 import { statusText } from '../ui/status';
 import { renderLegend } from '../ui/board-legend';
+import { createDiagnosticHistory } from './diagnostic-history';
+import { mountDiagnosticsMenu } from '../ui/diagnostics-menu';
 
 export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions> = {}): { dispose(): void } {
   root.innerHTML = `
@@ -42,10 +44,10 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
       <h2 id="privacy-heading" tabindex="-1" autofocus>通信・保存・不具合報告</h2>
       <p>盤面の入力と解析はブラウザ内で行い、アプリは盤面を外部へ送信しません。画像入力には対応していません。盤面はページ内のメモリに保持し、再読み込みすると初期化されます。ブラウザの保存領域への自動保存はありません。</p>
       <p>ページ表示や解析に必要な静的ファイル（HTML・CSS・JavaScript・Worker）の取得には通信が発生します。GitHub Pagesでは、GitHubがアクセス時のIPアドレスをセキュリティ目的で記録します。<a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection">GitHub Pagesのデータ収集について</a></p>
-      <p>診断履歴の取得・保持とJSONダウンロードは現在未対応です。アプリから診断データを自動送信する機能はありません。不具合の報告は、利用者自身が内容を確認して<a href="https://github.com/KKishikawa/minesweeper-slv/issues">GitHub Issue</a>へ投稿するか選べます。公開Issueの本文・添付ファイルは公開されます。</p>
+      <p>開発者向け診断はページ末尾で有効化した後の解析を直近100件までメモリ内に記録し、JSONをダウンロードできます。OFFで取得を停止し、実行中の記録を除外します。完了済み履歴は削除するか再読み込みするまで残り、再読み込みで設定も消えます。アプリから診断データを自動送信する機能はありません。不具合の報告は、利用者自身が内容を確認して<a href="https://github.com/KKishikawa/minesweeper-slv/issues">GitHub Issue</a>へ投稿するか選べます。公開Issueの本文・添付ファイルは公開されます。</p>
       <form method="dialog"><button type="submit">閉じる</button></form>
     </dialog>
-    <footer>画像入力には対応していません。再読み込みすると盤面は初期化されます。</footer>`;
+    <footer>画像入力には対応していません。再読み込みすると盤面は初期化されます。<div class="diagnostics-mount"></div></footer>`;
   const get = <T extends HTMLElement>(selector: string) => root.querySelector<T>(selector)!;
   const workspace = get<HTMLDivElement>('.workspace');
   const editorRoot = get<HTMLDivElement>('.editor-mount');
@@ -55,7 +57,10 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
   const privacyTrigger = get<HTMLButtonElement>('.privacy-badge');
   privacyTrigger.addEventListener('click', () => privacyDialog.showModal(), { signal: controller.signal });
   privacyDialog.addEventListener('close', () => privacyTrigger.focus(), { signal: controller.signal });
+  const history = createDiagnosticHistory();
+  const diagnosticsMenu = mountDiagnosticsMenu(get('.diagnostics-mount'), history);
   const client = createSolverClient(response => dispatch({ type: 'response', response }), { workerFactory: options.workerFactory ?? createModuleSolverWorker,
+    onDiagnostic: diagnostic => { history.finish(diagnostic); diagnosticsMenu.update(); options.onDiagnostic?.(diagnostic); },
     ...(options.timeoutMs === undefined ? {} : { timeoutMs: options.timeoutMs }) });
   const settings = mountBoardSettings(get('.settings-mount'), (width, height, totalMines) =>
     dispatch({ type: 'board-changed', board: createBoard(width, height, totalMines, state.board.revision + 1) }));
@@ -74,7 +79,10 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
     get('.proposal-counts').textContent = state.proposal ? `安全 ${state.proposal.safe.length} · 地雷 ${state.proposal.mines.length} · 推測候補 ${state.proposal.guesses.length}` : '';
     get('.status-detail').textContent = state.phase === 'guess-required' ? '確定できる手がありません。? は地雷の可能性が最も低い同率の候補です。'
       : state.phase === 'inconsistent' ? '数字・入力旗・総地雷数を確認してください。'
-      : state.phase === 'limit-reached' ? '解析量または待機時間の上限に達しました。盤面を更新するか、再解析してください。'
+      : state.phase === 'limit-reached' ? state.limitReason === 'timeout'
+        ? 'Workerの待機時間の上限に達しました。盤面を更新するか、再解析してください。'
+        : state.limitReason === 'node-budget' ? '探索ノード数の上限に達しました。盤面を更新するか、再解析してください。'
+          : '解析量または待機時間の上限に達しました。盤面を更新するか、再解析してください。'
       : state.phase === 'error' ? '解析を完了できませんでした。再解析をお試しください。'
       : state.phase === 'needs-review' ? '要確認のセルと盤面の寸法を確認してください。'
       : '入力した情報をもとに解析します。';
@@ -82,7 +90,15 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
   }
   function dispatch(action: AppAction) {
     const next = transition(state, action); state = next.state; render();
-    for (const effect of next.effects) effect.type === 'cancel' ? client.cancel() : client.run(effect.request);
+    for (const effect of next.effects) {
+      if (effect.type === 'cancel') client.cancel();
+      else {
+        const request = { ...effect.request, diagnostics: history.enabled };
+        history.start(request, { policy: state.policy, autoReconsider: state.autoReconsider, timeoutMs: options.timeoutMs ?? 5000 });
+        diagnosticsMenu.update();
+        client.run(request);
+      }
+    }
   }
   const policy = () => dispatch({ type: 'settings-changed',
     policy: get<HTMLInputElement>('input[value="reconsidered"]').checked ? 'reconsidered' : 'trusted',
@@ -96,5 +112,5 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
   });
   observer.observe(workspace);
   dispatch({ type: 'solve' });
-  return { dispose() { observer.disconnect(); controller.abort(); client.dispose(); editor.dispose(); settings.dispose(); root.replaceChildren(); } };
+  return { dispose() { observer.disconnect(); controller.abort(); client.dispose(); diagnosticsMenu.dispose(); editor.dispose(); settings.dispose(); root.replaceChildren(); } };
 }

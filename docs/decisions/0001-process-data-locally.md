@@ -28,7 +28,7 @@ Recorded: 2026-09-11（歴史資料から遡及記録）
 
 ローカル処理の判断は、すべての通信や端末内の保持を禁止するものではありません。静的ファイル（HTML・CSS・JavaScript・Worker）の取得には通信が発生し、GitHub PagesではGitHubがアクセス時のIPアドレスをセキュリティ目的で記録します（[GitHub公式説明](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection)）。
 
-現在の手動MVPでは盤面をページ内メモリに保持し、ブラウザの保存領域への自動保存は行いません。診断履歴・JSON出力は未実装で、#25の実装に合わせて保持と明示操作の説明を更新します。現在の説明は[通信・保存・診断報告](../project/privacy.md)を参照してください。
+現在の手動MVPでは盤面をページ内メモリに保持し、ブラウザの保存領域への自動保存は行いません。診断履歴は明示的な有効化後の解析のみ直近100件までメモリに保持し、利用者の操作でJSON出力・削除します。OFFで取得を停止して実行中の記録を除外し、完了済み履歴は残します。再読み込みで履歴と設定は消えます。現在の説明は[通信・保存・診断報告](../project/privacy.md)を参照してください。
 
 ## Evidence
 

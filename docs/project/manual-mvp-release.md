@@ -20,7 +20,7 @@
 
 現在の説明は[通信・保存・診断報告](privacy.md)を正本とします。UIとREADMEも、静的ファイル取得、ページ内メモリでの保持、ブラウザ保存領域への保存、利用者によるダウンロードとIssue投稿を区別します。公開Issueの本文・添付ファイルが公開される案内も確認します。
 
-現時点で診断履歴・JSON出力は未実装です。#25で追加した場合は、取得の有効化、保持対象・範囲・期間、再読み込み・無効化時の挙動とJSONダウンロードを実装に合わせて検証し、アプリから自動送信しないことを確認します。GitHub側のIP記録はブラウザのNetwork検証だけでは検証できないため、[GitHub公式説明](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection)を案内します。
+診断履歴・JSON出力を実装したため、取得の有効化、保持対象・範囲・期間、再読み込み・無効化時の挙動とJSONダウンロードを実装に合わせて検証し、アプリから自動送信しないことを確認します。GitHub側のIP記録はブラウザのNetwork検証だけでは検証できないため、[GitHub公式説明](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection)を案内します。
 
 以下の検証証跡と日付付き実施記録は、その対象commit・公開版についての過去の事実です。診断機能追加後の保持挙動を証明するものとして流用しません。保存済みの画像・JSON・manifestは変更しません。
 

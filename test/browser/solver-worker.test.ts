@@ -59,6 +59,33 @@ it('ignores malformed requests then accepts a valid request on the same worker',
       } });
     });
   });
-  expect(response).toEqual({ kind: 'result', requestId: 1, revision: 0, result: { status: 'limit-reached' } });
+  expect(response).toEqual({ kind: 'result', requestId: 1, revision: 0, result: { status: 'limit-reached', reason: 'node-budget' } });
+  await page.close();
+});
+
+it('receives checkpoints and exact node-exhaustion statistics from the real Worker', async () => {
+  const page = await harness.browser.newPage();
+  await page.goto(harness.baseUrl);
+  const output = await page.evaluate(async () => {
+    const load = new Function('path', 'return import(path)') as (path: string) => Promise<any>;
+    const { createBoard, editCell } = await load('/src/board/board.ts');
+    const { createModuleSolverWorker } = await load('/src/app/solver-client.ts');
+    const board = editCell(editCell(createBoard(7, 1, 2, 0), 1, 1), 5, 1);
+    const worker = createModuleSolverWorker();
+    return new Promise<any>((resolve, reject) => {
+      const checkpoints: unknown[] = [];
+      const timer = setTimeout(() => { worker.terminate(); reject(new Error('No terminal diagnostic')); }, 3000);
+      worker.onmessage = (event: MessageEvent) => {
+        if (event.data.kind === 'progress') { checkpoints.push(event.data); return; }
+        clearTimeout(timer); worker.terminate(); resolve({ checkpoints, terminal: event.data });
+      };
+      worker.postMessage({ kind: 'solve', requestId: 1, revision: board.revision, board,
+        policy: 'trusted', options: { maxNodes: 4 }, diagnostics: true });
+    });
+  });
+  expect(output.checkpoints[0]).toMatchObject({ kind: 'progress', statistics: { stage: 'validation', visitedNodes: 0 } });
+  expect(output.terminal).toMatchObject({ result: { status: 'limit-reached', reason: 'node-budget' },
+    statistics: { visitedNodes: 4, components: [{ cells: 2, visitedNodes: 4, status: 'limit-reached' }, { status: 'pending' }] } });
+  expect(output.terminal.result).not.toHaveProperty('proposal');
   await page.close();
 });
