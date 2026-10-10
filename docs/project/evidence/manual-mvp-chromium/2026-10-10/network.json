@@ -1,0 +1,166 @@
+{
+  "commit": "9b08c5fa8df3aea28d94b4635c70322f79deefc4",
+  "date": "2026-10-10T03:33:11.451Z",
+  "browser": "151.0.7922.34",
+  "platform": "darwin",
+  "osRelease": "27.0.0",
+  "node": "v22.12.0",
+  "url": "http://127.0.0.1:59810",
+  "requests": [
+    {
+      "url": "http://127.0.0.1:59810/",
+      "method": "GET",
+      "type": "document",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/index-DASd13Vb.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/index-DmXLGdqU.css",
+      "method": "GET",
+      "type": "stylesheet",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/",
+      "method": "GET",
+      "type": "document",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/index-DASd13Vb.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/index-DmXLGdqU.css",
+      "method": "GET",
+      "type": "stylesheet",
+      "hasBody": false
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "method": "GET",
+      "type": "script",
+      "hasBody": false
+    }
+  ],
+  "responses": [
+    {
+      "url": "http://127.0.0.1:59810/",
+      "status": 200,
+      "mime": "text/html"
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/index-DmXLGdqU.css",
+      "status": 200,
+      "mime": "text/css"
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/index-DASd13Vb.js",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:59810/",
+      "status": 200,
+      "mime": "text/html"
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/index-DmXLGdqU.css",
+      "status": 200,
+      "mime": "text/css"
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/index-DASd13Vb.js",
+      "status": 200,
+      "mime": "text/javascript"
+    },
+    {
+      "url": "http://127.0.0.1:59810/assets/solver.worker-Dy_Neicf.js",
+      "status": 200,
+      "mime": "text/javascript"
+    }
+  ],
+  "failed": [],
+  "sockets": [],
+  "errors": [],
+  "storage": {
+    "local": 0,
+    "session": 0,
+    "databases": 0,
+    "workers": 0,
+    "beacons": []
+  }
+}
