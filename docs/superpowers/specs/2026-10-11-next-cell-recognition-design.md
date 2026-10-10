@@ -2,9 +2,9 @@
 
 ## 状態・目的・範囲
 
-設計提案。候補方式の選定は実測による採用ではない。新しい採否は #6 のデータ整備、#7 の期限付きspike、#8 の証拠レビューとADRによって決める。現時点では [ADR 0003](../../decisions/0003-reject-current-cell-recognition-candidates.md) のセル認識不採用と、[ADR 0004](../../decisions/0004-partially-adopt-fail-closed-grid-detection.md) の14/16グリッド部分採用を維持する。
+2026-10-11に設計承認済み。候補方式の選定は実測による採用ではない。新しい採否は #6 のデータ整備、#7 の期限付きspike、#8 の証拠レビューとADRによって決める。現時点では [ADR 0003](../../decisions/0003-reject-current-cell-recognition-candidates.md) のセル認識不採用と、[ADR 0004](../../decisions/0004-partially-adopt-fail-closed-grid-detection.md) の14/16グリッド部分採用を維持する。
 
-Issue #5 の目的は、既存方式の失敗を区別して次に検証する方式を選び、正式評価、データ分離、ブラウザ実行、資産の扱い、停止・採否条件を先に固定すること。本書の数値は次期spikeの提案ゲートであり、達成済みの測定値ではない。候補実装、fixtureに合わせた調整、UI、solver、画像取得、既存コードの削除は本作業の対象外。
+Issue #5 の目的は、既存方式の失敗を区別して次に検証する方式を選び、正式評価、データ分離、ブラウザ実行、資産の扱い、停止・採否条件を先に固定すること。本書の数値は次期spikeの採用ゲートであり、達成済みの測定値ではない。候補実装、fixtureに合わせた調整、UI、solver、画像取得、既存コードの削除は本作業の対象外。
 
 依存する #3 は完了済み。現在の製品は手動入力MVPであり、認識の成否で製品コアを停止しない。#13 の認識統合だけを #8 の採用判断でゲートする。
 
@@ -54,7 +54,7 @@ RGBA＋利用者が入力した列数・行数
 
 成果物はラベル順、feature/scaler version、scaler、W、b、距離中心、共有閾値、訓練・較正manifest hash、生成環境、content hashを持つ。モデル再学習はランタイムで行わない。ブラウザはfixture ID、期待境界、truth、ブラウザ名を受け取らず、全正式ケースで同じ成果物を使う。
 
-- `recognized`: 有効グリッドがあり、全セルがcertainで、未知／不正セルがない。正解保証とは呼ばない。
+- `recognized`: 有効グリッドがあり、全セルがconfidenceゲートを通過し、不正値がない。未知セルの不存在や正解を保証する状態名ではない。
 - `needs-review`: 有効グリッドがあり、1セル以上がuncertain。uncertainセルの公開labelはnullとし、候補は診断用に留める。自動確定やsolverへの転送をしない。
 - `grid-not-found`: グリッドなし。公開geometryはnull、cellsは空。480個のuncertainセルに置換しない。
 - モデル破損、version不一致、非有限数、入力shape不正は明示的エラー。部分的なcertain結果を返さず、評価ではケース失敗として数える。
@@ -151,7 +151,7 @@ Firefox、Playwright WebKitは同じ固定成果物と変換手順で全ケー�
 | 採用済み／再利用 | `test/resources/0.png`〜`3.jpg`、`test/recognition/ground-truth/`、`fixture-manifest.ts` | 改変せず既知回帰として保存。新fixtureは別manifest版で追加 |
 | 採用済み／再利用 | `src/recognition/grid*.ts`、`pixels.ts`、geometryとPixelImage型、グリッドnegative・budget・決定性テスト | 採用済み14/16 fail-closedグリッドとcrop処理。分類器退役で削除しない |
 | 再利用（適応が必要） | `test/recognition/browser-derive.ts`、`derive.ts`、`image-io.ts`、`overlay.ts`、artifact／formal-evidence directory、グリッド評価器 | ブラウザ変換・可視化・安全な証拠出力を利用。次期E/U集計は旧ラベル推論から分離して新候補へ接続 |
-| 比較基準として一時保持 | `features.ts`、`normalize.ts`、`multi-classify.ts`、`prototype-bank.ts`、`prototype-bank-codec.ts` と対応unit tests | 新特徴と旧特徴の混同行列・拒否率を比較。正式bankがないため旧候補の採用成功は主張しない。#7では訓練／較正だけから作る比較用bankを使い、同じ独立評価splitで測る。#7報告の比較表・hash保存と #8 判断後に削除（候補が旧特徴を再利用すると決定した最小部分だけ保持） |
+| 比較基準として一時保持 | `features.ts`、`normalize.ts`、`multi-classify.ts`、`prototype-bank.ts`、`prototype-bank-codec.ts` と対応unit tests | 新特徴と旧特徴の混同行列・拒否率を比較。正式bankがないため旧候補の採用成功は主張しない。#7では訓練集合だけでscalerとprototypeをfitし、較正集合は閾値選択だけに使う比較用bankを作り、同じ独立評価splitで測る。#7報告の比較表・hash保存と #8 判断後に削除（候補が旧特徴を再利用すると決定した最小部分だけ保持） |
 | 比較基準として一時保持 | `scripts/recognition/prototype-builder.ts`、`generate-prototype-bank.ts`、`encode-prototype-bank.ts`、`calibrate.ts`、`evaluate-folds.ts`、`test/recognition/samples.ts` と直接依存テスト | 上記比較用bank生成に必要な依存閉包のみ。旧「全画面でfit」経路を新採用評価に転用しない。分離した比較実行で使わない部分は退役。用途完了は同じ #7/#8 条件 |
 | 退役対象 | `classify.ts`、`prototypes.ts`、`recognize.ts`、`infer.ts`、旧 `scripts/run-recognition-spike.ts` と単一方式だけを検証するtests | 旧判断再現以外の用途がない部分を退役。共有型・集計・cropが混在する箇所は先に再利用部分を分離し、依存参照確認後に削除 |
 | 退役対象 | `multi-recognize.ts`、旧 `scripts/run-multi-prototype-spike.ts` と旧採用runner専用tests | 16/16必須の旧採用経路。次期runnerに読み替えない。比較に必要な最小呼出しはspike専用境界へ移し、報告／履歴への導線を確認して削除 |
@@ -185,4 +185,4 @@ Firefox、Playwright WebKitは同じ固定成果物と変換手順で全ケー�
 | 採用・棄却・再設計の分岐 | §10（開始停止／棄却／passed／#8採否） |
 | 追加コメントの資産3区分、比較用途と削除条件 | §9 |
 
-設計レビュー後、#6でmanifestとfixture被覆を具体化し、#7で上記上限内の検証を行う。方式の製品採用は #8 まで行わない。
+本設計に従い、#6でmanifestとfixture被覆を具体化し、#7で上記上限内の検証を行う。方式の製品採用は #8 まで行わない。

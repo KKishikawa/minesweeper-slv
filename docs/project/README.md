@@ -8,7 +8,7 @@
 
 - 手動盤面入力型MVP: 設計・[実装計画](../superpowers/plans/2026-09-13-manual-board-mvp.md)に沿って単位1〜8を実装済み。単位9の自動検証とリリース手順も整備。Windows Chrome実機記録と合意済みChromium補完を保存し、GitHub Pages配信・公開後smokeまで完了
 - 盤面グリッド検出: Chromium正式評価16ケース中14ケースをfail-closedで部分採用
-- セル認識: 現在評価済みの候補は不採用。[次期方式・採用条件の設計提案](../superpowers/specs/2026-10-11-next-cell-recognition-design.md)を作成。候補の実装・採用は未実施
+- セル認識: 現在評価済みの候補は不採用。[次期方式・採用条件の設計](../superpowers/specs/2026-10-11-next-cell-recognition-design.md)を承認済み。候補の実装・採用は未実施
 - ブラウザ製品: PR #20で手動入力版をmainへ統合済み。2026-10-10のWindows実機結果・証跡と改善課題#22〜#26を記録。開発版 `0.1.0-dev.1` の出荷確認・公開を完了
 - Issue #24: [入力時の描画・レイアウト調査と修正](issue-24-input-stability.md)を実装。確認者の指示により今回はChromiumで検証し、Windows再検証は要求しない。統合・公開前の変更
 
