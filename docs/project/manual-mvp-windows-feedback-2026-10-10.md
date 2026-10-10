@@ -31,6 +31,10 @@ Windows Chromeでの検証を実施済み。W2〜W4・W6〜W12は確認者がOK�
 | 30×16・99地雷で解析限界 | 確認者報告。探索200,000ノードとWorker待機5秒の両方が理由なしのlimit-reachedになる。停止時の盤面全観測は未提供 | 制約成分の探索量、Worker起動・処理時間を分けて測る。まず停止理由・盤面・policy・訪問数・経過時間を明示操作でローカル取得し、再現fixture化する | [#25](https://github.com/KKishikawa/minesweeper-slv/issues/25)。診断整備後にsolver改善を比較 |
 | 旗の2設定の違いが伝わらない | 常時再検討は最初から旗を未確定扱い。自動再検討は旗を地雷扱いして矛盾した場合だけ同じ再検討処理に切替。成立する誤旗では自動切替しない | 適用条件を具体例で説明すれば選択できる仮説。文言と選択肢構成を比較する。後者だけ残す案は成立する誤旗を再評価する経路を失うため未決定 | [#26](https://github.com/KKishikawa/minesweeper-slv/issues/26)。設定の理解を改善 |
 
+### Issue #24 の調査・修正
+
+確認者の指示により、今回はWindows実機への依存を完了条件から外し、Mac上Chromiumで描画・高さ・フォーカス・スクロールを比較する。[調査記録](issue-24-input-stability.md)と[前後証跡](evidence/issue-24/README.md)を保存した。結果欄の高さ変動による追加render、同寸法Canvas初期化、凡例の再描画、選択/focusinの重複を解消。9×9 / 30×16・99地雷 × 3表示サイズの入力中、高さ・スクロール変動とlayout-shiftはゼロになった。過去のWindows記録を修正版のWindows実施結果へ置き換えるものではない。
+
 参照: [board-editor.ts](../../src/ui/board-editor.ts)、[board-renderer.ts](../../src/ui/board-renderer.ts)、[app.ts](../../src/app/app.ts)、[state.ts](../../src/app/state.ts)、[solver-client.ts](../../src/app/solver-client.ts)、[solver/types.ts](../../src/solver/types.ts)。
 
 スマホでは現状のタップ入力が使いやすいという所感もある。ただし正式なモバイル環境・確認ケースは未記録であり、対応保証は追加しない。02カード全体でのキー受付、Tab/Enterのnative動作、入力方式トグル、モバイルでのショートカット説明整理、差分描画は検証候補として保存し、採用を確定していない。確認者の原文は確認票の末尾に保持する。

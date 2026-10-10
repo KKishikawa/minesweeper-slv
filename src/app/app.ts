@@ -78,7 +78,12 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
     autoReconsider: get<HTMLInputElement>('input[name="auto-reconsider"]').checked });
   root.querySelectorAll('input[name="flag-policy"], input[name="auto-reconsider"]').forEach(input => input.addEventListener('change', policy, { signal: controller.signal }));
   get('.reanalyze').addEventListener('click', () => dispatch({ type: 'solve' }), { signal: controller.signal });
-  const observer = new ResizeObserver(render); observer.observe(workspace);
+  let observedWidth = workspace.clientWidth;
+  const observer = new ResizeObserver(() => {
+    const width = workspace.clientWidth;
+    if (width !== observedWidth) { observedWidth = width; render(); }
+  });
+  observer.observe(workspace);
   dispatch({ type: 'solve' });
   return { dispose() { observer.disconnect(); controller.abort(); client.dispose(); editor.dispose(); settings.dispose(); root.replaceChildren(); } };
 }

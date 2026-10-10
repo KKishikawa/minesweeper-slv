@@ -64,7 +64,11 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
     const height = size * board.height;
     surface.style.width = `${width}px`; surface.style.height = `${height}px`;
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
+    const pixelWidth = Math.round(width * dpr);
+    const pixelHeight = Math.round(height * dpr);
+    // Assigning even the same dimensions clears the bitmap and context state.
+    if (canvas.width !== pixelWidth) canvas.width = pixelWidth;
+    if (canvas.height !== pixelHeight) canvas.height = pixelHeight;
     canvas.style.width = `${width}px`; canvas.style.height = `${height}px`;
     const ctx = canvas.getContext('2d');
     if (ctx) { ctx.setTransform(dpr, 0, 0, dpr, 0, 0); renderBoard(ctx, board, proposal, validation, selected, size); }
@@ -78,7 +82,10 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
       Object.assign(button.style, { position: 'absolute', left: `${index % board!.width * size}px`, top: `${Math.floor(index / board!.width) * size}px`, width: `${size}px`, height: `${size}px`, background: 'transparent', padding: '0', border: '0', borderRadius: '0' });
     });
   }
-  function select(index: number) { selected = index; draw(); buttons[index]?.focus(); }
+  function select(index: number) {
+    if (selected !== index) { selected = index; draw(); }
+    buttons[index]?.focus();
+  }
   const click = (event: MouseEvent) => {
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     const target = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-cell]');
@@ -107,11 +114,18 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
   };
   const focusin = (event: FocusEvent) => {
     const target = event.target as HTMLElement;
-    if (target.dataset.cell !== undefined) { selected = Number(target.dataset.cell); draw(); }
+    if (target.dataset.cell !== undefined && selected !== Number(target.dataset.cell)) {
+      selected = Number(target.dataset.cell); draw();
+    }
   };
   grid.addEventListener('focusin', focusin);
   grid.addEventListener('click', click); grid.addEventListener('keydown', keydown);
-  const observer = new ResizeObserver(draw); observer.observe(root);
+  let observedWidth = root.clientWidth;
+  const observer = new ResizeObserver(() => {
+    const width = root.clientWidth;
+    if (width !== observedWidth) { observedWidth = width; draw(); }
+  });
+  observer.observe(root);
   return {
     update(nextBoard, nextProposal, nextValidation) {
       const rebuild = !board || board.width !== nextBoard.width || board.height !== nextBoard.height;
