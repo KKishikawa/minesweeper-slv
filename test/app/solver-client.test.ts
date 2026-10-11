@@ -63,7 +63,7 @@ describe('solver client', () => {
     expect(received[0]).toMatchObject({ kind: 'error', requestId: 1, revision: 1 });
   });
 
-  it('不正応答とmessageerrorをerrorに変換する', () => {
+  it('proposal欠落の不正応答をerrorに変換する', () => {
     const worker = fakeWorker();
     const received: SolverResponse[] = [];
     const client = createSolverClient(response => received.push(response), { workerFactory: () => worker });
@@ -71,6 +71,27 @@ describe('solver client', () => {
     worker.onmessage?.({ data: { kind: 'result', requestId: 1, revision: 1, result: { status: 'solved' } } } as MessageEvent);
     expect(received[0]).toMatchObject({ kind: 'error', requestId: 1, revision: 1 });
     expect(worker.terminated).toBe(true);
+  });
+
+  it('messageerrorは現requestのerrorを一度通知してWorkerを終了する', () => {
+    vi.useFakeTimers();
+    const worker = fakeWorker();
+    const received: SolverResponse[] = [];
+    const client = createSolverClient(response => received.push(response), { workerFactory: () => worker, timeoutMs: 50 });
+    client.run(request(1));
+    try {
+      worker.onmessageerror?.({} as MessageEvent);
+      expect(received).toHaveLength(1);
+      expect(received[0]).toMatchObject({ kind: 'error', requestId: 1, revision: 1 });
+      expect(worker.terminated).toBe(true);
+      vi.advanceTimersByTime(50);
+      worker.onmessageerror?.({} as MessageEvent);
+      worker.onmessage?.({ data: result(1) } as MessageEvent);
+      expect(received).toHaveLength(1);
+    } finally {
+      client.dispose();
+      vi.clearAllTimers();
+    }
   });
 
   it('cancelとdisposeの後は通知せずdispose後のrunを拒否する', () => {
