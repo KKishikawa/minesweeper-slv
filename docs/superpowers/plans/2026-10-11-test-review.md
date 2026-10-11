@@ -1,6 +1,6 @@
 # Test Review Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** テストが掲げる検証と実際の検証を一致させ、応答fixture、再現性、乱数被覆、非同期検証を改善する。
 
@@ -44,11 +44,11 @@
 
 **Interfaces:** 既存の `createSolverClient`、fakeWorker、`transition` を利用し、製品APIは変更しない。
 
-- [ ] 不正応答の既存テストを適切に改名し、独立したmessageerrorケースを追加する。fake timersで `onmessageerror` を呼び、現request/revisionのerror通知1件、Worker終了、タイムアウト経過と追加イベント後にも通知1件を検証する。クライアントをdisposeしタイマーを片付ける。
-- [ ] `npm test -- test/app/solver-client.test.ts` を実行し、messageerror処理を一時的に無効化した場合に新規テストが失敗することを確認する。一時変更は必ず戻し、製品コードをdiffに残さない。
-- [ ] `solveState` のstatusに応じた応答fixtureを作り、guess-requiredの復元assertionをproposal全体 `safe: [], mines: [], guesses: [0, 1], primaryGuess: 0` に更新する。テスト対象のtransitionを期待値生成に使わない。
-- [ ] `npm test -- test/app/solver-client.test.ts test/app/state.test.ts` を実行し全件成功を確認する。
-- [ ] 担当diffをself-reviewし、担当2ファイルだけcommitして、コマンド・結果・mutation確認をreportへ記録する。
+- [x] 不正応答の既存テストを適切に改名し、独立したmessageerrorケースを追加する。fake timersで `onmessageerror` を呼び、現request/revisionのerror通知1件、Worker終了、タイムアウト経過と追加イベント後にも通知1件を検証する。クライアントをdisposeしタイマーを片付ける。
+- [x] `npm test -- test/app/solver-client.test.ts` を実行し、messageerror処理を一時的に無効化した場合に新規テストが失敗することを確認する。一時変更は必ず戻し、製品コードをdiffに残さない。
+- [x] `solveState` のstatusに応じた応答fixtureを作り、guess-requiredの復元assertionをproposal全体 `safe: [], mines: [], guesses: [0, 1], primaryGuess: 0` に更新する。テスト対象のtransitionを期待値生成に使わない。
+- [x] `npm test -- test/app/solver-client.test.ts test/app/state.test.ts` を実行し全件成功を確認する。
+- [x] 担当diffをself-reviewし、担当2ファイルだけcommitして、コマンド・結果・mutation確認をreportへ記録する。
 
 ### Task 2: 拒否されたprototype bankの再現性
 
@@ -56,12 +56,12 @@
 
 **Interfaces:** `generatePrototypeBank({ outputPath })` と `NoPassingThresholdError.candidate: FinalBankCandidate` を利用する。
 
-- [ ] 成功・既知の拒否だけを明確に区別する生成結果helperをテスト内に作る。予期しない例外はそのままthrowする。異なる出力先で必ず2回独立に `generatePrototypeBank` を呼ぶ。
-- [ ] 拒否時は両方のerror型・name/message・candidateを比較する。candidate比較では `evaluationCases[].elapsedMs` だけを除外し、geometry、calibration、thresholds、bank、Chromium version、derivativeの画像hash・寸法・version、cellsを保持する。出力先はcandidateに含まれない。元の238閾値、16ケース、未検出ケース、480セル、出力未生成のassertionを維持する。
-- [ ] 成功時は既存のserialized bankと出力モジュールの同一性・codec round-tripを維持し、成功/拒否の混在を失敗として扱う。
-- [ ] 最小の比較helper検証で時間差は許容し、画像hashまたはケース別結果の差は比較失敗することを確認する。再現性本体は実生成を使う。
-- [ ] `npm test -- test/recognition/generated-bank.test.ts` を実行する。既存180秒で不足が実測された場合だけ、2回分に根拠のある上限へ調整し結果をreportする。
-- [ ] 担当diffをself-reviewし、担当ファイルだけcommitして、コマンド・結果・所要時間をreportへ記録する。
+- [x] 成功・既知の拒否だけを明確に区別する生成結果helperをテスト内に作る。予期しない例外はそのままthrowする。異なる出力先で必ず2回独立に `generatePrototypeBank` を呼ぶ。
+- [x] 拒否時は両方のerror型・name/message・candidateを比較する。candidate比較では `evaluationCases[].elapsedMs` だけを除外し、geometry、calibration、thresholds、bank、Chromium version、derivativeの画像hash・寸法・version、cellsを保持する。出力先はcandidateに含まれない。元の238閾値、16ケース、未検出ケース、480セル、出力未生成のassertionを維持する。
+- [x] 成功時は既存のserialized bankと出力モジュールの同一性・codec round-tripを維持し、成功/拒否の混在を失敗として扱う。
+- [x] 最小の比較helper検証で時間差は許容し、画像hashまたはケース別結果の差は比較失敗することを確認する。再現性本体は実生成を使う。
+- [x] `npm test -- test/recognition/generated-bank.test.ts` を実行する。既存180秒で不足が実測された場合だけ、2回分に根拠のある上限へ調整し結果をreportする。
+- [x] 担当diffをself-reviewし、担当ファイルだけcommitして、コマンド・結果・所要時間をreportへ記録する。
 
 ### Task 3: 3×3 solverケース生成の被覆
 
@@ -69,12 +69,12 @@
 
 **Interfaces:** `oracle(board)` は既存の独立総当たり実装をそのまま使う。生成ケースは3×3、400試行、seed 823を維持する。
 
-- [ ] 観測modeの9セル分の組み合わせを収集し、400試行で100種類以上、各セル位置で4modeすべてを検証する。固定seedの具体的な全出力一覧は固定しない。
-- [ ] 既存LCGの `random() % 4` のままでは被覆assertionが失敗することを確認する。
-- [ ] 固定seedの決定論的な乱数生成で上位ビットを利用し、mask/mode/誤った総地雷数を生成する。可読性を保つ最小のテスト内helperに留める。
-- [ ] すべての生成盤面を既存oracleと比較し、失敗メッセージにseed・trialを含める。solved、guess-required、inconsistentの各状態が生成されることも確認する。
-- [ ] `npm test -- test/solver/solve.test.ts` を実行し全件成功を確認する。
-- [ ] 担当diffをself-reviewし、担当ファイルだけcommitして、RED/GREENと被覆数をreportへ記録する。
+- [x] 観測modeの9セル分の組み合わせを収集し、400試行で100種類以上、各セル位置で4modeすべてを検証する。固定seedの具体的な全出力一覧は固定しない。
+- [x] 既存LCGの `random() % 4` のままでは被覆assertionが失敗することを確認する。
+- [x] 固定seedの決定論的な乱数生成で上位ビットを利用し、mask/mode/誤った総地雷数を生成する。可読性を保つ最小のテスト内helperに留める。
+- [x] すべての生成盤面を既存oracleと比較し、失敗メッセージにseed・trialを含める。solved、guess-required、inconsistentの各状態が生成されることも確認する。
+- [x] `npm test -- test/solver/solve.test.ts` を実行し全件成功を確認する。
+- [x] 担当diffをself-reviewし、担当ファイルだけcommitして、RED/GREENと被覆数をreportへ記録する。
 
 ### Task 4: 古いWorker応答を決定論的に送るブラウザfixture
 
@@ -82,16 +82,39 @@
 
 **Interfaces:** 新規fixture mode `controlled-late` と、root上の `release-stale-solver-results` イベントを使う。既存 `late` modeはdiagnostic-failuresでも使用するため維持する。
 
-- [ ] `mvp.test.ts` の古い応答ケースを `controlled-late` へ移す。初期盤面と次のall-safe盤面の応答を保持し、新しいtied-guess応答だけを直ちに返す契約にする。
-- [ ] fixture未対応時に新しいテストが失敗することを確認する。500ms待機は削除し、送信前にtied-guess表示と古い応答送信数0を確認する。
-- [ ] fixtureで初期盤面とall-safe盤面の応答をイベント発火まで保持する。イベントで古い応答を確実に送信し、rootの `data-stale-solver-results-sent` に送信数を公開する。terminateは古いイベントを消さない既存のテスト用動作を保つ。
-- [ ] rootのイベントをdispatchした後、送信数2を確認してからstatusと推測提案が維持され、all-safe提案が出ないことを確認する。setTimeoutによる古い応答待機に依存しない。
-- [ ] `npm test -- test/browser/mvp.test.ts test/browser/diagnostic-failures.test.ts test/browser/history.test.ts test/browser/input-stability.test.ts` を実行し、共有fixtureの既存modeに影響がないことを確認する。
-- [ ] 担当diffをself-reviewし、担当2ファイルだけcommitして、RED/GREENとコマンド・結果をreportへ記録する。
+- [x] `mvp.test.ts` の古い応答ケースを `controlled-late` へ移す。初期盤面と次のall-safe盤面の応答を保持し、新しいtied-guess応答だけを直ちに返す契約にする。
+- [x] fixture未対応時に新しいテストが失敗することを確認する。500ms待機は削除し、送信前にtied-guess表示と古い応答送信数0を確認する。
+- [x] fixtureで初期盤面とall-safe盤面の応答をイベント発火まで保持する。イベントで古い応答を確実に送信し、rootの `data-stale-solver-results-sent` に送信数を公開する。terminateは古いイベントを消さない既存のテスト用動作を保つ。
+- [x] rootのイベントをdispatchした後、送信数2を確認してからstatusと推測提案が維持され、all-safe提案が出ないことを確認する。setTimeoutによる古い応答待機に依存しない。
+- [x] `npm test -- test/browser/mvp.test.ts test/browser/diagnostic-failures.test.ts test/browser/history.test.ts test/browser/input-stability.test.ts` を実行し、共有fixtureの既存modeに影響がないことを確認する。
+- [x] 担当diffをself-reviewし、担当2ファイルだけcommitして、RED/GREENとコマンド・結果をreportへ記録する。
 
 ## 統合・完了条件
 
-- [ ] 各タスクの仕様適合・品質レビューを通過させる。指摘の修正は担当実装者に戻し、修正diffを再レビューする。
-- [ ] `npm run typecheck && npm run build && npm test` を実行し、通常テスト全体が成功することを確認する。意図的な子プロセス失敗ログと親suiteの結果を区別する。
-- [ ] `git diff --check` と変更範囲を確認し、全ブランチレビューを行う。
-- [ ] 計画のcheckboxを更新し、最終結果を記録・commitする。merge/pushは行わず、作業ブランチに結果を残す。
+- [x] 各タスクの仕様適合・品質レビューを通過させる。指摘の修正は担当実装者に戻し、修正diffを再レビューする。
+- [x] `npm run typecheck && npm run build && npm test` を実行し、通常テスト全体が成功することを確認する。意図的な子プロセス失敗ログと親suiteの結果を区別する。
+- [x] `git diff --check` と変更範囲を確認し、全ブランチレビューを行う。
+- [x] 計画のcheckboxを更新し、最終結果を記録・commitする。merge/pushは行わず、作業ブランチに結果を残す。
+
+
+## 実装・検証結果（2026-10-11）
+
+| タスク | commit | 個別検証 | 独立レビュー |
+| --- | --- | --- | --- |
+| 計画・foundation削除 | `086b5ba` | CI分割・benchmark 45件成功（削除後） | 最終レビューで確認 |
+| Worker・履歴の応答契約 | `e10b349` | 49件成功。messageerrorハンドラーを一時無効化すると新規テストが失敗し、製品コードを復元 | 仕様適合・品質承認、指摘なし |
+| prototype bank再現性 | `c4631db` | 3件成功、56.40秒。比較helperの時間差RED/GREEN確認。180秒上限維持 | 仕様適合・品質承認、指摘なし |
+| solverの生成被覆 | `777ec74` | 11件成功。旧生成4パターンでRED、新生成399パターンでGREEN。全位置4mode・3状態を確認 | 仕様適合・品質承認、指摘なし |
+| ブラウザの古い応答制御 | `65385ea` | 29件成功。fixture未対応でRED、対応後GREEN。500ms待機を除去 | 仕様適合・品質承認、指摘なし |
+
+最終の `npm run typecheck && npm run build && npm test` は終了コード0。
+通常テストは **60ファイル・525件すべて成功**、410.91秒。
+ログ中の `child.test.mjs` の意図的な失敗は、CI runnerの非0終了伝播を検証する子プロセスの結果であり、親suiteは成功している。
+`git diff --check` も成功した。
+
+全ブランチレビュー（`09e10e1..65385ea`）はReady、Critical / Important / Minorともに指摘なし。
+製品コード・認識スクリプト・採用閾値・画像fixtureと正解データ・依存関係に変更はない。
+現在の画像データではprototype bankの拒否分岐が実行される。成功分岐の既存検証は維持したが、今回の実生成で成功分岐を通したとは扱わない。
+
+コミットは既存SSH署名設定のまま作成した。署名の無効化や設定変更はしていない。
+実装は既存の分離された `テストの見直し` ブランチに保持する。
