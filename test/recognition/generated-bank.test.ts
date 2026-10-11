@@ -10,6 +10,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   NoPassingThresholdError,
   generatePrototypeBank,
+  type FinalBankCandidate,
 } from "../../scripts/recognition/generate-prototype-bank.js";
 import { encodePrototypeBank } from "../../scripts/recognition/encode-prototype-bank.js";
 import { decodePrototypeBank } from "../../src/recognition/prototype-bank-codec.js";
@@ -45,6 +46,84 @@ async function temporaryOutputPath(): Promise<string> {
   return join(directory, "prototype-bank.ts");
 }
 
+type GenerationOutcome =
+  | { readonly kind: "success"; readonly serialized: Awaited<ReturnType<typeof generatePrototypeBank>> }
+  | { readonly kind: "rejection"; readonly error: NoPassingThresholdError };
+
+async function generateOutcome(outputPath: string): Promise<GenerationOutcome> {
+  try {
+    return { kind: "success", serialized: await generatePrototypeBank({ outputPath }) };
+  } catch (error) {
+    if (!(error instanceof NoPassingThresholdError)) throw error;
+    return { kind: "rejection", error };
+  }
+}
+
+function comparableCandidate(candidate: FinalBankCandidate) {
+  return {
+    ...candidate,
+    evaluationCases: candidate.evaluationCases.map(({ elapsedMs: _elapsedMs, ...evaluationCase }) => evaluationCase),
+  };
+}
+
+const comparisonCandidate: FinalBankCandidate = {
+  geometry: {
+    formatVersion: 1,
+    featureVersion: "features-v1",
+    scaler: { center: new Float64Array([0]), scale: new Float64Array([1]) },
+    prototypes: [],
+  },
+  calibration: [],
+  thresholds: null,
+  bank: null,
+  chromiumVersion: "comparison-browser",
+  evaluationCases: [{
+    id: "0:source",
+    kind: "source",
+    gridFound: false,
+    correctCells: 0,
+    wrongCertainCells: 0,
+    uncertainCells: 480,
+    elapsedMs: 1,
+    browserVersion: "comparison-browser",
+    derivative: {
+      scale: 1,
+      encoding: "source",
+      width: 480,
+      height: 480,
+      rgbaSha256: "a".repeat(64),
+      browserVersion: "comparison-browser",
+    },
+    geometry: null,
+    cells: [],
+  }],
+};
+
+describe("candidate reproducibility comparison", () => {
+  it("allows elapsed time differences while retaining image hashes and case results", () => {
+    const firstCase = comparisonCandidate.evaluationCases[0]!;
+    const changedTime = {
+      ...comparisonCandidate,
+      evaluationCases: [{ ...firstCase, elapsedMs: 99 }],
+    };
+    expect(comparableCandidate(changedTime)).toEqual(comparableCandidate(comparisonCandidate));
+
+    const changedHash = {
+      ...comparisonCandidate,
+      evaluationCases: [{ ...firstCase, derivative: { ...firstCase.derivative, rgbaSha256: "b".repeat(64) } }],
+    };
+    expect(() => expect(comparableCandidate(changedHash))
+      .toEqual(comparableCandidate(comparisonCandidate))).toThrow();
+
+    const changedResult = {
+      ...comparisonCandidate,
+      evaluationCases: [{ ...firstCase, uncertainCells: 479 }],
+    };
+    expect(() => expect(comparableCandidate(changedResult))
+      .toEqual(comparableCandidate(comparisonCandidate))).toThrow();
+  });
+});
+
 afterEach(async () => {
   await Promise.all(temporaryDirectories.splice(0).map((directory) => rm(directory, {
     recursive: true,
@@ -76,12 +155,18 @@ describe("final prototype bank generation", () => {
   it("reproduces a passing candidate or records deterministic rejection without output", async () => {
     const firstOutputPath = await temporaryOutputPath();
     const secondOutputPath = await temporaryOutputPath();
-    let firstSerialized;
-    try {
-      firstSerialized = await generatePrototypeBank({ outputPath: firstOutputPath });
-    } catch (error) {
+    const first = await generateOutcome(firstOutputPath);
+    const second = await generateOutcome(secondOutputPath);
+    expect(second.kind).toBe(first.kind);
+
+    if (first.kind === "rejection") {
+      if (second.kind !== "rejection") throw new Error("Prototype bank generation outcomes differ.");
+      const error = first.error;
       expect(error).toBeInstanceOf(NoPassingThresholdError);
-      if (!(error instanceof NoPassingThresholdError)) throw error;
+      expect(second.error).toBeInstanceOf(NoPassingThresholdError);
+      expect(second.error.name).toBe(error.name);
+      expect(second.error.message).toBe(error.message);
+      expect(comparableCandidate(second.error.candidate)).toEqual(comparableCandidate(error.candidate));
 
       expect(error.candidate.thresholds).toBeNull();
       expect(error.candidate.bank).toBeNull();
@@ -99,6 +184,8 @@ describe("final prototype bank generation", () => {
         "1:canvas-scale-075",
         "2:canvas-scale-075",
       ]);
+      expect(second.error.candidate.evaluationCases.every((evaluationCase) => Number.isFinite(evaluationCase.elapsedMs)
+        && evaluationCase.elapsedMs >= 0)).toBe(true);
       expect(error.candidate.evaluationCases.every((evaluationCase) => evaluationCase.correctCells === 0
         && evaluationCase.wrongCertainCells === 0
         && evaluationCase.uncertainCells === 480
@@ -127,8 +214,10 @@ describe("final prototype bank generation", () => {
       return;
     }
 
+    if (second.kind !== "success") throw new Error("Prototype bank generation outcomes differ.");
     {
-      const secondSerialized = await generatePrototypeBank({ outputPath: secondOutputPath });
+      const firstSerialized = first.serialized;
+      const secondSerialized = second.serialized;
       const firstModule = await readFile(firstOutputPath, "utf8");
       const secondModule = await readFile(secondOutputPath, "utf8");
 
