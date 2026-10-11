@@ -6,7 +6,7 @@ Issue #5 の[承認済み設計](../superpowers/specs/2026-10-11-next-cell-recog
 
 既存画像 `test/resources/0.png`〜`3.jpg` と `test/recognition/ground-truth/0.json`〜`3.json` は変更しない。[新manifest](../../test/recognition/dataset/manifest.json)はこれらを既知回帰集合として参照し、元ファイルのSHA-256と従来の11 direct／3 fallback／2期待棄却を固定する。撮影系列の独立性が確認されていないため、4画像とも同じ保守的なgroup/familyに置く。旧manifestや旧評価runnerの分割は変更しない。
 
-出典、利用権、公開可否、撮影条件、テーマ、scanline付き6の位置、truthの2者確認は歴史的資料から確定できていない。権利やレビューの承認を推定して記録しない。現在はこれらも開始停止理由となる。
+収録対象は、2026-10-11にリポジトリ所有者から提示された [Trust Me, I Nailed It の公式Steamページ](https://store.steampowered.com/app/4311000/_/)として出典に記録した。既存4画像それぞれの撮影履歴、利用権、公開可否、撮影条件、テーマ、scanline付き6の位置、truthの2者確認は引き続き未確認。権利やレビューの承認を推定して記録しない。現在はこれらも開始停止理由となる。
 
 ## 収録と分離
 
@@ -71,3 +71,5 @@ trainだけでfitし、calibrationは事前候補と共有閾値の選択だけ�
 未完了項目は、新規positive 12group以上、新規negative 6group以上、7・8・scanline条件、複数テーマ／終局negativeの収録、出典・許諾の証拠、truthの2者確認、fixture構成レビュー、および新規画像の全4変換とgrid契約の検証。現時点でモデル学習・較正・独立評価、認識性能や採否の判断は実行していない。
 
 初回の基盤検証と3エンジンのhash／環境snapshotは[2026-10-11の証拠](evidence/issue-6/2026-10-11/README.md)を参照。
+
+追加画像の収録担当者向けに[収録チェックリスト](recognition-fixture-collection.md)を用意した。既存の証拠snapshotは実行当時のmanifestを保持し、今回の出典追記で書き換えない。
