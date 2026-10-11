@@ -58,11 +58,15 @@ it.each([['error', '解析に失敗しました'], ['limit', '待機時間の上
   await status(message!);
 });
 it('discards delayed proposals after a newer board has been analyzed', async () => {
-  await page.goto(`${harness.baseUrl}/test/browser/app.fixture.html?mode=late`);
-  await board(2, 1, 0); // Delayed all-safe response.
+  await page.goto(`${harness.baseUrl}/test/browser/app.fixture.html?mode=controlled-late`);
+  await board(2, 1, 0); // Hold this all-safe response alongside the initial response.
   await board(2, 1, 1); // Newer tied-guess result.
   await status('推測が必要です');
-  await page.waitForTimeout(500); // Cross the deliberately delayed test event.
+  expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('提案: 推測 ?');
+  expect(await page.locator('#app').getAttribute('data-stale-solver-results-sent')).toBe('0');
+  await page.locator('#app').evaluate((root) => root.dispatchEvent(new Event('release-stale-solver-results')));
+  expect(await page.locator('#app').getAttribute('data-stale-solver-results-sent')).toBe('2');
   expect(await page.getByRole('status').textContent()).toBe('推測が必要です');
   expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('提案: 推測 ?');
+  expect(await page.locator('[role="gridcell"][aria-label*="提案: 安全 S"]').count()).toBe(0);
 });

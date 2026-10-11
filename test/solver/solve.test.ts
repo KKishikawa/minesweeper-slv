@@ -67,21 +67,36 @@ it('matches an independent oracle for every 2x2 observation pattern with fixed f
   }
 }, 30_000);
 it('matches seeded 3x3 truth-derived boards including wrong flags and totals', () => {
-  let seed = 823;
-  const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed; };
+  const initialSeed = 823;
+  let seed = initialSeed;
+  const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed >>> 16; };
+  const observedModes = Array.from({ length: 9 }, () => new Set<number>());
+  const modePatterns = new Set<string>();
+  const statuses = new Set<string>();
   for (let trial = 0; trial < 400; trial++) {
     const mask = random() % 512;
     const bits = Array.from({ length: 9 }, (_, index) => (mask >>> index) & 1);
+    const trialModes: number[] = [];
     const cells = bits.map((mine, index) => {
       let value: CellValue = 'closed';
       const mode = random() % 4;
+      trialModes.push(mode);
+      observedModes[index]!.add(mode);
       if (mode === 0) value = 'flag';
       else if (!mine && mode !== 1) {
         value = bits.reduce((sum, bit, other) => sum + (other !== index && Math.abs(other % 3 - index % 3) <= 1 && Math.abs(Math.floor(other / 3) - Math.floor(index / 3)) <= 1 ? bit : 0), 0) as CellValue;
       }
       return { value, source: 'manual' as const, uncertain: false };
     });
+    modePatterns.add(trialModes.join(''));
     const board = { width: 3, height: 3, revision: 0, totalMines: trial % 3 ? bits.reduce((a, b) => a + b, 0) : random() % 10, cells };
-    expect(solve(board, options)).toEqual(oracle(board));
+    const result = solve(board, options);
+    statuses.add(result.status);
+    expect(result, `seed=${initialSeed}, trial=${trial}`).toEqual(oracle(board));
   }
+  expect(modePatterns.size, `seed=${initialSeed}: distinct mode patterns`).toBeGreaterThanOrEqual(100);
+  for (const [index, modes] of observedModes.entries()) {
+    expect([...modes].sort(), `seed=${initialSeed}: modes at cell ${index}`).toEqual([0, 1, 2, 3]);
+  }
+  expect([...statuses].sort(), `seed=${initialSeed}: solver statuses`).toEqual(['guess-required', 'inconsistent', 'solved']);
 });

@@ -70,9 +70,12 @@ describe('app state', () => {
 
 function solveState(state: AppState, status: 'solved' | 'guess-required' = 'solved'): AppState {
   const running = transition(state, { type: 'solve' }).state;
+  const result = status === 'solved'
+    ? { status: 'solved' as const, proposal: { safe: [0], mines: [1], guesses: [], primaryGuess: null } }
+    : { status: 'guess-required' as const, proposal: { safe: [], mines: [], guesses: [0, 1], primaryGuess: 0 } };
   return transition(running, { type: 'response', response: { kind: 'result',
     requestId: running.activeRequestId!, revision: running.board.revision,
-    result: { status, proposal: { safe: [0], mines: [1], guesses: [], primaryGuess: null } } } }).state;
+    result } }).state;
 }
 
 describe('board snapshot transitions', () => {
@@ -115,7 +118,7 @@ describe('board snapshot transitions', () => {
     const restored = transition(edited, { type: 'undo' });
     expect(restored.effects).toEqual([{ type: 'cancel' }]);
     expect(restored.state.phase).toBe('guess-required');
-    expect(restored.state.proposal?.mines).toEqual([1]);
+    expect(restored.state.proposal).toEqual({ safe: [], mines: [], guesses: [0, 1], primaryGuess: 0 });
   });
 
   it('結果なしentryへ戻ると新revisionとrequestで解析し古い応答を拒否する', () => {
