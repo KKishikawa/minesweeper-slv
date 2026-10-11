@@ -43,3 +43,7 @@
 ## 更新順
 
 プロジェクトレベルの判断が変わる場合は、ADR、製品定義、ロードマップ、この現在地、関連IssueとIssue #1、公開要約が変わる場合だけroot README、の順に更新します。
+
+## 認識 fixture 管理
+
+[認識評価 fixture の管理と未収録条件](recognition-fixtures.md) に、Issue #6 のmanifest、被覆・分離検証、ブラウザ変換コマンドと開始停止条件を記録しています。

@@ -1,0 +1,457 @@
+{
+  "manifestSha256": "3d4b20512368b5f2877b3a2a663c307246edb7c56dcdbbe25d2f4564bb6d8ac1",
+  "status": "next-cell-recognition-blocked",
+  "issues": [
+    {
+      "code": "rights-unconfirmed",
+      "subject": "0",
+      "detail": "Source rights and public redistribution must both be confirmed."
+    },
+    {
+      "code": "truth-unreviewed",
+      "subject": "0",
+      "detail": "Two distinct reviewers must confirm the current truth hash."
+    },
+    {
+      "code": "scanline-unannotated",
+      "subject": "0",
+      "detail": "Annotate scanline-bearing digit 6 cell indices, or an explicit empty list."
+    },
+    {
+      "code": "rights-unconfirmed",
+      "subject": "1",
+      "detail": "Source rights and public redistribution must both be confirmed."
+    },
+    {
+      "code": "truth-unreviewed",
+      "subject": "1",
+      "detail": "Two distinct reviewers must confirm the current truth hash."
+    },
+    {
+      "code": "scanline-unannotated",
+      "subject": "1",
+      "detail": "Annotate scanline-bearing digit 6 cell indices, or an explicit empty list."
+    },
+    {
+      "code": "rights-unconfirmed",
+      "subject": "2",
+      "detail": "Source rights and public redistribution must both be confirmed."
+    },
+    {
+      "code": "truth-unreviewed",
+      "subject": "2",
+      "detail": "Two distinct reviewers must confirm the current truth hash."
+    },
+    {
+      "code": "scanline-unannotated",
+      "subject": "2",
+      "detail": "Annotate scanline-bearing digit 6 cell indices, or an explicit empty list."
+    },
+    {
+      "code": "rights-unconfirmed",
+      "subject": "3",
+      "detail": "Source rights and public redistribution must both be confirmed."
+    },
+    {
+      "code": "truth-unreviewed",
+      "subject": "3",
+      "detail": "Two distinct reviewers must confirm the current truth hash."
+    },
+    {
+      "code": "scanline-unannotated",
+      "subject": "3",
+      "detail": "Annotate scanline-bearing digit 6 cell indices, or an explicit empty list."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train",
+      "detail": "Positive groups 0/6."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:#",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:.",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:F",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:1",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:2",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:3",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:4",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:5",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:6",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:7",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:8",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:6:scanline-present",
+      "detail": "Independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "train:6:scanline-absent",
+      "detail": "Independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration",
+      "detail": "Positive groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:#",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:.",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:F",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:1",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:2",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:3",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:4",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:5",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:6",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:7",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:8",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:6:scanline-present",
+      "detail": "Independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:6:scanline-absent",
+      "detail": "Independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation",
+      "detail": "Positive groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:#",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:.",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:F",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:1",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:2",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:3",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:4",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:5",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:6",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:7",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:8",
+      "detail": "Source cells 0/10, independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:6:scanline-present",
+      "detail": "Independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:6:scanline-absent",
+      "detail": "Independent groups 0/3."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "calibration:negative",
+      "detail": "Independent groups 0/3, unknown source cells 0/30."
+    },
+    {
+      "code": "coverage-incomplete",
+      "subject": "evaluation:negative",
+      "detail": "Independent groups 0/3, unknown source cells 0/30."
+    }
+  ],
+  "positive": {
+    "train": {
+      "groups": 0,
+      "labels": {
+        "1": {
+          "cells": 0,
+          "groups": 0
+        },
+        "2": {
+          "cells": 0,
+          "groups": 0
+        },
+        "3": {
+          "cells": 0,
+          "groups": 0
+        },
+        "4": {
+          "cells": 0,
+          "groups": 0
+        },
+        "5": {
+          "cells": 0,
+          "groups": 0
+        },
+        "6": {
+          "cells": 0,
+          "groups": 0
+        },
+        "7": {
+          "cells": 0,
+          "groups": 0
+        },
+        "8": {
+          "cells": 0,
+          "groups": 0
+        },
+        "#": {
+          "cells": 0,
+          "groups": 0
+        },
+        ".": {
+          "cells": 0,
+          "groups": 0
+        },
+        "F": {
+          "cells": 0,
+          "groups": 0
+        }
+      },
+      "scanline6": {
+        "present": 0,
+        "absent": 0
+      }
+    },
+    "calibration": {
+      "groups": 0,
+      "labels": {
+        "1": {
+          "cells": 0,
+          "groups": 0
+        },
+        "2": {
+          "cells": 0,
+          "groups": 0
+        },
+        "3": {
+          "cells": 0,
+          "groups": 0
+        },
+        "4": {
+          "cells": 0,
+          "groups": 0
+        },
+        "5": {
+          "cells": 0,
+          "groups": 0
+        },
+        "6": {
+          "cells": 0,
+          "groups": 0
+        },
+        "7": {
+          "cells": 0,
+          "groups": 0
+        },
+        "8": {
+          "cells": 0,
+          "groups": 0
+        },
+        "#": {
+          "cells": 0,
+          "groups": 0
+        },
+        ".": {
+          "cells": 0,
+          "groups": 0
+        },
+        "F": {
+          "cells": 0,
+          "groups": 0
+        }
+      },
+      "scanline6": {
+        "present": 0,
+        "absent": 0
+      }
+    },
+    "evaluation": {
+      "groups": 0,
+      "labels": {
+        "1": {
+          "cells": 0,
+          "groups": 0
+        },
+        "2": {
+          "cells": 0,
+          "groups": 0
+        },
+        "3": {
+          "cells": 0,
+          "groups": 0
+        },
+        "4": {
+          "cells": 0,
+          "groups": 0
+        },
+        "5": {
+          "cells": 0,
+          "groups": 0
+        },
+        "6": {
+          "cells": 0,
+          "groups": 0
+        },
+        "7": {
+          "cells": 0,
+          "groups": 0
+        },
+        "8": {
+          "cells": 0,
+          "groups": 0
+        },
+        "#": {
+          "cells": 0,
+          "groups": 0
+        },
+        ".": {
+          "cells": 0,
+          "groups": 0
+        },
+        "F": {
+          "cells": 0,
+          "groups": 0
+        }
+      },
+      "scanline6": {
+        "present": 0,
+        "absent": 0
+      }
+    }
+  },
+  "negative": {
+    "calibration": {
+      "groups": 0,
+      "unknownCells": 0
+    },
+    "evaluation": {
+      "groups": 0,
+      "unknownCells": 0
+    }
+  }
+}

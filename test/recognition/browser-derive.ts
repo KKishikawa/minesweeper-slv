@@ -6,6 +6,13 @@ import { chromium, firefox, webkit } from "playwright";
 import type { PixelImage } from "../../src/recognition/types.js";
 
 export type BrowserEngine = "chromium" | "firefox" | "webkit";
+export const CANVAS_PARAMETERS = {
+  dimensionRounding: "Math.round",
+  imageSmoothingEnabled: true,
+  imageSmoothingQuality: "low",
+  jpegQuality: 0.75,
+  decode: { imageOrientation: "from-image", premultiplyAlpha: "default", colorSpaceConversion: "default" },
+} as const;
 export type BrowserDerivativeName =
   | "source"
   | "canvas-scale-075"
@@ -34,13 +41,15 @@ interface BrowserDerivative {
   readonly image: BrowserPixelImage;
 }
 
-const DERIVE_BROWSER_IMAGES_EXPRESSION = String.raw`async (dataUrl) => {
+const DERIVE_BROWSER_IMAGES_EXPRESSION = String.raw`async ({ dataUrl, parameters }) => {
   async function canvasImage(width, height, drawable) {
     const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
     const context = canvas.getContext("2d");
     if (context === null) throw new Error("2D Canvas context is unavailable");
+    context.imageSmoothingEnabled = parameters.imageSmoothingEnabled;
+    context.imageSmoothingQuality = parameters.imageSmoothingQuality;
     context.drawImage(drawable, 0, 0, width, height);
     const imageData = context.getImageData(0, 0, width, height);
     const pixels = new Uint8ClampedArray(imageData.data);
@@ -57,7 +66,7 @@ const DERIVE_BROWSER_IMAGES_EXPRESSION = String.raw`async (dataUrl) => {
   }
 
   const sourceBlob = await (await fetch(dataUrl)).blob();
-  const source = await createImageBitmap(sourceBlob);
+  const source = await createImageBitmap(sourceBlob, parameters.decode);
   try {
     const sourceImage = await canvasImage(source.width, source.height, source);
     const scaled075 = await canvasImage(Math.round(source.width * 0.75), Math.round(source.height * 0.75), source);
@@ -68,14 +77,16 @@ const DERIVE_BROWSER_IMAGES_EXPRESSION = String.raw`async (dataUrl) => {
     jpegCanvas.height = source.height;
     const jpegContext = jpegCanvas.getContext("2d");
     if (jpegContext === null) throw new Error("2D Canvas context is unavailable");
+    jpegContext.imageSmoothingEnabled = parameters.imageSmoothingEnabled;
+    jpegContext.imageSmoothingQuality = parameters.imageSmoothingQuality;
     jpegContext.drawImage(source, 0, 0);
     const jpegBlob = await new Promise((resolve, reject) => {
       jpegCanvas.toBlob((blob) => {
         if (blob === null) reject(new Error("Canvas JPEG encoding failed"));
         else resolve(blob);
-      }, "image/jpeg", 0.75);
+      }, "image/jpeg", parameters.jpegQuality);
     });
-    const jpeg = await createImageBitmap(jpegBlob);
+    const jpeg = await createImageBitmap(jpegBlob, parameters.decode);
     try {
       return [
         { name: "source", scale: 1, encoding: "source", image: sourceImage },
@@ -129,7 +140,7 @@ export async function deriveBrowserImages(
     const page = await browser.newPage();
     const dataUrl = sourceDataUrl(sourcePath, sourceBytes);
     const derivatives = await page.evaluate<BrowserDerivative[]>(
-      `(${DERIVE_BROWSER_IMAGES_EXPRESSION})(${JSON.stringify(dataUrl)})`,
+      `(${DERIVE_BROWSER_IMAGES_EXPRESSION})(${JSON.stringify({ dataUrl, parameters: CANVAS_PARAMETERS })})`,
     );
 
     return derivatives.map((derivative) => ({
