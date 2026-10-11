@@ -22,6 +22,8 @@ h2 { margin: 0 0 20px; font-size: 17px; font-weight: 650; }
 button, input { font: inherit; }
 button { cursor: pointer; border: 1px solid #afc3c7; border-radius: 6px; background: #fff; color: #294f5c; min-height: 36px; padding: 7px 12px; }
 button:hover { background: #eef4f2; }
+button:disabled { opacity: .55; cursor: default; }
+button:disabled:hover { background: #fff; }
 button:focus-visible, input:focus-visible { outline: 3px solid #0075bd; outline-offset: 3px; }
 .board-settings { display: flex; flex-wrap: wrap; gap: 16px; align-items: end; }
 .board-settings label { display: grid; gap: 7px; font-size: 13px; font-weight: 600; }
@@ -33,7 +35,7 @@ input[aria-invalid="true"] { border-color: #b52e35; }
 .workspace { display: grid; gap: 24px; align-items: start; }
 .workspace[data-placement="right"] { grid-template-columns: minmax(0, 1fr) 288px; }
 .workspace[data-placement="below"] { grid-template-columns: minmax(0, 1fr); }
-.editor-mount { min-width: 0; }
+.editor-panel, .editor-mount { min-width: 0; }
 .input-mode { display: flex; flex-wrap: wrap; gap: 8px 16px; border: 0; padding: 0; margin: 0 0 12px; font-size: 13px; }
 .input-mode legend { font-weight: 600; margin-bottom: 8px; }
 .input-mode label { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; cursor: pointer; }
@@ -47,16 +49,20 @@ input[aria-invalid="true"] { border-color: #b52e35; }
 .board-cell { min-height: 0; }
 .board-cell:focus-visible { outline: 3px solid #0075bd; outline-offset: -3px; }
 .reset-button { margin-top: 20px; font-size: 13px; }
+.history-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.history-controls button { font-size: 13px; }
+.history-note { max-width: 65ch; margin: 8px 0 0; color: #687e86; font-size: 12px; line-height: 1.8; }
 .information { min-width: 0; font-size: 13px; line-height: 1.7; }
 .result-card { border: 1px solid #c5d8cf; background: #eef6f1; border-radius: 10px; padding: 18px; }
 .result-card[data-phase="error"], .result-card[data-phase="inconsistent"] { border-color: #e4bbb5; background: #fff1ee; }
 .status { font-size: 18px; font-weight: 700; line-height: 1.5; margin: 0 0 8px; }
 .status-detail { color: #516b70; margin: 0; }
+.restored-result { color: #397060; font-size: 12px; margin: 8px 0 0; min-block-size: 2lh; }
 .proposal-counts { font-size: 12px; margin: 12px 0; }
 /* Reserve the longest current messages at the 288px sidebar width.
    Minima keep solving/empty counts stable without clipping larger text. */
 .status { min-block-size: 2lh; }
-.status-detail { min-block-size: 3lh; }
+.status-detail { min-block-size: 4lh; }
 .proposal-counts { min-block-size: 1lh; }
 .reanalyze { margin-top: 8px; width: 100%; background: transparent; }
 .flag-note, .legend-note { color: #657a82; font-size: 12px; }

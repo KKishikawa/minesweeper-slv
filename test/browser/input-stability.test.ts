@@ -25,6 +25,27 @@ async function prepare(page: Page, columns = 9) {
   await page.evaluate(() => (window as any).inputProbe.reset());
 }
 
+// Syncing settings on every render would erase a draft when the delayed response arrives.
+it('preserves unsubmitted board settings through a delayed solver response', async () => {
+  const page = await harness.browser.newPage();
+  try {
+    await page.goto(`${harness.baseUrl}/test/browser/app.fixture.html?mode=draft`);
+    await settled(page);
+    await page.getByRole('gridcell').first().focus(); await page.keyboard.press('0');
+    expect(await page.locator('.result-card').getAttribute('data-phase')).toBe('solving');
+    await page.getByLabel('幅', { exact: true }).fill('12');
+    await page.getByLabel('高さ', { exact: true }).fill('7');
+    await page.getByLabel('総地雷数', { exact: true }).fill('20');
+    expect(await page.locator('.result-card').getAttribute('data-phase')).toBe('solving');
+    await page.locator('#app').dispatchEvent('release-solver-result');
+    await settled(page);
+    expect(await page.getByLabel('幅', { exact: true }).inputValue()).toBe('12');
+    expect(await page.getByLabel('高さ', { exact: true }).inputValue()).toBe('7');
+    expect(await page.getByLabel('総地雷数', { exact: true }).inputValue()).toBe('20');
+    expect(await page.getByRole('gridcell').count()).toBe(81);
+  } finally { await page.close(); }
+});
+
 // Catches empty counts/copy collapsing the result and moving the page during solving.
 it.each([1920, 1280, 960].flatMap(width => [9, 30].map(columns => ({ width, columns }))))(
   'keeps input geometry stable at $width px with $columns columns through solving and recovery', async ({ width, columns }) => {
