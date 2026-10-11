@@ -24,12 +24,12 @@
     "build:pages": "vite build --base=/minesweeper-slv/"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
-    "playwright": "^1.62.1",
-    "sharp": "^0.35.3",
-    "tsx": "^4.23.12",
+    "@types/node": "^26.6.5",
+    "playwright": "^1.64.0",
+    "sharp": "^0.35.5",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
-    "vite": "^8.2.1",
-    "vitest": "^4.1.10"
+    "vite": "^8.3.4",
+    "vitest": "^5.0.3"
   }
 }
