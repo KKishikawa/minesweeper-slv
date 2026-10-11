@@ -1,70 +1,85 @@
 # minesweeper-slv
 
-ブラウザ上でマインスイーパーの盤面を解析するローカルsolverを構築するプロジェクトです。最初に手動盤面入力で使える製品を提供し、その後に画像支援と認識統合を追加します。
+マインスイーパーの盤面を手動で入力し、安全なセル・地雷・推測候補を確認できるブラウザアプリです。解析はWeb Workerを使ってブラウザ内で実行し、入力した盤面を外部へ送信しません。
 
-手動盤面入力型MVPの開発版 `0.1.0-dev.1` を[GitHub Pagesで公開しました](https://kkishikawa.github.io/minesweeper-slv/)。公開時点のWindows Chrome実機記録と合意済みChromium補完、公開後smokeを保持しています。今回の固定旗・Undo/Redo変更の検証状況は[Issue #26の設計変更記録](docs/project/issue-26-trusted-flags-history.md)を参照してください。認識研究は独立して継続します。
+[ブラウザで使う](https://kkishikawa.github.io/minesweeper-slv/)
 
-## 利用できる機能
+公開サイトは開発版 `0.1.0-dev.1` です。以下はリポジトリ内のコードの機能・使い方で、公開サイトとは異なる場合があります。公開したバージョンと変更内容は[リリース記録](docs/project/manual-mvp-release.md)を参照してください。
 
-- 幅・高さ1〜30、総地雷数0〜セル数を指定した盤面作成
-- マウスとキーボードで閉じたセル・空き・旗・数字1〜8を入力
-- 安全セル（S）、地雷（M）、同率の推測候補（?）の提案
-- 入力旗を確定地雷として扱う解析、矛盾表示と再解析
-- 「元に戻す／やり直す」で盤面設定・セル観測・保存済み解析結果を復元（現在を含む直近100盤面）
-- Web Worker内でのローカル解析。入力を上書きせず、更新前の応答を破棄
-- 開発者向け診断をONにして取得した履歴のJSON出力（メモリ内・最大100件）。[取得・再実行手順](docs/project/solver-diagnostics.md)
+## 主な機能
 
-入力方式は「キーボード中心」と「クリック・タップ中心」を切り替えられます。初期状態は主な入力デバイスがタッチならクリック・タップ中心、それ以外はキーボード中心です。端末の種類を完全に識別する判定ではありません。手動で選んだ方式は盤面の再作成やリセットでも維持し、再読み込み時は再判定します。
+- 幅・高さ1〜30、総地雷数0〜セル数を指定して盤面を作成
+- マウス・タッチ・キーボードで、閉じたセル・空き・旗・数字1〜8を入力
+- 安全セル（S）、地雷（M）、同率の推測候補（?）を表示
+- 入力の矛盾を表示し、修正した盤面を再解析
+- 「元に戻す／やり直す」で盤面設定・入力・保存済み解析結果を復元（現在を含む直近100盤面）
 
-キーボード中心では、セルのクリックは選択とフォーカス移動だけを行い、観測値を変更しません。矢印で移動、0 / Spaceで空き、Fで旗、Deleteで閉じる、1〜8で数字です。クリック・タップ中心では、パレットを選んでセルをクリック・タップします。リセットは幅・高さ・総地雷数を保ちます。Undo/Redoは画面のボタンをTabとEnter/Spaceでも操作できます。独自のCtrl/Cmd+Zショートカットはありません。
+提案は入力した盤面と区別して表示され、入力を上書きしません。
 
-## 制限と現在地
+## 使い方
 
+1. 幅・高さ・総地雷数を指定して盤面を作成します。
+2. 手元のマインスイーパーの盤面に合わせて、開いたセルの数字や空きセル、地雷と判断した旗を入力します。
+3. 解析結果のS・M・?を確認します。盤面を編集すると、更新した入力に基づいて解析します。
+
+入力方式は画面で切り替えられます。
+
+| 入力方式 | 操作 |
+| --- | --- |
+| キーボード中心 | セルをクリックして選択し、矢印キーで移動。`0` / `Space`で空き、`F`で旗、`Delete`で閉じたセル、`1`〜`8`で数字を入力 |
+| クリック・タップ中心 | パレットで入力する値を選び、セルをクリック・タップ |
+
+初期の入力方式は主な入力デバイスに応じて選ばれます。手動で選んだ方式は盤面の再作成やリセットでも維持され、ページを再読み込みすると再判定されます。
+
+リセットは幅・高さ・総地雷数を保ったまま、セルの入力を初期化します。「元に戻す／やり直す」は画面のボタンで操作でき、TabとEnter / Spaceでも使用できます。
+
+## 利用上の注意
+
+- **入力した旗は確定地雷として解析します。** 誤った旗でも数字と矛盾しなければ、その旗を前提とした提案が表示されます。旗を修正する場合は閉じたセルへ戻すか、「元に戻す」を使ってください。
+- `?`は推測候補です。安全が確定したセルではありません。
 - 解析は200,000探索ノード・Worker待機5秒を上限とし、超過時は提案を表示しません。
-- 入力旗は常に確定地雷です。数字と矛盾しない誤旗は検出できず、その旗を前提とした提案が出ます。常時再検討・矛盾時の自動再検討は削除しました。誤旗は閉じたセルへ手動修正するか、Undoで旗を置く前へ戻してください。
-- 履歴は探索量の削減や性能改善を保証しません。別盤面の古い提案は重ねず、復元した盤面と一致する保存結果だけを表示します。
-- 画像入力、認識統合、自動クリック、数値確率表示、自動保存はありません。再読み込みで盤面は初期化されます。
-- 盤面グリッド検出はChromium正式評価16ケース中14ケースで部分採用。セル認識候補は不採用で、認識研究は[Issue #5](https://github.com/KKishikawa/minesweeper-slv/issues/5)から独立して継続します。
-- version `0.1.0-dev.1`。開発版として公開済みです。
-- 検証結果と公開記録は[手動MVPリリース確認](docs/project/manual-mvp-release.md)を参照してください。
+- 画像入力・画像認識・自動クリック・数値による確率表示には対応していません。
+- 盤面と履歴はページ内のメモリに保持します。自動保存はなく、再読み込みやページ終了で消えます。
 
-## 通信・保存・不具合報告
+主な対象環境はWindowsのChromeです。
 
-盤面の入力と解析はブラウザ内で行い、アプリは盤面を外部へ送信しません。ページ表示や解析に必要な静的ファイル（HTML・CSS・JavaScript・Worker）の取得には通信が発生します。GitHub Pagesでは、GitHubがアクセス時のIPアドレスをセキュリティ目的で記録します（[GitHub公式説明](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection)）。
+## 通信と不具合報告
 
-盤面と解析結果の履歴は、現在を含む直近100盤面をページ内のメモリに保持し、古いものから削除します。Undo後の新しい編集はRedo側を破棄します。再解析は履歴を増やしません。同じ盤面の再解析が失敗しても以前の成功結果を保持し、離れて戻ったときに復元します。保存結果の復元ではWorkerを起動せず、結果のない未完了盤面へ戻る場合だけ新しく解析します。履歴一覧・永続保存はなく、再読み込みやページ終了で消えます。開発者向け診断は既定でOFFです。有効化後の解析を直近100件までメモリ内に保持し、JSONをダウンロードできます。OFFで取得を停止し、実行中の記録を除外します。完了済み履歴は削除するか再読み込みするまで残り、再読み込みで設定も消えます。アプリから診断データを自動送信する機能はありません。
+盤面の入力と解析はブラウザ内で行います。ページや解析に必要なHTML・CSS・JavaScript・Workerなどの静的ファイルの取得には通信が発生します。通信と保存の詳細は[通信・保存・診断データの説明](docs/project/privacy.md)を参照してください。
 
-不具合の報告は利用者自身が内容を確認し、[GitHub Issue](https://github.com/KKishikawa/minesweeper-slv/issues)へ投稿するか選べます。公開Issueの本文・添付ファイルは公開されます。現在の通信・保存・診断機能の詳細は[通信・保存・診断報告の説明](docs/project/privacy.md)を参照してください。
+不具合は[GitHub Issues](https://github.com/KKishikawa/minesweeper-slv/issues)へ報告できます。再現手順、使用したブラウザ、期待した結果と実際の結果を記載してください。
 
-## 動作環境
+解析の調査には、ページ末尾の「開発者向け診断」から取得できる診断JSONも使えます。診断は初期状態ではOFFで、有効化後の解析を直近100件までメモリに記録します。アプリからの自動送信はありません。詳しくは[診断の取得・再実行手順](docs/project/solver-diagnostics.md)を参照してください。公開Issueの本文や添付ファイルは公開されるため、投稿前に内容を確認してください。
 
-- 開発・CI基準: `.node-version`で22.12.0に固定
-- 対応Node.js: 22.12.0以上
-- 正式評価: Chromium
-- 参考評価: Firefox / Playwright WebKit
+## ローカルで開発する
 
-`package-lock.json`はPlaywright 1.62.1を固定し、Playwrightが対応するChromium revisionを管理します。通常CIとローカルセットアップは、独立したブラウザバージョンではなく、この組み合わせを使用します。
+Node.js 22.12.0以上が必要です。開発・CIでは[.node-version](.node-version)に指定した22.12.0を使用しています。
 
-## セットアップ
+依存パッケージとテスト用Chromiumをインストールします。
 
 ```sh
 npm ci
 npx --no-install playwright install chromium
 ```
 
-## 起動
+開発サーバーを起動します。
 
 ```sh
 npm run dev
 ```
 
-production版は`npm run build`の後に`npm run preview`で確認できます。
+本番用ビルドをローカルで確認するには、次のコマンドを実行します。
 
-## 検証
+```sh
+npm run build
+npm run preview
+```
 
-全Pull Requestと`main`へのpushでは、同じNode.js・Chromium条件で通常テスト全体を5グループに分けて実行します。各グループ内は直列実行し、製品グループでは型チェックとbuildも行います。必須チェック`CI / quality`は、すべてのグループの成功だけを受け入れます。
+### テスト
 
-productionブラウザテストは生成済み`dist`を使うため、`npm test`の前にbuildが必要です。ローカルの完全検証はtypecheck → build → npm testの順で行います。`npm test`は通常テスト全体の完全直列回帰です。Pages公開workflowでもこの完全検証を維持し、公開は`main`の対象commitの出荷確認と明示的承認後に手動で実行します。
+自動テストにはChromiumを使用し、Firefox / Playwright WebKitは参考評価としています。
+
+型チェック、ビルド、通常テスト全体を順に実行します。ブラウザテストは生成済みの`dist`を使うため、先にビルドが必要です。
 
 ```sh
 npm run typecheck
@@ -72,40 +87,20 @@ npm run build
 npm test
 ```
 
-`test:ci`はグループを選んで実行するコマンドです。グループは`product`、`formal`、`holdout`、`grid-compatibility`、`recognition`です。製品グループはすべての製品ブラウザテストを含むため、先にbuildしてください。
+ブラウザテストだけを実行する場合は、ビルド後に`npm run test:browser`を実行します。
+
+CIでは通常テストを`product`、`formal`、`holdout`、`grid-compatibility`、`recognition`の5グループに分けて実行します。個別のグループは次のように実行できます。`product`を実行する場合も先にビルドしてください。
 
 ```sh
 npm run test:ci -- product
 ```
 
-`npm run test:browser`でブラウザテストだけを実行できます。この場合も先に`npm run build`を実行してください。
+## 設計・ロードマップ
 
-グリッド検出の正式なChromium評価を再実行します。採用結果は11件の直接検出、3件のフォールバック検出、2件のfail-closedです。
+画像入力と認識統合は今後の開発対象です。現時点では手動入力を利用できます。
 
-```sh
-npx tsx scripts/recognition/evaluate-grid-fallback.ts
-```
-
-棄却されたセル認識方式の採用条件2件だけを再実行します。現在の証拠では2件とも失敗し、終了コード1を返します。この専用コマンドは通常CIでは実行しません。不採用判断の正本はspike報告書とGit履歴であり、この赤いテストは次期認識設計で再利用価値を棚卸しする退役候補です。
-
-```sh
-npm run test:spike-evidence
-```
-
-## ロードマップと資料
-
-- [現在のプロジェクト情報](docs/project/README.md)
-- [現在の製品定義](docs/project/product.md)
-- [入力方式切替の検証と実機再検証手順](docs/project/input-mode-verification.md)
-- [現在のロードマップ](docs/project/roadmap.md)
-- [ADR log](docs/decisions/README.md)
-- [GitHub作業ダッシュボード（Issue #1）](https://github.com/KKishikawa/minesweeper-slv/issues/1)
-- [全体設計](docs/superpowers/specs/2026-08-16-minesweeper-solver-design.md)
-- [初期セル認識spike報告](docs/superpowers/spikes/2026-08-16-image-recognition-report.md)
-- [multi-prototypeセル認識spike報告](docs/superpowers/spikes/2026-08-23-multi-prototype-recognition-report.md)
-- [次期セル認識方式・評価契約の設計（Issue #5）](docs/superpowers/specs/2026-10-11-next-cell-recognition-design.md)
-- [canonical grid fallback採用報告](docs/superpowers/spikes/2026-08-24-canonical-grid-fallback-report.md)
-
-全体設計と初期セル認識spike報告には、当時のnative scale / original encoding限定の採用判断が記録されています。この判断は後続の正式評価によって置換され、現在のセル認識は不採用です。現在の製品範囲と順序は`docs/project`、有効な判断と置換関係はADR log、各実験の測定結果はspike報告を参照してください。
-
-`docs/superpowers/plans`のチェック欄は各作業時点の実施記録であり、プロジェクト全体の現在の完了状態を示すものではありません。GitHub Issueは個々の作業状態を管理し、Issue #1はリポジトリ内ロードマップへ案内する作業ダッシュボードです。
+- [製品仕様](docs/project/product.md)
+- [ロードマップ](docs/project/roadmap.md)
+- [開発状況・研究資料](docs/project/README.md)
+- [設計判断の記録（ADR）](docs/decisions/README.md)
+- [リリース・動作確認の記録](docs/project/manual-mvp-release.md)
