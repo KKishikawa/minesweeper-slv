@@ -3,7 +3,7 @@ import { createAppState, transition } from '../../src/app/state';
 import { mountBoardEditor } from '../../src/ui/board-editor';
 import { mountBoardSettings } from '../../src/ui/board-settings';
 import '../../src/app/style.css';
-let state = { ...createAppState(createBoard(3, 1, 1, 0)), policy: 'reconsidered' as const };
+let state = createAppState(createBoard(3, 1, 1, 0));
 let edits = 0;
 let resets = 0;
 function update() {

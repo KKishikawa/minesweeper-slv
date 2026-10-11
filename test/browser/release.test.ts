@@ -135,8 +135,6 @@ it('supports the main workflow using keyboard navigation only', async () => {
   await page.keyboard.press('Tab'); await page.keyboard.press('Enter');
   await tabTo('[role=gridcell]'); await page.keyboard.press('0');
   await state(page, '確定した手があります');
-  await tabTo('input[value=trusted]'); await page.keyboard.press('ArrowDown');
-  expect(await page.getByLabel('入力旗を再検討する', { exact: true }).isChecked()).toBe(true);
   await tabTo('.reanalyze'); await page.keyboard.press('Enter'); await state(page, '確定した手があります');
   await tabTo('.reset-button'); await page.keyboard.press('Enter'); await state(page, '推測が必要です');
   expect(await page.getByRole('gridcell').count()).toBe(3);

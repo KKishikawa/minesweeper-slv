@@ -6,7 +6,7 @@ import type { SolverRequest, SolverResponse } from '../../src/workers/protocol';
 
 afterEach(() => vi.useRealTimers());
 const request = (id: number): SolverRequest => ({ kind: 'solve', requestId: id, revision: id,
-  board: createBoard(2, 1, 1, id), policy: 'trusted', options: { maxNodes: 4 }, diagnostics: true });
+  board: createBoard(2, 1, 1, id), options: { maxNodes: 4 }, diagnostics: true });
 const worker = (): SolverWorkerPort => ({ postMessage() {}, terminate() {}, onmessage: null, onerror: null, onmessageerror: null });
 const statistics = { stage: 'enumeration' as const, elapsedMs: 12, visitedNodes: 4,
   components: [{ cells: 2, constraints: 1, visitedNodes: 4, status: 'limit-reached' as const }] };

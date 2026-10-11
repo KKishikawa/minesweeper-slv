@@ -21,21 +21,19 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
     <section class="settings-card" aria-labelledby="settings-heading"><h2 id="settings-heading"><span class="step">01</span> 盤面の設定</h2><div class="settings-mount"></div></section>
     <section class="workbench" aria-labelledby="board-heading">
       <h2 id="board-heading"><span class="step">02</span> 盤面を入力</h2>
-      <div class="workspace"><div class="editor-mount"></div>
+      <div class="workspace"><div class="editor-panel"><div class="editor-mount"></div>
+        <div class="history-controls" role="group" aria-label="盤面の履歴" aria-describedby="history-note">
+          <button class="undo-button" type="button" disabled>元に戻す</button><button class="redo-button" type="button" disabled>やり直す</button>
+        </div>
+        <p class="history-note" id="history-note">現在を含む直近100盤面をこのページのメモリに保持します。再読み込みすると履歴は消えます。</p>
+      </div>
         <aside class="information" aria-label="解析と設定">
-          <section class="result-card"><p class="eyebrow">次の一手</p><p class="status" role="status" aria-live="polite"></p><p class="status-detail"></p><p class="proposal-counts"></p><button class="reanalyze" type="button">再解析する</button></section>
-          <fieldset class="flag-policy"><legend>入力旗の扱い</legend>
-            <label><input type="radio" name="flag-policy" value="trusted" checked>入力旗を地雷として扱う</label>
-            <label><input type="radio" name="flag-policy" value="reconsidered">入力旗を再検討する</label>
-            <label class="auto-policy"><input type="checkbox" name="auto-reconsider">矛盾したときに入力旗を自動で再検討する</label>
-          </fieldset>
-          <p class="policy-note">地雷として扱う設定では、成立する誤った旗は検出できません。すべての旗を評価し直す場合は再検討を選んでください。</p>
-          <p class="effective-policy"></p>
+          <section class="result-card"><p class="eyebrow">次の一手</p><p class="status" role="status" aria-live="polite"></p><p class="status-detail"></p><p class="restored-result" aria-live="polite"></p><p class="proposal-counts"></p><button class="reanalyze" type="button">再解析する</button></section>
+          <p class="flag-note">入力旗は地雷として扱います。誤った旗でも数字と矛盾しなければ、その旗を前提とした提案が出ます。旗が正しいことを確認してください。</p>
           <section class="legend" aria-label="凡例"><h3>表示の見方</h3>
             <p class="legend-items"><span><canvas data-symbol="flag" aria-hidden="true"></canvas> 入力旗</span><span><canvas data-symbol="safe" aria-hidden="true"></canvas> 提案: 安全 S</span></p>
             <p class="legend-items"><span><canvas data-symbol="mine" aria-hidden="true"></canvas> 提案: 地雷 M</span><span><canvas data-symbol="guess" aria-hidden="true"></canvas> 推測候補 ?</span></p>
-            <p class="legend-items"><span><canvas data-symbol="flag-safe" aria-hidden="true"></canvas> 入力旗と提案が両方ある例</span></p>
-            <p class="legend-note">再検討中も左の旗は入力として残り、右に解析の提案を表示します。提案は入力を変更しません。青い枠は操作中のセルです。</p>
+            <p class="legend-note">入力旗は確定地雷として残り、閉じたセルに解析の提案を表示します。提案は入力を変更しません。青い枠は操作中のセルです。</p>
           </section>
         </aside>
       </div>
@@ -68,43 +66,46 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
     const { width, height, totalMines, revision } = state.board;
     dispatch({ type: 'board-changed', board: createBoard(width, height, totalMines, revision + 1) });
   });
-  function render() {
+  function render(restoreSettings = false) {
     const layout = computeLayout(workspace.clientWidth, state.board.width);
     workspace.dataset.placement = layout.placement;
     editorRoot.style.setProperty('--board-cell-size', String(layout.cellSize));
+    settings.update(state.board, restoreSettings);
     editor.update(state.board, state.proposal, state.validation);
+    get<HTMLButtonElement>('.undo-button').disabled = state.history.cursor === 0;
+    get<HTMLButtonElement>('.redo-button').disabled = state.history.cursor === state.history.entries.length - 1;
     renderLegend(get('.legend'));
     get('.status').textContent = statusText(state);
     get('.result-card').dataset.phase = state.phase;
+    get('.restored-result').textContent = state.restoredResult ? '保存された解析結果を表示しています。' : '';
     get('.proposal-counts').textContent = state.proposal ? `安全 ${state.proposal.safe.length} · 地雷 ${state.proposal.mines.length} · 推測候補 ${state.proposal.guesses.length}` : '';
     get('.status-detail').textContent = state.phase === 'guess-required' ? '確定できる手がありません。? は地雷の可能性が最も低い同率の候補です。'
-      : state.phase === 'inconsistent' ? '数字・入力旗・総地雷数を確認してください。'
+      : state.phase === 'inconsistent' ? '数字・入力旗・総地雷数を確認してください。編集を元に戻すこともできます。'
       : state.phase === 'limit-reached' ? state.limitReason === 'timeout'
-        ? 'Workerの待機時間の上限に達しました。盤面を更新するか、再解析してください。'
-        : state.limitReason === 'node-budget' ? '探索ノード数の上限に達しました。盤面を更新するか、再解析してください。'
-          : '解析量または待機時間の上限に達しました。盤面を更新するか、再解析してください。'
+        ? 'Workerの待機時間の上限に達しました。元に戻す、盤面の更新、再解析を試してください。'
+        : state.limitReason === 'node-budget' ? '探索ノード数の上限に達しました。元に戻す、盤面の更新、再解析を試してください。'
+          : '解析量または待機時間の上限に達しました。元に戻す、盤面の更新、再解析を試してください。'
       : state.phase === 'error' ? '解析を完了できませんでした。再解析をお試しください。'
       : state.phase === 'needs-review' ? '要確認のセルと盤面の寸法を確認してください。'
       : '入力した情報をもとに解析します。';
-    get('.effective-policy').textContent = state.effectivePolicy === 'reconsidered' ? '入力旗を再検討して解析しています。' : '';
   }
   function dispatch(action: AppAction) {
-    const next = transition(state, action); state = next.state; render();
+    const next = transition(state, action);
+    const historyMoved = (action.type === 'undo' || action.type === 'redo') && next.state.history.cursor !== state.history.cursor;
+    state = next.state; render(historyMoved);
     for (const effect of next.effects) {
       if (effect.type === 'cancel') client.cancel();
       else {
         const request = { ...effect.request, diagnostics: history.enabled };
-        history.start(request, { policy: state.policy, autoReconsider: state.autoReconsider, timeoutMs: options.timeoutMs ?? 5000 });
+        history.start(request, { timeoutMs: options.timeoutMs ?? 5000 });
         diagnosticsMenu.update();
         client.run(request);
       }
     }
   }
-  const policy = () => dispatch({ type: 'settings-changed',
-    policy: get<HTMLInputElement>('input[value="reconsidered"]').checked ? 'reconsidered' : 'trusted',
-    autoReconsider: get<HTMLInputElement>('input[name="auto-reconsider"]').checked });
-  root.querySelectorAll('input[name="flag-policy"], input[name="auto-reconsider"]').forEach(input => input.addEventListener('change', policy, { signal: controller.signal }));
   get('.reanalyze').addEventListener('click', () => dispatch({ type: 'solve' }), { signal: controller.signal });
+  get('.undo-button').addEventListener('click', () => dispatch({ type: 'undo' }), { signal: controller.signal });
+  get('.redo-button').addEventListener('click', () => dispatch({ type: 'redo' }), { signal: controller.signal });
   let observedWidth = workspace.clientWidth;
   const observer = new ResizeObserver(() => {
     const width = workspace.clientWidth;

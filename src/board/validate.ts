@@ -1,6 +1,6 @@
-import type { BoardSnapshot, FlagPolicy, ValidationResult } from './types';
+import type { BoardSnapshot, ValidationResult } from './types';
 
-export function validateBoard(board: BoardSnapshot, policy: FlagPolicy): ValidationResult {
+export function validateBoard(board: BoardSnapshot): ValidationResult {
   const { width, height, cells, totalMines } = board;
   const inconsistent = (reason: 'settings' | 'local' | 'total', cells: number[] = []): ValidationResult =>
     ({ status: 'inconsistent', reason, cells });
@@ -11,9 +11,8 @@ export function validateBoard(board: BoardSnapshot, policy: FlagPolicy): Validat
   const uncertain = cells.flatMap((cell, index) => cell.uncertain ? [index] : []);
   if (uncertain.length) return { status: 'needs-review', reason: 'uncertain', cells: uncertain };
   if (!Number.isInteger(totalMines) || totalMines < 0 || totalMines > width * height) return inconsistent('settings');
-  const isFlag = (index: number) => policy === 'trusted' && cells[index]?.value === 'flag';
-  const isCandidate = (index: number) => cells[index]?.value === 'closed'
-    || (policy === 'reconsidered' && cells[index]?.value === 'flag');
+  const isFlag = (index: number) => cells[index]?.value === 'flag';
+  const isCandidate = (index: number) => cells[index]?.value === 'closed';
   const invalid: number[] = [];
   cells.forEach((cell, index) => {
     if (typeof cell.value !== 'number') return;

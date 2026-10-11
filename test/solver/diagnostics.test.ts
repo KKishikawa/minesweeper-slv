@@ -7,7 +7,7 @@ import { oracle } from './oracle';
 it('reports the shared node budget and component sizes without exposing partial proposals', () => {
   const board = editCell(editCell(createBoard(7, 1, 2, 0), 1, 1), 5, 1);
   const samples: SolverStatistics[] = [];
-  const result = solve(board, 'trusted', { maxNodes: 4 }, stats => samples.push(stats));
+  const result = solve(board, { maxNodes: 4 }, stats => samples.push(stats));
   expect(result).toEqual({ status: 'limit-reached', reason: 'node-budget' });
   expect(samples.at(-1)).toMatchObject({ stage: 'enumeration', visitedNodes: 4,
     components: [
@@ -21,7 +21,7 @@ it('reports the shared node budget and component sizes without exposing partial 
 it('diagnostic observation preserves independently verified solver results and immutable samples', () => {
   const board = editCell(editCell(createBoard(7, 1, 3, 0), 1, 1), 5, 1);
   const samples: SolverStatistics[] = [];
-  expect(solve(board, 'trusted', { maxNodes: 200_000 }, stats => samples.push(stats))).toEqual(oracle(board, 'trusted'));
+  expect(solve(board, { maxNodes: 200_000 }, stats => samples.push(stats))).toEqual(oracle(board));
   expect(samples.at(-1)).toMatchObject({ stage: 'complete', visitedNodes: 14,
     components: [{ visitedNodes: 7, status: 'completed' }, { visitedNodes: 7, status: 'completed' }] });
   expect(samples[0]!.components).toBeNull();

@@ -4,8 +4,8 @@ import { createBoard } from '../../src/board/board';
 import type { SolverRequest } from '../../src/workers/protocol';
 
 const request = (id: number): SolverRequest => ({ kind: 'solve', requestId: id, revision: id,
-  board: createBoard(2, 1, 1, id), policy: 'reconsidered', options: { maxNodes: 200_000 } });
-const context = { policy: 'trusted' as const, autoReconsider: true };
+  board: createBoard(2, 1, 1, id), options: { maxNodes: 200_000 } });
+const context = {};
 const terminal = (id: number) => ({ requestId: id, revision: id, outcome: 'cancelled' as const,
   elapsedMs: 15, timeoutMs: 5000, statistics: null, statisticsSource: 'unavailable' as const, error: null });
 
@@ -26,7 +26,7 @@ it('records only runs started while enabled and keeps finished history after dis
   const exported = JSON.parse(history.exportJson({ version: 'test', commit: 'abc', dirty: false }));
   expect(exported).toMatchObject({ schemaVersion: 1, build: { version: 'test', commit: 'abc', dirty: false },
     entries: [{ requestId: 2, revision: 2, board: { totalMines: 1 }, policy: 'trusted',
-      effectivePolicy: 'reconsidered', autoReconsider: true, maxNodes: 200_000,
+      effectivePolicy: 'trusted', autoReconsider: false, maxNodes: 200_000,
       outcome: 'cancelled', elapsedMs: 15, timeoutMs: 5000, statistics: null, statisticsSource: 'unavailable' }] });
   expect(exported.entries).toHaveLength(1);
   expect(exported.entries[0]).not.toHaveProperty('proposal');

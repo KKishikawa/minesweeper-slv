@@ -11,7 +11,6 @@ export interface BoardSnapshot {
   readonly revision: number;
   readonly cells: readonly BoardCell[];
 }
-export type FlagPolicy = 'trusted' | 'reconsidered';
 export type ValidationResult =
   | { status: 'valid' }
   | { status: 'needs-review'; reason: 'uncertain' | 'dimensions'; cells: number[] }

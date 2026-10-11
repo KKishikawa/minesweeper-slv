@@ -1,4 +1,6 @@
-export function mountBoardSettings(root: HTMLElement, onCreate: (width: number, height: number, totalMines: number) => void): { dispose(): void } {
+import type { BoardSnapshot } from '../board/types';
+
+export function mountBoardSettings(root: HTMLElement, onCreate: (width: number, height: number, totalMines: number) => void): { update(board: BoardSnapshot, forceSync?: boolean): void; dispose(): void } {
   const form = document.createElement('form');
   form.className = 'board-settings'; form.noValidate = true;
   const inputs = ['幅', '高さ', '総地雷数'].map((labelText, index) => {
@@ -28,5 +30,15 @@ export function mountBoardSettings(root: HTMLElement, onCreate: (width: number, 
     onCreate(width, height, totalMines);
   };
   form.addEventListener('submit', submit);
-  return { dispose() { form.removeEventListener('submit', submit); form.remove(); } };
+  let previousSettings: [number, number, number] | null = null;
+  return {
+    update(board, forceSync = false) {
+      const values: [number, number, number] = [board.width, board.height, board.totalMines];
+      if (!forceSync && previousSettings && values.every((value, index) => value === previousSettings![index])) return;
+      previousSettings = values;
+      inputs.forEach((input, index) => { input.value = String(values[index]); input.removeAttribute('aria-invalid'); });
+      error.textContent = '';
+    },
+    dispose() { form.removeEventListener('submit', submit); form.remove(); },
+  };
 }

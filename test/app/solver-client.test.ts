@@ -9,7 +9,7 @@ function fakeWorker(): SolverWorkerPort & { terminated: boolean } {
     onmessage: null, onerror: null, onmessageerror: null };
 }
 const request = (id: number): SolverRequest => ({ kind: 'solve', requestId: id, revision: id,
-  board: createBoard(2, 1, 1, id), policy: 'trusted', options: { maxNodes: 200_000 } });
+  board: createBoard(2, 1, 1, id), options: { maxNodes: 200_000 } });
 const result = (id: number): SolverResponse => ({ kind: 'result', requestId: id, revision: id, result: { status: 'inconsistent' } });
 
 describe('solver client', () => {
@@ -125,7 +125,11 @@ describe('solver client', () => {
     worker.onmessage?.({ data } as MessageEvent);
     expect(received[0]).toMatchObject({ kind: 'error', requestId: 1, revision: 1 });
   });
-  it('trustedの入力旗を提案対象に含めない', () => {
+  it.each([
+    { status: 'solved', proposal: { safe: [0], mines: [], guesses: [], primaryGuess: null } },
+    { status: 'solved', proposal: { safe: [], mines: [0], guesses: [], primaryGuess: null } },
+    { status: 'guess-required', proposal: { safe: [], mines: [], guesses: [0], primaryGuess: 0 } },
+  ])('入力旗への安全・地雷・推測の提案を拒否する %#', result => {
     const worker = fakeWorker();
     const received: SolverResponse[] = [];
     const client = createSolverClient(response => received.push(response), { workerFactory: () => worker });
@@ -134,7 +138,7 @@ describe('solver client', () => {
       { value: 'closed' as const, source: 'manual' as const, uncertain: false },
     ] } };
     client.run(flagged);
-    worker.onmessage?.({ data: { kind: 'result', requestId: 1, revision: 1, result: { status: 'solved', proposal: { safe: [0], mines: [], guesses: [], primaryGuess: null } } } } as MessageEvent);
+    worker.onmessage?.({ data: { kind: 'result', requestId: 1, revision: 1, result } } as MessageEvent);
     expect(received[0]?.kind).toBe('error');
   });
   it('契約どおりの確定手と推測は結果として受け付ける', () => {
@@ -148,17 +152,6 @@ describe('solver client', () => {
       worker.onmessage?.({ data: { kind: 'result', requestId: 1, revision: 1, result: proposal } } as MessageEvent);
       expect(received[0]?.kind).toBe('result');
     }
-  });
-  it('reconsideredでは入力旗も提案対象にできる', () => {
-    const worker = fakeWorker();
-    const received: SolverResponse[] = [];
-    const flagged = { ...request(1), policy: 'reconsidered' as const, board: { ...createBoard(2, 1, 1, 1), cells: [
-      { value: 'flag' as const, source: 'manual' as const, uncertain: false },
-      { value: 'closed' as const, source: 'manual' as const, uncertain: false },
-    ] } };
-    createSolverClient(response => received.push(response), { workerFactory: () => worker }).run(flagged);
-    worker.onmessage?.({ data: { kind: 'result', requestId: 1, revision: 1, result: { status: 'solved', proposal: { safe: [0], mines: [], guesses: [], primaryGuess: null } } } } as MessageEvent);
-    expect(received[0]?.kind).toBe('result');
   });
   it.each([0, -1, NaN, Infinity])('不正なtimeout %sを拒否する', timeoutMs => {
     expect(() => createSolverClient(() => {}, { workerFactory: fakeWorker, timeoutMs })).toThrow(RangeError);

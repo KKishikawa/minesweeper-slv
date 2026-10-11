@@ -10,7 +10,7 @@ beforeAll(async () => {
   harness = await startBrowserHarness();
   page = await harness.browser.newPage({ deviceScaleFactor: 1 });
   page.setDefaultTimeout(3000);
-  await mkdir('test/artifacts/issue-22', { recursive: true });
+  await mkdir('test/artifacts/trusted-flags', { recursive: true });
 });
 afterAll(async () => { await harness?.close(); });
 async function board(width: number, mines: number) {
@@ -42,27 +42,27 @@ it('renders the same flag, safe, mine and guess symbols in the legend and board 
   await page.getByRole('status').filter({ hasText: '推測が必要です' }).waitFor();
   expect(await pixels('.board-surface canvas', 1)).toEqual(await pixels('.legend [data-symbol=guess]'));
 });
-it.each([1, 2])('keeps a flag shape separate from the safe proposal at 24px and DPR %i', async dpr => {
+it.each([1, 2])('keeps the fixed input flag visible through selection and focus at 24px and DPR %i', async dpr => {
   await page.close();
   page = await harness.browser.newPage({ deviceScaleFactor: dpr });
   page.setDefaultTimeout(3000);
   await page.goto(harness.baseUrl);
   await page.addStyleTag({ content: '.editor-mount { --board-cell-size: 24 !important; }' });
   await board(3, 1);
-  await page.getByRole('gridcell').first().focus(); await page.keyboard.press('0');
-  await page.keyboard.press('ArrowRight'); await page.keyboard.press('f');
-  await page.getByLabel('入力旗を再検討する', { exact: true }).check();
+  await page.getByRole('gridcell').nth(1).focus(); await page.keyboard.press('1');
+  await page.keyboard.press('ArrowLeft'); await page.keyboard.press('f');
   await page.getByRole('status').filter({ hasText: '確定した手があります' }).waitFor();
-  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('入力旗 提案: 安全 S');
+  expect(await page.getByRole('gridcell').nth(0).getAttribute('aria-label')).toContain('入力旗');
+  expect(await page.getByRole('gridcell').nth(0).getAttribute('aria-label')).not.toContain('提案:');
   const masks: number[][] = [];
   for (const state of ['selected', 'focused', 'unselected']) {
-    if (state === 'focused') { await page.getByRole('gridcell').nth(1).focus(); await page.keyboard.press('ArrowLeft'); await page.keyboard.press('ArrowRight'); }
+    if (state === 'focused') { await page.getByRole('gridcell').nth(0).focus(); await page.keyboard.press('ArrowRight'); await page.keyboard.press('ArrowLeft'); }
     if (state === 'unselected') await page.keyboard.press('ArrowRight');
-    if (state === 'focused') expect(await page.getByRole('gridcell').nth(1).evaluate(cell => getComputedStyle(cell).outlineStyle)).not.toBe('none');
-    const screenshot = await page.getByRole('gridcell').nth(1).screenshot({ scale: 'css', path: `test/artifacts/issue-22/flag-safe-${state}-dpr${dpr}.png` });
+    if (state === 'focused') expect(await page.getByRole('gridcell').nth(0).evaluate(cell => getComputedStyle(cell).outlineStyle)).not.toBe('none');
+    const screenshot = await page.getByRole('gridcell').nth(0).screenshot({ scale: 'css', path: `test/artifacts/trusted-flags/fixed-flag-${state}-dpr${dpr}.png` });
     const { data, info } = await sharp(screenshot).raw().toBuffer({ resolveWithObject: true });
     const mask: number[] = [];
-    for (let y = 0; y < info.height; y++) for (let x = 0; x < 11; x++) {
+    for (let y = 0; y < info.height; y++) for (let x = 0; x < info.width; x++) {
       const offset = (y * info.width + x) * info.channels;
       if (data[offset]! > 90 && data[offset + 1]! < 100 && data[offset + 2]! < 80) mask.push(y * info.width + x);
     }
@@ -74,20 +74,20 @@ it.each([1, 2])('keeps a flag shape separate from the safe proposal at 24px and 
     masks.push(mask);
   }
   expect(masks[1]).toEqual(masks[0]); expect(masks[2]).toEqual(masks[0]);
-  expect(await pixels('.board-surface canvas', 1)).toEqual(await pixels('.legend [data-symbol=flag-safe]'));
-  await page.screenshot({ path: `test/artifacts/issue-22/legend-and-board-dpr${dpr}.png`, fullPage: true });
+  expect(await pixels('.board-surface canvas', 0)).toEqual(await pixels('.legend [data-symbol=flag]'));
+  await page.screenshot({ path: `test/artifacts/trusted-flags/legend-and-board-dpr${dpr}.png`, fullPage: true });
 });
 
-it('uses 24px cells for the responsive 30-column W5 reproduction', async () => {
+it('shows fixed flags in 24px cells on the responsive 30-column board', async () => {
   await page.goto(harness.baseUrl);
   await page.setViewportSize({ width: 1130, height: 1080 });
   await board(30, 1);
-  await page.getByRole('gridcell').first().focus(); await page.keyboard.press('0');
-  await page.keyboard.press('ArrowRight'); await page.keyboard.press('f');
-  await page.getByLabel('入力旗を再検討する', { exact: true }).check();
+  await page.getByRole('gridcell').nth(1).focus(); await page.keyboard.press('1');
+  await page.keyboard.press('ArrowLeft'); await page.keyboard.press('f');
   await page.getByRole('status').filter({ hasText: '確定した手があります' }).waitFor();
-  expect((await page.getByRole('gridcell').nth(1).boundingBox())?.width).toBe(24);
-  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('入力旗 提案: 安全 S');
-  expect(await pixels('.board-surface canvas', 1)).toEqual(await pixels('.legend [data-symbol=flag-safe]'));
-  await page.screenshot({ path: 'test/artifacts/issue-22/responsive-30-columns.png', fullPage: true });
+  expect((await page.getByRole('gridcell').nth(0).boundingBox())?.width).toBe(24);
+  expect(await page.getByRole('gridcell').nth(0).getAttribute('aria-label')).toContain('入力旗');
+  expect(await page.getByRole('gridcell').nth(0).getAttribute('aria-label')).not.toContain('提案:');
+  expect(await pixels('.board-surface canvas', 0)).toEqual(await pixels('.legend [data-symbol=flag]'));
+  await page.screenshot({ path: 'test/artifacts/trusted-flags/responsive-30-columns.png', fullPage: true });
 });

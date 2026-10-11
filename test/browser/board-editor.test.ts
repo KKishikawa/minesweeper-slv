@@ -30,7 +30,7 @@ it('creates a board, supports every keyboard value and keeps focus', async () =>
   expect((await inspect()).state.board.revision).toBe(before.state.board.revision);
   expect(await page.locator('[role=alert]').textContent()).toContain('1〜30');
 });
-it.each(['mouse', 'keyboard'])('resets exactly once through %s and retains settings and policy', async method => {
+it.each(['mouse', 'keyboard'])('resets exactly once through %s and retains board settings', async method => {
   await page.goto(`${harness.baseUrl}/test/browser/editor.fixture.html`);
   await page.getByLabel('クリック・タップ中心', { exact: true }).check();
   await page.getByRole('button', { name: '旗', exact: true }).click();
@@ -44,7 +44,6 @@ it.each(['mouse', 'keyboard'])('resets exactly once through %s and retains setti
   expect(after.edits).toBe(before.edits);
   expect(after.state.board.revision).toBe(before.state.board.revision + 1);
   expect(after.state.board.cells.every((cell: any) => cell.value === 'closed' && cell.source === 'manual' && !cell.uncertain)).toBe(true);
-  expect(after.state.policy).toBe('reconsidered');
   expect(after.state.board.totalMines).toBe(1);
   expect(after.state.proposal).toBeNull();
 });

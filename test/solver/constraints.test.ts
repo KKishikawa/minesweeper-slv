@@ -6,15 +6,14 @@ describe('constraint derivation', () => {
   it('derives edge and corner neighbors without wrapping rows', () => {
     let board = createBoard(3, 2, 1, 0);
     board = editCell(board, 0, 1);
-    expect(buildConstraints(board, 'trusted')).toEqual([{ cells: [1, 3, 4], mines: 1 }]);
+    expect(buildConstraints(board)).toEqual([{ cells: [1, 3, 4], mines: 1 }]);
   });
 
-  it('subtracts trusted flags but includes reconsidered flags as candidates', () => {
+  it('subtracts fixed flags and excludes them from candidates', () => {
     let board = createBoard(2, 2, 1, 0);
     board = editCell(board, 0, 1);
     board = editCell(board, 1, 'flag');
-    expect(buildConstraints(board, 'trusted')).toEqual([{ cells: [2, 3], mines: 0 }]);
-    expect(buildConstraints(board, 'reconsidered')).toEqual([{ cells: [1, 2, 3], mines: 1 }]);
+    expect(buildConstraints(board)).toEqual([{ cells: [2, 3], mines: 0 }]);
   });
 });
 

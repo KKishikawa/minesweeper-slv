@@ -17,9 +17,13 @@ ONより前に開始した解析は記録しない。ON自体では再解析し�
 
 JSON取得後の用途は利用者が選ぶ。GitHub Issueへの報告は補助リンクから利用者自身が行い、アプリは自動投稿しない。公開Issueへ共有した内容は公開される。所有者によるローカル調査など、Issue起票を伴わない利用も可能。
 
+## 編集履歴との違い
+
+Undo/Redoの直近100盤面は、診断の直近100実行とは独立です。保存結果を復元するだけなら新しいsolver実行・診断entryは発生しません。実行中のUndo/Redoは通常のcancelledとして記録します。結果のない未完了盤面への復元や「再解析する」で実際にWorkerを起動したときだけ、診断ONなら新entryを記録します。編集snapshotには診断履歴・Worker・timer・実行IDを含めず、診断のOFF・削除で編集履歴を消しません。
+
 ## JSONの内容
 
-`schemaVersion: 1`。`entries`は開始順で、各記録に解析開始時の盤面全セル（value/source/uncertain）、寸法・総地雷数・revision、requestId、開始時刻、選択policy、effectivePolicy、自動再検討設定、探索予算・待機時間上限を含む。ダウンロード時に現在の盤面で置き換えない。自動再検討による再実行は別requestIdの記録になる。
+`schemaVersion: 1`。`entries`は開始順で、各記録に解析開始時の盤面全セル（value/source/uncertain）、寸法・総地雷数・revision、requestId、開始時刻、固定方式のmetadata（policy/effectivePolicyは常にtrusted、autoReconsiderは常にfalse）、探索予算・待機時間上限を含む。ダウンロード時に現在の盤面で置き換えない。これらは利用者向け設定ではありません。常時再検討・矛盾時の自動再検討は削除しました。
 
 `build`は配信JSのbuild時に埋め込んだpackage version・commit SHA・dirtyフラグ。未コミット変更があるbuildは`dirty: true`であり、commitだけで同一ソースを再現できるとは扱わない。Git情報を取得できないソースアーカイブなどではcommit/dirtyは`null`。
 
@@ -31,7 +35,7 @@ JSON取得後の用途は利用者が選ぶ。GitHub Issueへの報告は補助�
 | node-budget | solverが共有探索予算を使い切った |
 | timeout | client側のWorker待機上限に到達した |
 | worker-error | Worker起動・送受信・処理エラー、または不正応答 |
-| cancelled | 盤面・設定更新、再解析、破棄によって実行を取り消した |
+| cancelled | 盤面編集、Undo/Redo、再解析、破棄によって実行を取り消した |
 | running | ダウンロード時点でまだ処理中 |
 | limit-unknown | 理由のない旧形式／代替Workerのlimit応答。実Workerはnode-budgetを返す |
 
@@ -49,7 +53,9 @@ JSON取得後の用途は利用者が選ぶ。GitHub Issueへの報告は補助�
 npm run diagnostics:replay -- /path/to/minesweeper-diagnostics.json 0
 ```
 
-末尾の数値は`entries`の0始まりindex。省略時は0。選択した開始時盤面・effectivePolicy・maxNodesで同期solverを再実行し、JSONを標準出力へ出す。形式不一致・不正な盤面構造・範囲外indexは終了コード1で拒否する。
+末尾の数値は`entries`の0始まりindex。省略時は0。選択した開始時盤面・trusted固定方式・maxNodesで同期solverを再実行し、JSONを標準出力へ出す。形式不一致・不正な盤面構造・範囲外indexは終了コード1で拒否する。
+
+旧診断の`effectivePolicy: reconsidered`は、再検討方式が削除されたため元のbuild commitの旧版で再実行する必要があると明示し、終了コード1で拒否します。trustedへ読み替えません。旧診断・実機証跡は歴史資料として保持します。
 
 このコマンドはブラウザのWorker起動、待機時間上限、キャンセルを再現しない。`workerTimeoutReproduced: false`を明示する。元のoutcomeと直接solverの再実行結果を区別して読む。timeoutを含むfixtureの再評価は、元のブラウザ環境での追加計測が必要。
 

@@ -25,6 +25,27 @@ async function prepare(page: Page, columns = 9) {
   await page.evaluate(() => (window as any).inputProbe.reset());
 }
 
+// Syncing settings on every render would erase a draft when the delayed response arrives.
+it('preserves unsubmitted board settings through a delayed solver response', async () => {
+  const page = await harness.browser.newPage();
+  try {
+    await page.goto(`${harness.baseUrl}/test/browser/app.fixture.html?mode=draft`);
+    await settled(page);
+    await page.getByRole('gridcell').first().focus(); await page.keyboard.press('0');
+    expect(await page.locator('.result-card').getAttribute('data-phase')).toBe('solving');
+    await page.getByLabel('幅', { exact: true }).fill('12');
+    await page.getByLabel('高さ', { exact: true }).fill('7');
+    await page.getByLabel('総地雷数', { exact: true }).fill('20');
+    expect(await page.locator('.result-card').getAttribute('data-phase')).toBe('solving');
+    await page.locator('#app').dispatchEvent('release-solver-result');
+    await settled(page);
+    expect(await page.getByLabel('幅', { exact: true }).inputValue()).toBe('12');
+    expect(await page.getByLabel('高さ', { exact: true }).inputValue()).toBe('7');
+    expect(await page.getByLabel('総地雷数', { exact: true }).inputValue()).toBe('20');
+    expect(await page.getByRole('gridcell').count()).toBe(81);
+  } finally { await page.close(); }
+});
+
 // Catches empty counts/copy collapsing the result and moving the page during solving.
 it.each([1920, 1280, 960].flatMap(width => [9, 30].map(columns => ({ width, columns }))))(
   'keeps input geometry stable at $width px with $columns columns through solving and recovery', async ({ width, columns }) => {
@@ -118,13 +139,13 @@ it('refreshes board and legend bitmaps after the device pixel ratio changes', as
     expect(await page.evaluate(() => devicePixelRatio)).toBe(2);
     expect(await page.locator('.board-surface canvas').evaluate(el => [(el as HTMLCanvasElement).width, (el as HTMLCanvasElement).height])).toEqual([720, 720]);
     expect(await page.locator('.legend canvas').evaluateAll(elements => elements.map(el => [(el as HTMLCanvasElement).width, (el as HTMLCanvasElement).height])))
-      .toEqual([[48, 48], [48, 48], [48, 48], [48, 48], [48, 48]]);
+      .toEqual([[48, 48], [48, 48], [48, 48], [48, 48]]);
     expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('入力旗');
   } finally { await page.close(); }
 });
 
-// Catches the automatic fallback note inserting/removing a row in the sidebar.
-it('keeps the page height stable when automatic flag reconsideration starts and ends', async () => {
+// Catches contradiction/recovery copy moving the input area.
+it('keeps the page height stable when a fixed flag contradicts a number and is corrected', async () => {
   const page = await harness.browser.newPage({ viewport: { width: 1280, height: 800 } });
   try {
     await prepare(page);
@@ -132,17 +153,17 @@ it('keeps the page height stable when automatic flag reconsideration starts and 
     await page.getByLabel('高さ', { exact: true }).fill('1');
     await page.getByLabel('総地雷数', { exact: true }).fill('1');
     await page.getByRole('button', { name: '盤面を作成', exact: true }).click();
-    await page.getByLabel('矛盾したときに入力旗を自動で再検討する', { exact: true }).check();
     await settled(page);
     await page.getByRole('gridcell').first().focus();
     await page.keyboard.press('0'); await settled(page);
     const before = await page.evaluate(() => document.documentElement.scrollHeight);
     await page.keyboard.press('ArrowRight'); await page.keyboard.press('f'); await settled(page);
-    expect(await page.locator('.effective-policy').textContent()).toContain('再検討');
-    expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('入力旗 提案: 安全 S');
+    expect(await page.getByRole('status').textContent()).toBe('盤面に矛盾があります');
+    expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('入力旗');
+    expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).not.toContain('提案:');
     expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(before);
     await page.keyboard.press('Delete'); await settled(page);
-    expect(await page.locator('.effective-policy').textContent()).toBe('');
+    expect(await page.getByRole('status').textContent()).toBe('確定した手があります');
     expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(before);
   } finally { await page.close(); }
 });

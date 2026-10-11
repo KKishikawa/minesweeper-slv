@@ -51,7 +51,7 @@ function isProposal(value: unknown, request: SolverRequest, status: 'solved' | '
     && index >= 0 && index < cellCount && (position === 0 || index > array[position - 1])))) return false;
   const indexes = arrays.flat();
   if (new Set(indexes).size !== indexes.length) return false;
-  if (request.policy === 'trusted' && indexes.some(index => request.board.cells[index]?.value === 'flag')) return false;
+  if (indexes.some(index => request.board.cells[index]?.value === 'flag')) return false;
   if (status === 'solved') return value.guesses.length === 0 && value.primaryGuess === null;
   return value.safe.length === 0 && value.mines.length === 0 && value.guesses.length > 0
     && value.primaryGuess === value.guesses[0];
