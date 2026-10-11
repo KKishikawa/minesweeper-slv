@@ -6,6 +6,16 @@ const mode = new URLSearchParams(location.search).get('mode');
 let count = 0;
 const root = document.querySelector<HTMLElement>('#app')!;
 root.dataset.solverRuns = '0';
+const staleResponses: Array<() => void> = [];
+if (mode === 'controlled-late') {
+  root.dataset.staleSolverResultsSent = '0';
+  root.addEventListener('release-stale-solver-results', () => {
+    for (const respond of staleResponses.splice(0)) {
+      respond();
+      root.dataset.staleSolverResultsSent = String(Number(root.dataset.staleSolverResultsSent) + 1);
+    }
+  });
+}
 mountApp(root, {
   timeoutMs: mode === 'limit' ? 50 : 1500,
   workerFactory: () => {
@@ -22,7 +32,9 @@ mountApp(root, {
           ? { status: 'limit-reached' as const, reason: 'node-budget' as const }
           : solve(request.board, request.options);
         const respond = () => worker.onmessage?.(new MessageEvent('message', { data: { kind: 'result', requestId: request.requestId, revision: request.revision, result } }));
-        if (mode === 'draft' && sequence > 1) root.addEventListener('release-solver-result', respond, { once: true });
+        if (mode === 'controlled-late' && sequence <= 2) staleResponses.push(respond);
+        else if (mode === 'controlled-late') respond();
+        else if (mode === 'draft' && sequence > 1) root.addEventListener('release-solver-result', respond, { once: true });
         else setTimeout(respond, mode === 'stability' ? 80 : mode === 'history' || mode === 'draft' ? 5 : sequence <= 2 ? 400 : 5);
       },
     };
