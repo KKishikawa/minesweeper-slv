@@ -31,6 +31,12 @@ npm run test:ci -- product
 
 `npm run test:spike-evidence`は、不採用になった認識方式の過去の採用条件を再現する専用コマンドであり、通常のgreen baselineではありません。
 
+## 依存パッケージの更新
+
+Renovateの設定は`renovate.json`で管理します。npmとGitHub Actionsの通常の更新PRを、日本時間の毎週月曜日6:00〜9:00の実行枠で作成・更新します。マイナー・パッチ更新はnpmとGitHub Actionsそれぞれでまとめ、メジャー更新は個別PRにします。マージは手動で行い、`CI / quality`の成功と変更内容を確認してください。
+
+稼働には、設定を`main`に取り込んだうえで、[Renovate GitHub App](https://github.com/apps/renovate)の対象リポジトリに`KKishikawa/minesweeper-slv`を指定します。設定の変更時は、公式の`renovate-config-validator --strict --no-global renovate.json`で検証してください。
+
 ## 認識spike
 
 - fixtureの正解データ、採用閾値、fail-closed条件を、テストを通す目的だけで弱めないでください。
