@@ -1,4 +1,4 @@
-import type { BoardSnapshot, FlagPolicy } from '../board/types';
+import type { BoardSnapshot } from '../board/types';
 import type { SolverRequest } from '../workers/protocol';
 import type { SolverRunDiagnostic } from './solver-client';
 
@@ -8,9 +8,9 @@ export interface DiagnosticEntry {
   revision: number;
   startedAt: string;
   board: BoardSnapshot;
-  policy: FlagPolicy;
-  effectivePolicy: FlagPolicy;
-  autoReconsider: boolean;
+  policy: 'trusted';
+  effectivePolicy: 'trusted';
+  autoReconsider: false;
   maxNodes: number;
   timeoutMs: number;
   diagnostic: SolverRunDiagnostic | null;
@@ -27,11 +27,11 @@ export function createDiagnosticHistory() {
       enabled = value;
       if (!enabled) entries = entries.filter(entry => entry.diagnostic !== null);
     },
-    start(request: SolverRequest, context: { policy: FlagPolicy; autoReconsider: boolean; timeoutMs?: number }) {
+    start(request: SolverRequest, context: { timeoutMs?: number }) {
       if (!enabled) return;
       entries.push({ requestId: request.requestId, revision: request.revision, startedAt: new Date().toISOString(),
-        board: structuredClone(request.board), policy: context.policy, effectivePolicy: request.policy,
-        autoReconsider: context.autoReconsider, maxNodes: request.options.maxNodes, timeoutMs: context.timeoutMs ?? 5000, diagnostic: null });
+        board: structuredClone(request.board), policy: 'trusted', effectivePolicy: 'trusted',
+        autoReconsider: false, maxNodes: request.options.maxNodes, timeoutMs: context.timeoutMs ?? 5000, diagnostic: null });
       if (entries.length > 100) entries.shift();
     },
     finish(diagnostic: SolverRunDiagnostic) {

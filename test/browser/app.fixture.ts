@@ -14,7 +14,7 @@ mountApp(document.querySelector('#app')!, {
       postMessage(request) {
         if (mode === 'limit') return;
         if (mode === 'error') { setTimeout(() => worker.onerror?.(new ErrorEvent('error', { message: 'Injected test error' })), 10); return; }
-        const result = solve(request.board, request.policy, request.options);
+        const result = solve(request.board, request.options);
         setTimeout(() => worker.onmessage?.(new MessageEvent('message', { data: { kind: 'result', requestId: request.requestId, revision: request.revision, result } })), mode === 'stability' ? 80 : sequence <= 2 ? 400 : 5);
       },
     };

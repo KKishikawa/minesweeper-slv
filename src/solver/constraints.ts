@@ -1,10 +1,10 @@
-import type { BoardSnapshot, FlagPolicy } from '../board/types';
+import type { BoardSnapshot } from '../board/types';
 
 export interface Constraint { cells: number[]; mines: number }
 
 const sorted = (values: Iterable<number>): number[] => [...new Set(values)].sort((a, b) => a - b);
 
-export function buildConstraints(board: BoardSnapshot, policy: FlagPolicy): Constraint[] {
+export function buildConstraints(board: BoardSnapshot): Constraint[] {
   const result: Constraint[] = [];
   board.cells.forEach((cell, index) => {
     if (typeof cell.value !== 'number') return;
@@ -20,8 +20,8 @@ export function buildConstraints(board: BoardSnapshot, policy: FlagPolicy): Cons
         if (nx < 0 || ny < 0 || nx >= board.width || ny >= board.height) continue;
         const neighbor = ny * board.width + nx;
         const value = board.cells[neighbor]!.value;
-        if (value === 'flag' && policy === 'trusted') mines--;
-        else if (value === 'closed' || value === 'flag') cells.push(neighbor);
+        if (value === 'flag') mines--;
+        else if (value === 'closed') cells.push(neighbor);
       }
     }
     result.push({ cells, mines });

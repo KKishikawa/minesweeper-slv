@@ -1,4 +1,4 @@
-import type { BoardSnapshot, FlagPolicy } from '../board/types.js';
+import type { BoardSnapshot } from '../board/types.js';
 
 export interface SolverProposal {
   safe: number[];
@@ -23,5 +23,5 @@ export interface SolverStatistics {
   elapsedMs: number;
   components: ComponentStatistics[] | null;
 }
-export type Solver = (board: BoardSnapshot, policy: FlagPolicy, options: SolveOptions,
+export type Solver = (board: BoardSnapshot, options: SolveOptions,
   observe?: (statistics: SolverStatistics) => void) => SolveResult;

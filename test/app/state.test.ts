@@ -5,9 +5,9 @@ import type { AppState } from '../../src/app/state.js';
 
 describe('app state', () => {
   it('同revisionでも古いrequestを受け付けない', () => {
-    const state: AppState = { board: createBoard(2, 1, 1, 3), policy: 'trusted', autoReconsider: false,
+    const state: AppState = { board: createBoard(2, 1, 1, 3),
       phase: 'solving', validation: { status: 'valid' }, proposal: null, activeRequestId: 9,
-      nextRequestId: 10, effectivePolicy: 'trusted', message: null };
+      nextRequestId: 10, message: null };
     expect(acceptsResponse(state, { kind: 'result', requestId: 8, revision: 3, result: { status: 'inconsistent' } })).toBe(false);
   });
 
@@ -26,37 +26,24 @@ describe('app state', () => {
     expect(transition(state, { type: 'board-changed', board: state.board })).toEqual({ state, effects: [] });
   });
 
-  it('設定変更は盤面の観測を保ちrevisionを進める', () => {
-    const state = createAppState(createBoard(2, 1, 1, 0));
-    const changed = transition(state, { type: 'settings-changed', policy: 'reconsidered', autoReconsider: true });
-    expect(changed.state.board.cells).toBe(state.board.cells);
-    expect(changed.state.board.revision).toBe(1);
-    expect(changed.state.policy).toBe('reconsidered');
-    expect(changed.effects.map(effect => effect.type)).toEqual(['cancel', 'run']);
+  it('入力旗と数字の矛盾は解析せず手動修正を待つ', () => {
+    const board = editCell(editCell(createBoard(3, 1, 1, 0), 0, 0), 1, 'flag');
+    const stopped = transition(createAppState(board), { type: 'solve' });
+    expect(stopped.state.phase).toBe('inconsistent');
+    expect(stopped.state.validation).toEqual({ status: 'inconsistent', reason: 'local', cells: [0] });
+    expect(stopped.state.board.cells[1]!.value).toBe('flag');
+    expect(stopped.effects).toEqual([{ type: 'cancel' }]);
+    const corrected = transition(stopped.state, { type: 'board-changed', board: editCell(board, 1, 'closed') });
+    expect(corrected.state.phase).toBe('solving');
+    expect(corrected.effects.map(effect => effect.type)).toEqual(['cancel', 'run']);
   });
-  it('安全な整数の最大revisionから設定を変更できない', () => {
-    const state = createAppState(createBoard(1, 1, 0, Number.MAX_SAFE_INTEGER));
-    expect(() => transition(state, { type: 'settings-changed', policy: 'trusted', autoReconsider: false })).toThrow(RangeError);
-  });
-
-  it('trusted矛盾は自動再検討を一度だけ実行する', () => {
-    let board = createBoard(3, 1, 1, 0);
-    board = editCell(editCell(board, 0, 0), 1, 'flag');
-    const state = transition(createAppState(board), { type: 'settings-changed', policy: 'trusted', autoReconsider: true });
-    expect(state.state.phase).toBe('solving');
-    expect(state.state.effectivePolicy).toBe('reconsidered');
-    expect(state.effects.at(-1)).toMatchObject({ type: 'run', request: { policy: 'reconsidered' } });
-    const response = transition(state.state, { type: 'response', response: { kind: 'result', requestId: state.state.activeRequestId!, revision: state.state.board.revision, result: { status: 'inconsistent' } } });
-    expect(response.state.phase).toBe('inconsistent');
-    expect(response.effects).toEqual([]);
-  });
-  it('solverがtrustedの全体矛盾を返したら同revisionで新IDに再検討する', () => {
-    const running = transition(createAppState(createBoard(2, 1, 1, 0)), { type: 'settings-changed', policy: 'trusted', autoReconsider: true }).state;
-    const fallback = transition(running, { type: 'response', response: { kind: 'result', requestId: running.activeRequestId!, revision: running.board.revision, result: { status: 'inconsistent' } } });
-    expect(fallback.state.board.revision).toBe(running.board.revision);
-    expect(fallback.state.activeRequestId).toBe(running.nextRequestId);
-    expect(fallback.state.effectivePolicy).toBe('reconsidered');
-    expect(fallback.effects).toMatchObject([{ type: 'cancel' }, { type: 'run', request: { policy: 'reconsidered' } }]);
+  it('solverの全体矛盾は再試行せず完了する', () => {
+    const running = transition(createAppState(createBoard(2, 1, 1, 0)), { type: 'solve' }).state;
+    const stopped = transition(running, { type: 'response', response: { kind: 'result', requestId: running.activeRequestId!, revision: running.board.revision, result: { status: 'inconsistent' } } });
+    expect(stopped.state.phase).toBe('inconsistent');
+    expect(stopped.state.activeRequestId).toBeNull();
+    expect(stopped.state.nextRequestId).toBe(running.nextRequestId);
+    expect(stopped.effects).toEqual([]);
   });
   it('不確実な盤面は実行せずneeds-reviewになる', () => {
     const board = { ...createBoard(1, 1, 0, 1), cells: [{ value: 'closed' as const, source: 'recognition' as const, uncertain: true }] };
@@ -64,10 +51,9 @@ describe('app state', () => {
     expect(changed.state.phase).toBe('needs-review');
     expect(changed.effects).toEqual([{ type: 'cancel' }]);
   });
-  it('総地雷数の設定矛盾は自動再検討してもsettingsを保持する', () => {
+  it('総地雷数の設定矛盾は解析せずsettingsを保持する', () => {
     const board = { ...createBoard(1, 1, 0, 0), totalMines: 2 };
-    const changed = transition(createAppState(board), { type: 'settings-changed', policy: 'trusted', autoReconsider: true });
-    expect(changed.state.effectivePolicy).toBe('trusted');
+    const changed = transition(createAppState(board), { type: 'solve' });
     expect(changed.state.validation).toEqual({ status: 'inconsistent', reason: 'settings', cells: [] });
     expect(changed.effects).toEqual([{ type: 'cancel' }]);
   });

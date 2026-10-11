@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
-import type { BoardSnapshot, FlagPolicy } from '../../src/board/types';
+import type { BoardSnapshot } from '../../src/board/types';
 import type { SolverStatistics } from '../../src/solver/types';
 import { solve } from '../../src/solver/solve';
 
@@ -25,8 +25,9 @@ export function replayDiagnosticExport(input: unknown, entryIndex: number) {
   const entry: unknown = input.entries[entryIndex];
   if (!record(entry) || !isBoard(entry.board) || !count(entry.maxNodes)
     || (entry.effectivePolicy !== 'trusted' && entry.effectivePolicy !== 'reconsidered')) throw new Error('Malformed diagnostic entry');
+  if (entry.effectivePolicy === 'reconsidered') throw new Error('再検討方式は削除されたため、元のbuild commitの旧版で再実行する必要があります。');
   let statistics: SolverStatistics | null = null;
-  const result = solve(entry.board, entry.effectivePolicy as FlagPolicy, { maxNodes: entry.maxNodes }, sample => { statistics = sample; });
+  const result = solve(entry.board, { maxNodes: entry.maxNodes }, sample => { statistics = sample; });
   return { entryIndex, sourceBuild: input.build ?? null, originalOutcome: entry.outcome ?? null,
     effectivePolicy: entry.effectivePolicy, maxNodes: entry.maxNodes,
     workerTimeoutReproduced: false, result, statistics };

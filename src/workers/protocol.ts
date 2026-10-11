@@ -1,7 +1,7 @@
-import type { BoardSnapshot, FlagPolicy } from '../board/types.js';
+import type { BoardSnapshot } from '../board/types.js';
 import type { SolveOptions, SolveResult, SolverStatistics } from '../solver/types.js';
 
-export type SolverRequest = { kind: 'solve'; requestId: number; revision: number; board: BoardSnapshot; policy: FlagPolicy; options: SolveOptions; diagnostics?: boolean };
+export type SolverRequest = { kind: 'solve'; requestId: number; revision: number; board: BoardSnapshot; options: SolveOptions; diagnostics?: boolean };
 export type SolverResponse =
   | { kind: 'result'; requestId: number; revision: number; result: SolveResult; statistics?: SolverStatistics }
   | { kind: 'error'; requestId: number; revision: number; message: string; statistics?: SolverStatistics };

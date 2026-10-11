@@ -59,13 +59,7 @@ input[aria-invalid="true"] { border-color: #b52e35; }
 .status-detail { min-block-size: 3lh; }
 .proposal-counts { min-block-size: 1lh; }
 .reanalyze { margin-top: 8px; width: 100%; background: transparent; }
-.flag-policy { border: 0; padding: 0; margin: 24px 0 12px; }
-.flag-policy legend { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
-.flag-policy label { display: flex; align-items: baseline; gap: 8px; margin: 8px 0; }
-.flag-policy input { accent-color: #255c4a; flex-shrink: 0; }
-.auto-policy { padding-top: 8px; border-top: 1px solid #e3e9e8; }
-.policy-note, .legend-note { color: #657a82; font-size: 12px; }
-.effective-policy { color: #256744; font-weight: 600; min-block-size: 1lh; }
+.flag-note, .legend-note { color: #657a82; font-size: 12px; }
 .legend { border-top: 1px solid #e1e7e5; padding-top: 12px; margin-top: 20px; }
 .legend h3 { margin: 0 0 10px; font-size: 13px; }
 .legend p { margin: 6px 0; }

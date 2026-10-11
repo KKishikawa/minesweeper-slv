@@ -7,7 +7,7 @@ const record = (value: unknown): value is Record<string, unknown> => typeof valu
 const integer = (value: unknown): value is number => Number.isSafeInteger(value) && (value as number) >= 0;
 function isRequest(value: unknown): value is SolverRequest {
   if (!record(value) || value.kind !== 'solve' || !integer(value.requestId) || !integer(value.revision)
-    || (value.policy !== 'trusted' && value.policy !== 'reconsidered') || !record(value.options)
+    || 'policy' in value || !record(value.options)
     || !integer(value.options.maxNodes) || !record(value.board)) return false;
   if ('diagnostics' in value && typeof value.diagnostics !== 'boolean') return false;
   const board = value.board;
@@ -36,11 +36,11 @@ self.onmessage = (event: MessageEvent<unknown>) => {
     }
   } : undefined;
   try {
-    const validation = validateBoard(request.board, request.policy);
+    const validation = validateBoard(request.board);
     if (validation.status === 'needs-review') {
       response = { kind: 'error', requestId: request.requestId, revision: request.revision, message: '入力を確認してください' };
     } else {
-      const result = solve(request.board, request.policy, request.options, observe);
+      const result = solve(request.board, request.options, observe);
       response = { kind: 'result', requestId: request.requestId, revision: request.revision, result };
     }
   } catch (error) {

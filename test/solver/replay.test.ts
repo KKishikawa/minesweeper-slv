@@ -4,17 +4,17 @@ import { createDiagnosticHistory } from '../../src/app/diagnostic-history';
 import { createBoard, editCell } from '../../src/board/board';
 import { oracle } from './oracle';
 
-it('replays a real exported observation with its effective flag policy and original node budget', () => {
+it('replays a real exported observation with fixed flags and original node budget', () => {
   const history = createDiagnosticHistory();
   history.setEnabled(true);
-  const board = editCell(editCell(createBoard(3, 1, 1, 0), 0, 0), 1, 'flag');
+  const board = editCell(editCell(createBoard(3, 1, 1, 0), 1, 1), 0, 'flag');
   history.start({ kind: 'solve', requestId: 1, revision: board.revision, board,
-    policy: 'reconsidered', options: { maxNodes: 200_000 } }, { policy: 'trusted', autoReconsider: true });
+    options: { maxNodes: 200_000 } }, {});
   history.finish({ requestId: 1, revision: board.revision, outcome: 'solved', elapsedMs: 12,
     timeoutMs: 5000, statistics: null, statisticsSource: 'unavailable', error: null });
   const replay = replayDiagnosticExport(JSON.parse(history.exportJson({ version: 'test', commit: 'abc', dirty: false })), 0);
-  expect(replay.result).toEqual(oracle(board, 'reconsidered'));
-  expect(replay).toMatchObject({ entryIndex: 0, originalOutcome: 'solved', effectivePolicy: 'reconsidered',
+  expect(replay.result).toEqual(oracle(board));
+  expect(replay).toMatchObject({ entryIndex: 0, originalOutcome: 'solved', effectivePolicy: 'trusted',
     maxNodes: 200_000, workerTimeoutReproduced: false, statistics: { visitedNodes: 0, components: [] } });
 });
 
@@ -33,4 +33,11 @@ it.each([
   { schemaVersion: 1, entries: [{ board: { ...createBoard(1, 1, 0, 0), cells: [{ value: 'code', source: 'manual', uncertain: false }] }, effectivePolicy: 'trusted', maxNodes: 1 }] },
 ])('rejects incompatible or malformed reproduction input %#', input => {
   expect(() => replayDiagnosticExport(input, 0)).toThrow();
+});
+
+it('rejects legacy reconsidered diagnostics with instructions to rerun the original build', () => {
+  const board = editCell(editCell(createBoard(3, 1, 1, 0), 0, 0), 1, 'flag');
+  expect(() => replayDiagnosticExport({ schemaVersion: 1, build: { commit: 'abc' }, entries: [
+    { board, effectivePolicy: 'reconsidered', maxNodes: 200_000 },
+  ] }, 0)).toThrow(/再検討方式は削除された.*元のbuild commitの旧版で再実行/);
 });

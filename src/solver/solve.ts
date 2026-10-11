@@ -4,7 +4,7 @@ import { enumerateComponent } from './enumerate';
 import { choose, convolve } from './combine';
 import type { Solver, SolveResult, SolverStatistics } from './types';
 
-export const solve: Solver = (board, policy, options, observe) => {
+export const solve: Solver = (board, options, observe) => {
   const started = observe ? performance.now() : 0;
   const budget = { visited: 0, maxNodes: options.maxNodes };
   const statistics: SolverStatistics = { stage: 'validation', visitedNodes: 0, elapsedMs: 0, components: null };
@@ -12,15 +12,15 @@ export const solve: Solver = (board, policy, options, observe) => {
     elapsedMs: performance.now() - started, components: statistics.components?.map(component => ({ ...component })) ?? null });
   const finish = (result: SolveResult): SolveResult => { sample(); return result; };
   sample();
-  if (validateBoard(board, policy).status !== 'valid') return finish({ status: 'inconsistent' });
+  if (validateBoard(board).status !== 'valid') return finish({ status: 'inconsistent' });
   if (!Number.isSafeInteger(options.maxNodes) || options.maxNodes <= 0) return finish({ status: 'limit-reached', reason: 'node-budget' });
   statistics.stage = 'reduction';
   sample();
-  const reduced = reduceConstraints(buildConstraints(board, policy));
+  const reduced = reduceConstraints(buildConstraints(board));
   if (reduced.inconsistent) return finish({ status: 'inconsistent' });
   const candidates = board.cells.flatMap((cell, index) =>
-    cell.value === 'closed' || (cell.value === 'flag' && policy === 'reconsidered') ? [index] : []);
-  const flags = policy === 'trusted' ? board.cells.filter(cell => cell.value === 'flag').length : 0;
+    cell.value === 'closed' ? [index] : []);
+  const flags = board.cells.filter(cell => cell.value === 'flag').length;
   const remaining = board.totalMines - flags - reduced.mines.length;
   const fixed = new Set([...reduced.safe, ...reduced.mines]);
   const components = [];

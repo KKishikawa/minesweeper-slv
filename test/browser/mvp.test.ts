@@ -28,19 +28,27 @@ it('creates, solves, detects contradictions and recovers by editing', async () =
   await page.keyboard.press('2'); await status('確定した手があります');
   await board(2, 1, 1); await status('推測が必要です');
 });
-it('retains input flags when reconsidering and exposes the effective policy', async () => {
+it('treats flags as fixed mines, explains the limitation and recovers by manual correction', async () => {
   await page.goto(harness.baseUrl); await board(3, 1, 1);
+  expect(await page.getByText('入力旗は地雷として扱います。誤った旗でも数字と矛盾しなければ、その旗を前提とした提案が出ます。旗が正しいことを確認してください。', { exact: true }).isVisible()).toBe(true);
+  expect(await page.locator('input[name="flag-policy"], input[name="auto-reconsider"]').count()).toBe(0);
   await page.getByRole('gridcell').nth(0).focus(); await page.keyboard.press('0');
   await page.keyboard.press('ArrowRight'); await page.keyboard.press('f');
   await status('盤面に矛盾があります');
-  await page.getByLabel('矛盾したときに入力旗を自動で再検討する', { exact: true }).check();
+  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('入力旗');
+  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).not.toContain('提案:');
+  await page.getByRole('button', { name: '再解析する', exact: true }).click();
+  await status('盤面に矛盾があります');
+  await page.getByRole('gridcell').nth(1).focus(); await page.keyboard.press('Delete');
   await status('確定した手があります');
-  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('入力旗 提案: 安全 S');
-  expect(await page.getByText('入力旗を再検討して解析しています。', { exact: true }).isVisible()).toBe(true);
-  await page.getByLabel('入力旗を再検討する', { exact: true }).check();
-  await page.getByRole('button', { name: '盤面をリセット', exact: true }).click();
-  await status('推測が必要です');
-  expect(await page.getByLabel('入力旗を再検討する', { exact: true }).isChecked()).toBe(true);
+  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('閉じたセル 提案: 安全 S');
+  await board(3, 1, 1);
+  await page.getByRole('gridcell').nth(1).focus(); await page.keyboard.press('1');
+  await page.keyboard.press('ArrowLeft'); await page.keyboard.press('f');
+  await status('確定した手があります');
+  expect(await page.getByRole('gridcell').nth(0).getAttribute('aria-label')).toContain('入力旗');
+  expect(await page.getByRole('gridcell').nth(0).getAttribute('aria-label')).not.toContain('提案:');
+  expect(await page.getByRole('gridcell').nth(2).getAttribute('aria-label')).toContain('提案: 安全 S');
 });
 it.each([['error', '解析に失敗しました'], ['limit', '待機時間の上限に達しました']])('clears proposals on %s and exposes retry', async (mode, message) => {
   await page.goto(`${harness.baseUrl}/test/browser/app.fixture.html?mode=${mode}`);

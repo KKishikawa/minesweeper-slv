@@ -12,9 +12,9 @@ export function renderLegend(root: HTMLElement): void {
     const previous = rendered.get(canvas);
     if (previous && previous.symbol === symbol && previous.dpr === dpr) return;
     let board = createBoard(1, 1, 0, 0);
-    if (symbol === 'flag' || symbol === 'flag-safe') board = editCell(board, 0, 'flag');
+    if (symbol === 'flag') board = editCell(board, 0, 'flag');
     const proposal: SolverProposal = {
-      safe: symbol === 'safe' || symbol === 'flag-safe' ? [0] : [],
+      safe: symbol === 'safe' ? [0] : [],
       mines: symbol === 'mine' ? [0] : [],
       guesses: symbol === 'guess' ? [0] : [], primaryGuess: null,
     };

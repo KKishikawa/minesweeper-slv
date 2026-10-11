@@ -30,7 +30,7 @@ it('exports only opted-in runs through a quiet menu, retains them on OFF and res
   expect(exported.build.commit).toMatch(/^[0-9a-f]{40}$/);
   expect(exported.entries).toHaveLength(1);
   expect(exported.entries[0]).toMatchObject({ board: { width: 9, height: 9, totalMines: 10 },
-    policy: 'trusted', effectivePolicy: 'trusted', maxNodes: 200_000, timeoutMs: 5000,
+    policy: 'trusted', effectivePolicy: 'trusted', autoReconsider: false, maxNodes: 200_000, timeoutMs: 5000,
     outcome: 'guess-required', statisticsSource: 'final', statistics: { visitedNodes: 0, components: [] } });
   expect(exported.entries[0].board.cells).toHaveLength(81);
   await toggle.uncheck();

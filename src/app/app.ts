@@ -24,18 +24,11 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
       <div class="workspace"><div class="editor-mount"></div>
         <aside class="information" aria-label="解析と設定">
           <section class="result-card"><p class="eyebrow">次の一手</p><p class="status" role="status" aria-live="polite"></p><p class="status-detail"></p><p class="proposal-counts"></p><button class="reanalyze" type="button">再解析する</button></section>
-          <fieldset class="flag-policy"><legend>入力旗の扱い</legend>
-            <label><input type="radio" name="flag-policy" value="trusted" checked>入力旗を地雷として扱う</label>
-            <label><input type="radio" name="flag-policy" value="reconsidered">入力旗を再検討する</label>
-            <label class="auto-policy"><input type="checkbox" name="auto-reconsider">矛盾したときに入力旗を自動で再検討する</label>
-          </fieldset>
-          <p class="policy-note">地雷として扱う設定では、成立する誤った旗は検出できません。すべての旗を評価し直す場合は再検討を選んでください。</p>
-          <p class="effective-policy"></p>
+          <p class="flag-note">入力旗は地雷として扱います。誤った旗でも数字と矛盾しなければ、その旗を前提とした提案が出ます。旗が正しいことを確認してください。</p>
           <section class="legend" aria-label="凡例"><h3>表示の見方</h3>
             <p class="legend-items"><span><canvas data-symbol="flag" aria-hidden="true"></canvas> 入力旗</span><span><canvas data-symbol="safe" aria-hidden="true"></canvas> 提案: 安全 S</span></p>
             <p class="legend-items"><span><canvas data-symbol="mine" aria-hidden="true"></canvas> 提案: 地雷 M</span><span><canvas data-symbol="guess" aria-hidden="true"></canvas> 推測候補 ?</span></p>
-            <p class="legend-items"><span><canvas data-symbol="flag-safe" aria-hidden="true"></canvas> 入力旗と提案が両方ある例</span></p>
-            <p class="legend-note">再検討中も左の旗は入力として残り、右に解析の提案を表示します。提案は入力を変更しません。青い枠は操作中のセルです。</p>
+            <p class="legend-note">入力旗は確定地雷として残り、閉じたセルに解析の提案を表示します。提案は入力を変更しません。青い枠は操作中のセルです。</p>
           </section>
         </aside>
       </div>
@@ -86,7 +79,6 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
       : state.phase === 'error' ? '解析を完了できませんでした。再解析をお試しください。'
       : state.phase === 'needs-review' ? '要確認のセルと盤面の寸法を確認してください。'
       : '入力した情報をもとに解析します。';
-    get('.effective-policy').textContent = state.effectivePolicy === 'reconsidered' ? '入力旗を再検討して解析しています。' : '';
   }
   function dispatch(action: AppAction) {
     const next = transition(state, action); state = next.state; render();
@@ -94,16 +86,12 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
       if (effect.type === 'cancel') client.cancel();
       else {
         const request = { ...effect.request, diagnostics: history.enabled };
-        history.start(request, { policy: state.policy, autoReconsider: state.autoReconsider, timeoutMs: options.timeoutMs ?? 5000 });
+        history.start(request, { timeoutMs: options.timeoutMs ?? 5000 });
         diagnosticsMenu.update();
         client.run(request);
       }
     }
   }
-  const policy = () => dispatch({ type: 'settings-changed',
-    policy: get<HTMLInputElement>('input[value="reconsidered"]').checked ? 'reconsidered' : 'trusted',
-    autoReconsider: get<HTMLInputElement>('input[name="auto-reconsider"]').checked });
-  root.querySelectorAll('input[name="flag-policy"], input[name="auto-reconsider"]').forEach(input => input.addEventListener('change', policy, { signal: controller.signal }));
   get('.reanalyze').addEventListener('click', () => dispatch({ type: 'solve' }), { signal: controller.signal });
   let observedWidth = workspace.clientWidth;
   const observer = new ResizeObserver(() => {
