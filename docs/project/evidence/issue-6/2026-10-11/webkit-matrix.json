@@ -1,0 +1,933 @@
+{
+  "status": "matrix-reproducible",
+  "role": "reference",
+  "fixtureReadiness": "not-assessed",
+  "recognition": "not-run",
+  "manifestSha256": "3d4b20512368b5f2877b3a2a663c307246edb7c56dcdbbe25d2f4564bb6d8ac1",
+  "environment": {
+    "node": "v22.12.0",
+    "os": "darwin",
+    "osRelease": "27.0.0",
+    "arch": "arm64",
+    "cpu": "Apple M3 Pro",
+    "lockfileSha256": "daf7fca2d9faa43e3a3631cacc6ba54628f2120061449a49d650de8e3a43beea",
+    "playwright": "1.62.1",
+    "sharp": "0.35.3",
+    "imageLibraries": {
+      "aom": "3.14.1",
+      "archive": "3.8.8",
+      "cairo": "1.18.4",
+      "cgif": "0.5.3",
+      "exif": "0.6.26",
+      "expat": "2.8.2",
+      "ffi": "3.6.0",
+      "fontconfig": "2.18.1",
+      "freetype": "2.14.3",
+      "fribidi": "1.0.16",
+      "glib": "2.89.1",
+      "harfbuzz": "14.2.1",
+      "heif": "1.23.1",
+      "highway": "1.4.0",
+      "imagequant": "2.4.1",
+      "lcms": "2.19.1",
+      "mozjpeg": "0826579",
+      "pango": "1.58.0",
+      "pixman": "0.46.4",
+      "png": "1.6.58",
+      "proxy-libintl": "0.5",
+      "rsvg": "2.62.90",
+      "tiff": "d01a94b",
+      "uhdr": "1acdbed",
+      "vips": "8.18.3",
+      "webp": "1.6.0",
+      "xml2": "2.15.3",
+      "zlib-ng": "2.3.3",
+      "sharp": "0.35.3"
+    }
+  },
+  "manifest": {
+    "version": 1,
+    "fixtures": [
+      {
+        "id": "0",
+        "group": "legacy-unverified-sequence",
+        "family": "legacy-unverified-sequence",
+        "split": "regression",
+        "kind": "positive",
+        "theme": "legacy-unverified",
+        "source": {
+          "path": "test/resources/0.png",
+          "sha256": "544e88f603044be8ce48c44e161b215a3c59429001550b0c8d33185b17ccc81c"
+        },
+        "truth": {
+          "path": "test/recognition/ground-truth/0.json",
+          "sha256": "e66a55f01376eb8c9e134efce1c0f10ad6120a191fdf152b3066381da575fdd5"
+        },
+        "provenance": {
+          "origin": "Existing repository fixture; upstream source not recorded",
+          "license": "Unconfirmed",
+          "rights": "pending",
+          "publication": "pending",
+          "captureConditions": "Historical capture conditions not recorded"
+        },
+        "reviews": [],
+        "scanline6Indices": null,
+        "expectedStages": {
+          "source": "direct",
+          "canvas-scale-075": "direct",
+          "canvas-scale-125": "direct",
+          "canvas-jpeg-q75": "direct"
+        }
+      },
+      {
+        "id": "1",
+        "group": "legacy-unverified-sequence",
+        "family": "legacy-unverified-sequence",
+        "split": "regression",
+        "kind": "positive",
+        "theme": "legacy-unverified",
+        "source": {
+          "path": "test/resources/1.png",
+          "sha256": "8b7d5ff568e74e12fcd36981ecde05888c16122bb2868abea42965eb4c7bfc1d"
+        },
+        "truth": {
+          "path": "test/recognition/ground-truth/1.json",
+          "sha256": "c55489224d4836cc9e9f33cdc713b8aee491ae8355dd245c2d6796af2317cbf9"
+        },
+        "provenance": {
+          "origin": "Existing repository fixture; upstream source not recorded",
+          "license": "Unconfirmed",
+          "rights": "pending",
+          "publication": "pending",
+          "captureConditions": "Historical capture conditions not recorded"
+        },
+        "reviews": [],
+        "scanline6Indices": null,
+        "expectedStages": {
+          "source": "direct",
+          "canvas-scale-075": "source-revalidation-rejected",
+          "canvas-scale-125": "fallback",
+          "canvas-jpeg-q75": "direct"
+        }
+      },
+      {
+        "id": "2",
+        "group": "legacy-unverified-sequence",
+        "family": "legacy-unverified-sequence",
+        "split": "regression",
+        "kind": "positive",
+        "theme": "legacy-unverified",
+        "source": {
+          "path": "test/resources/2.png",
+          "sha256": "09f764889872db0ea78a3fec86a20df9a0d83a99018cb12cc72f0541619839e2"
+        },
+        "truth": {
+          "path": "test/recognition/ground-truth/2.json",
+          "sha256": "00656f953314cc42d38a88b0c67463c83ecdb2373810eb2b16bb18d68b090458"
+        },
+        "provenance": {
+          "origin": "Existing repository fixture; upstream source not recorded",
+          "license": "Unconfirmed",
+          "rights": "pending",
+          "publication": "pending",
+          "captureConditions": "Historical capture conditions not recorded"
+        },
+        "reviews": [],
+        "scanline6Indices": null,
+        "expectedStages": {
+          "source": "direct",
+          "canvas-scale-075": "source-revalidation-rejected",
+          "canvas-scale-125": "fallback",
+          "canvas-jpeg-q75": "direct"
+        }
+      },
+      {
+        "id": "3",
+        "group": "legacy-unverified-sequence",
+        "family": "legacy-unverified-sequence",
+        "split": "regression",
+        "kind": "positive",
+        "theme": "legacy-unverified",
+        "source": {
+          "path": "test/resources/3.jpg",
+          "sha256": "4fe6b7d681ada3d8200a9f8a0d17c39054cba7a31aeb3a379f5ed019c549fe01"
+        },
+        "truth": {
+          "path": "test/recognition/ground-truth/3.json",
+          "sha256": "98f346b3357851ef0116d1ddb03a7bf822696e28c1b69dd550ccf050060a417b"
+        },
+        "provenance": {
+          "origin": "Existing repository fixture; upstream source not recorded",
+          "license": "Unconfirmed",
+          "rights": "pending",
+          "publication": "pending",
+          "captureConditions": "Historical capture conditions not recorded"
+        },
+        "reviews": [],
+        "scanline6Indices": null,
+        "expectedStages": {
+          "source": "direct",
+          "canvas-scale-075": "fallback",
+          "canvas-scale-125": "direct",
+          "canvas-jpeg-q75": "direct"
+        }
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "0:source",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "source",
+      "width": 2560,
+      "height": 1440,
+      "scale": 1,
+      "encoding": "source",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "direct",
+      "recognition": "not-run",
+      "rgbaSha256": "7bc3f140d111721f0234ec352c4561fa5b4aeb4671c4a52e6bb004ef69e57dde",
+      "pngSha256": "959ef2228e9f79d3873ca087e0174dc936705699c4a7d93c8ec7c46512c08a49",
+      "file": "fixture-0-source.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "7bc3f140d111721f0234ec352c4561fa5b4aeb4671c4a52e6bb004ef69e57dde"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "7bc3f140d111721f0234ec352c4561fa5b4aeb4671c4a52e6bb004ef69e57dde"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "7bc3f140d111721f0234ec352c4561fa5b4aeb4671c4a52e6bb004ef69e57dde"
+        }
+      ]
+    },
+    {
+      "id": "0:canvas-scale-075",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-scale-075",
+      "width": 1920,
+      "height": 1080,
+      "scale": 0.75,
+      "encoding": "canvas-rgba",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "direct",
+      "recognition": "not-run",
+      "rgbaSha256": "8de4ba42a01c925a49b2c7cf7101529e5a3d10f507d4be9868df6710988e0ac4",
+      "pngSha256": "2d14a53d41965f44aaa5eab96965a612ae7960e17a6895dd1f8094d587b5f0eb",
+      "file": "fixture-0-canvas-scale-075.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "8de4ba42a01c925a49b2c7cf7101529e5a3d10f507d4be9868df6710988e0ac4"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "8de4ba42a01c925a49b2c7cf7101529e5a3d10f507d4be9868df6710988e0ac4"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "8de4ba42a01c925a49b2c7cf7101529e5a3d10f507d4be9868df6710988e0ac4"
+        }
+      ]
+    },
+    {
+      "id": "0:canvas-scale-125",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-scale-125",
+      "width": 3200,
+      "height": 1800,
+      "scale": 1.25,
+      "encoding": "canvas-rgba",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "direct",
+      "recognition": "not-run",
+      "rgbaSha256": "d9f50f3a9e0a8585f062610663e4ba55a1399c3907206d16b034c313e96f742f",
+      "pngSha256": "9b45cd77dd825c299a4dab784f72958fd605901bbb54e7dda6abc37a8dd812de",
+      "file": "fixture-0-canvas-scale-125.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "d9f50f3a9e0a8585f062610663e4ba55a1399c3907206d16b034c313e96f742f"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "d9f50f3a9e0a8585f062610663e4ba55a1399c3907206d16b034c313e96f742f"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "d9f50f3a9e0a8585f062610663e4ba55a1399c3907206d16b034c313e96f742f"
+        }
+      ]
+    },
+    {
+      "id": "0:canvas-jpeg-q75",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-jpeg-q75",
+      "width": 2560,
+      "height": 1440,
+      "scale": 1,
+      "encoding": "canvas-jpeg-075",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "direct",
+      "recognition": "not-run",
+      "rgbaSha256": "17ec2c80ff6dd5da33bac31488053038d86033bafdb23278d844e719fccafcd8",
+      "pngSha256": "08685ebe09f2ea9e6186955cb61f17d2c9851e4599cdc74946b6474a4db70526",
+      "file": "fixture-0-canvas-jpeg-q75.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "17ec2c80ff6dd5da33bac31488053038d86033bafdb23278d844e719fccafcd8"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "17ec2c80ff6dd5da33bac31488053038d86033bafdb23278d844e719fccafcd8"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "17ec2c80ff6dd5da33bac31488053038d86033bafdb23278d844e719fccafcd8"
+        }
+      ]
+    },
+    {
+      "id": "1:source",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "source",
+      "width": 2560,
+      "height": 1440,
+      "scale": 1,
+      "encoding": "source",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "direct",
+      "recognition": "not-run",
+      "rgbaSha256": "5518ba6bca87960661905b391be9fbf6f5ba07fd0149ea39035afb1c924add57",
+      "pngSha256": "93409c980511d74b19070169778d7cdd2f2b97520f8058977b254832a2a61578",
+      "file": "fixture-1-source.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "5518ba6bca87960661905b391be9fbf6f5ba07fd0149ea39035afb1c924add57"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "5518ba6bca87960661905b391be9fbf6f5ba07fd0149ea39035afb1c924add57"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "5518ba6bca87960661905b391be9fbf6f5ba07fd0149ea39035afb1c924add57"
+        }
+      ]
+    },
+    {
+      "id": "1:canvas-scale-075",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-scale-075",
+      "width": 1920,
+      "height": 1080,
+      "scale": 0.75,
+      "encoding": "canvas-rgba",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "source-revalidation-rejected",
+      "recognition": "not-run",
+      "rgbaSha256": "5e1e8955971a1d67166a4d7bff996c2bb98d881adb4431726aa75a1fa5b2c0b3",
+      "pngSha256": "897df920f19ee57f4ed9b7b311f87772ff17c4a41fda14a630efca75886021a1",
+      "file": "fixture-1-canvas-scale-075.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "5e1e8955971a1d67166a4d7bff996c2bb98d881adb4431726aa75a1fa5b2c0b3"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "5e1e8955971a1d67166a4d7bff996c2bb98d881adb4431726aa75a1fa5b2c0b3"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "5e1e8955971a1d67166a4d7bff996c2bb98d881adb4431726aa75a1fa5b2c0b3"
+        }
+      ]
+    },
+    {
+      "id": "1:canvas-scale-125",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-scale-125",
+      "width": 3200,
+      "height": 1800,
+      "scale": 1.25,
+      "encoding": "canvas-rgba",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "fallback",
+      "recognition": "not-run",
+      "rgbaSha256": "28663a897fed4aaaa662d6cf4df7aac31ed90700e6f9bc310f94f5915d3e7f24",
+      "pngSha256": "1c8e4ee905471aaca26d95f2eebb9f179512ad8663ff2f2539f151f7e93ee206",
+      "file": "fixture-1-canvas-scale-125.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "28663a897fed4aaaa662d6cf4df7aac31ed90700e6f9bc310f94f5915d3e7f24"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "28663a897fed4aaaa662d6cf4df7aac31ed90700e6f9bc310f94f5915d3e7f24"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "28663a897fed4aaaa662d6cf4df7aac31ed90700e6f9bc310f94f5915d3e7f24"
+        }
+      ]
+    },
+    {
+      "id": "1:canvas-jpeg-q75",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-jpeg-q75",
+      "width": 2560,
+      "height": 1440,
+      "scale": 1,
+      "encoding": "canvas-jpeg-075",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "direct",
+      "recognition": "not-run",
+      "rgbaSha256": "8964a11018611cc540240d0aeaeb235468f62a91df6227895be0e62e9d4f1f54",
+      "pngSha256": "64e5247a56c23d60ba99745a7cd7a17c7e36c71fac920a4f8660fade7a1f8813",
+      "file": "fixture-1-canvas-jpeg-q75.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "8964a11018611cc540240d0aeaeb235468f62a91df6227895be0e62e9d4f1f54"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "8964a11018611cc540240d0aeaeb235468f62a91df6227895be0e62e9d4f1f54"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "8964a11018611cc540240d0aeaeb235468f62a91df6227895be0e62e9d4f1f54"
+        }
+      ]
+    },
+    {
+      "id": "2:source",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "source",
+      "width": 2560,
+      "height": 1440,
+      "scale": 1,
+      "encoding": "source",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "direct",
+      "recognition": "not-run",
+      "rgbaSha256": "cf4aa26bb95ec4772612846f3df7b1bd3654744d342d7b18e81c10a1a147ca45",
+      "pngSha256": "fe3ace03fc006461fe2644a6f5b90093974a3c07dd7e746064e922f3627efd21",
+      "file": "fixture-2-source.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "cf4aa26bb95ec4772612846f3df7b1bd3654744d342d7b18e81c10a1a147ca45"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "cf4aa26bb95ec4772612846f3df7b1bd3654744d342d7b18e81c10a1a147ca45"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "cf4aa26bb95ec4772612846f3df7b1bd3654744d342d7b18e81c10a1a147ca45"
+        }
+      ]
+    },
+    {
+      "id": "2:canvas-scale-075",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-scale-075",
+      "width": 1920,
+      "height": 1080,
+      "scale": 0.75,
+      "encoding": "canvas-rgba",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "source-revalidation-rejected",
+      "recognition": "not-run",
+      "rgbaSha256": "5e464dda17b824878c7f5864e4a98f15009cc2c5129efe97825550a137990403",
+      "pngSha256": "610bb986361ed839c06bf87a21f536a5ed97fc49ff93ce804c8a84efe52d8c67",
+      "file": "fixture-2-canvas-scale-075.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "5e464dda17b824878c7f5864e4a98f15009cc2c5129efe97825550a137990403"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "5e464dda17b824878c7f5864e4a98f15009cc2c5129efe97825550a137990403"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "5e464dda17b824878c7f5864e4a98f15009cc2c5129efe97825550a137990403"
+        }
+      ]
+    },
+    {
+      "id": "2:canvas-scale-125",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-scale-125",
+      "width": 3200,
+      "height": 1800,
+      "scale": 1.25,
+      "encoding": "canvas-rgba",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "fallback",
+      "recognition": "not-run",
+      "rgbaSha256": "57111bddfea95896856acd505c06842078105e71574b7e216dba242c24602e53",
+      "pngSha256": "6105849c33ab02bca8d249200a1e3497ebaaf2f36126a2324af0d05b34cfb4c8",
+      "file": "fixture-2-canvas-scale-125.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "57111bddfea95896856acd505c06842078105e71574b7e216dba242c24602e53"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "57111bddfea95896856acd505c06842078105e71574b7e216dba242c24602e53"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "57111bddfea95896856acd505c06842078105e71574b7e216dba242c24602e53"
+        }
+      ]
+    },
+    {
+      "id": "2:canvas-jpeg-q75",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-jpeg-q75",
+      "width": 2560,
+      "height": 1440,
+      "scale": 1,
+      "encoding": "canvas-jpeg-075",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "direct",
+      "recognition": "not-run",
+      "rgbaSha256": "211b4ba892df6c033228be8fe98ed9e18a5a62c95ed001539cae7ddece3166d0",
+      "pngSha256": "cb37ef0908ee3ba3748bc6214db90db211741a3de2b55e31a505a6eed6aece04",
+      "file": "fixture-2-canvas-jpeg-q75.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "211b4ba892df6c033228be8fe98ed9e18a5a62c95ed001539cae7ddece3166d0"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "211b4ba892df6c033228be8fe98ed9e18a5a62c95ed001539cae7ddece3166d0"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "211b4ba892df6c033228be8fe98ed9e18a5a62c95ed001539cae7ddece3166d0"
+        }
+      ]
+    },
+    {
+      "id": "3:source",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "source",
+      "width": 2560,
+      "height": 1440,
+      "scale": 1,
+      "encoding": "source",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "direct",
+      "recognition": "not-run",
+      "rgbaSha256": "5ab0f29b3a8fa131f2c51dcf3916e949ea74b7d428bf1c225b64cfcd07d3aab6",
+      "pngSha256": "1d5f81b97e4203ac79c8f81c7476693ae96076bdac6e71d261810d54e7f3b0cb",
+      "file": "fixture-3-source.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "5ab0f29b3a8fa131f2c51dcf3916e949ea74b7d428bf1c225b64cfcd07d3aab6"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "5ab0f29b3a8fa131f2c51dcf3916e949ea74b7d428bf1c225b64cfcd07d3aab6"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "5ab0f29b3a8fa131f2c51dcf3916e949ea74b7d428bf1c225b64cfcd07d3aab6"
+        }
+      ]
+    },
+    {
+      "id": "3:canvas-scale-075",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-scale-075",
+      "width": 1920,
+      "height": 1080,
+      "scale": 0.75,
+      "encoding": "canvas-rgba",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "fallback",
+      "recognition": "not-run",
+      "rgbaSha256": "5c7239b92520ce1657673fcafe6e907cf040035d50391da8e1b64f649764c90c",
+      "pngSha256": "3966a416238869db27cb67267898e1a5d86671b53361ff6524bbe38d398362f1",
+      "file": "fixture-3-canvas-scale-075.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "5c7239b92520ce1657673fcafe6e907cf040035d50391da8e1b64f649764c90c"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "5c7239b92520ce1657673fcafe6e907cf040035d50391da8e1b64f649764c90c"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 1920,
+          "height": 1080,
+          "rgbaSha256": "5c7239b92520ce1657673fcafe6e907cf040035d50391da8e1b64f649764c90c"
+        }
+      ]
+    },
+    {
+      "id": "3:canvas-scale-125",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-scale-125",
+      "width": 3200,
+      "height": 1800,
+      "scale": 1.25,
+      "encoding": "canvas-rgba",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "direct",
+      "recognition": "not-run",
+      "rgbaSha256": "f60fc21ce3db64a3866f61b1ed5e2a00e5ac6d3002ca78d00a941846210a4980",
+      "pngSha256": "9e5be446cac32e6ab019f26b6aeb97dadcd2a33021c13681b4280fd490b7fd09",
+      "file": "fixture-3-canvas-scale-125.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "f60fc21ce3db64a3866f61b1ed5e2a00e5ac6d3002ca78d00a941846210a4980"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "f60fc21ce3db64a3866f61b1ed5e2a00e5ac6d3002ca78d00a941846210a4980"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 3200,
+          "height": 1800,
+          "rgbaSha256": "f60fc21ce3db64a3866f61b1ed5e2a00e5ac6d3002ca78d00a941846210a4980"
+        }
+      ]
+    },
+    {
+      "id": "3:canvas-jpeg-q75",
+      "engine": "webkit",
+      "role": "reference",
+      "name": "canvas-jpeg-q75",
+      "width": 2560,
+      "height": 1440,
+      "scale": 1,
+      "encoding": "canvas-jpeg-075",
+      "parameters": {
+        "dimensionRounding": "Math.round",
+        "imageSmoothingEnabled": true,
+        "imageSmoothingQuality": "low",
+        "jpegQuality": 0.75,
+        "decode": {
+          "imageOrientation": "from-image",
+          "premultiplyAlpha": "default",
+          "colorSpaceConversion": "default"
+        }
+      },
+      "expectedStage": "direct",
+      "recognition": "not-run",
+      "rgbaSha256": "8d1110c19e98970c9854471717f9a7b13afd4fbbfe84df8d9c93cc306fcfc893",
+      "pngSha256": "571f4e5ee0daac61932c74c016952f38a396fd27555c5b42178267c23de90552",
+      "file": "fixture-3-canvas-jpeg-q75.png",
+      "reproducible": true,
+      "runs": [
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "8d1110c19e98970c9854471717f9a7b13afd4fbbfe84df8d9c93cc306fcfc893"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "8d1110c19e98970c9854471717f9a7b13afd4fbbfe84df8d9c93cc306fcfc893"
+        },
+        {
+          "browserVersion": "26.5",
+          "width": 2560,
+          "height": 1440,
+          "rgbaSha256": "8d1110c19e98970c9854471717f9a7b13afd4fbbfe84df8d9c93cc306fcfc893"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "artifactDirectory": "test/artifacts/recognition-dataset/webkit-db47ffe2-9002-493a-81af-df675a64fd0e"
+}

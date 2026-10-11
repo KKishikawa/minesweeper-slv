@@ -17,6 +17,8 @@
     "typecheck": "tsc --noEmit",
     "browsers:install:spike": "playwright install chromium firefox webkit",
     "spike:recognition": "tsx scripts/run-multi-prototype-spike.ts",
+    "fixtures:audit": "tsx scripts/recognition/audit-dataset.ts",
+    "fixtures:derive": "tsx scripts/recognition/derive-dataset.ts",
     "test:browser": "vitest run test/browser",
     "diagnostics:replay": "tsx scripts/solver/replay.ts",
     "build:pages": "vite build --base=/minesweeper-slv/"
