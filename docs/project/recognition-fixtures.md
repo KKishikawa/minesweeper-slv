@@ -2,11 +2,15 @@
 
 ## 現在の状態
 
-Issue #5 の[承認済み設計](../superpowers/specs/2026-10-11-next-cell-recognition-design.md)に従う管理・被覆検証・Canvas変換の基盤。**新規の独立画面は未収録で、Issue #6 の受け入れ条件はまだ満たさない。#7 は開始不可。** 合成テストデータを正式fixtureへ転用しない。
+Issue #5 の[承認済み設計](../superpowers/specs/2026-10-11-next-cell-recognition-design.md)に従う管理・被覆検証・Canvas変換の基盤。2026-10-12に追加画像25枚と診断JSON25個を整理し、正規化truthの下書きを作成した。30×16は9独立group・24枚、対象外の16×16は1group・1枚。正式manifestには既存4画像だけを登録している。**Issue #6 の受け入れ条件はまだ満たさず、#7 は開始不可。** 合成テストデータを正式fixtureへ転用しない。
+
+最新の[収録・訂正・正規化記録](evidence/issue-6/2026-10-12/README.md)と[グリッド修正実験の停止記録](evidence/issue-6/2026-10-12/grid-location-safety.md)を参照する。訂正10セルの所有者確認は済んだが、盤面全体の2者確認、boundsの正式検証、scanline注釈、split、利用・公開条件、追加画像の正式4変換は未完了。グリッド第一案は既存成功を棄却したため採用せず、検出経路を統合前へ戻した。
+
+所有者は2026-10-12に追加negative収録を不要とした。今後の収録依頼には含めない。以下のnegative最低数は承認済み設計・auditに残る旧条件であり、その整合変更は未実施。既存のグリッド安全性テストは維持する。
 
 既存画像 `test/resources/0.png`〜`3.jpg` と `test/recognition/ground-truth/0.json`〜`3.json` は変更しない。[新manifest](../../test/recognition/dataset/manifest.json)はこれらを既知回帰集合として参照し、元ファイルのSHA-256と従来の11 direct／3 fallback／2期待棄却を固定する。撮影系列の独立性が確認されていないため、4画像とも同じ保守的なgroup/familyに置く。旧manifestや旧評価runnerの分割は変更しない。
 
-出典、利用権、公開可否、撮影条件、テーマ、scanline付き6の位置、truthの2者確認は歴史的資料から確定できていない。権利やレビューの承認を推定して記録しない。現在はこれらも開始停止理由となる。
+収録対象は、2026-10-11にリポジトリ所有者から提示された [Trust Me, I Nailed It の公式Steamページ](https://store.steampowered.com/app/4311000/_/)として出典に記録した。既存4画像それぞれの撮影履歴、利用権、公開可否、撮影条件、テーマ、scanline付き6の位置、truthの2者確認は引き続き未確認。権利やレビューの承認を推定して記録しない。現在はこれらも開始停止理由となる。
 
 ## 収録と分離
 
@@ -71,3 +75,5 @@ trainだけでfitし、calibrationは事前候補と共有閾値の選択だけ�
 未完了項目は、新規positive 12group以上、新規negative 6group以上、7・8・scanline条件、複数テーマ／終局negativeの収録、出典・許諾の証拠、truthの2者確認、fixture構成レビュー、および新規画像の全4変換とgrid契約の検証。現時点でモデル学習・較正・独立評価、認識性能や採否の判断は実行していない。
 
 初回の基盤検証と3エンジンのhash／環境snapshotは[2026-10-11の証拠](evidence/issue-6/2026-10-11/README.md)を参照。
+
+追加画像の収録担当者向けに[収録チェックリスト](recognition-fixture-collection.md)を用意した。既存の証拠snapshotは実行当時のmanifestを保持し、今回の出典追記で書き換えない。
