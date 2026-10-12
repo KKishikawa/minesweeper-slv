@@ -1,0 +1,299 @@
+[
+  {
+    "run": 1,
+    "totalMs": 3107.377666,
+    "stages": {
+      "launch": {
+        "count": 4,
+        "ms": 321.1461259999998
+      },
+      "new-page": {
+        "count": 4,
+        "ms": 133.40295900000024
+      },
+      "derive-images": {
+        "count": 1,
+        "ms": 802.2715
+      },
+      "close": {
+        "count": 4,
+        "ms": 94.17720799999984
+      },
+      "input-transfer-resample": {
+        "count": 3,
+        "ms": 809.836667
+      },
+      "output-transfer-hash": {
+        "count": 451,
+        "ms": 659.8809950000041
+      },
+      "cleanup": {
+        "count": 3,
+        "ms": 1.1149159999997664
+      }
+    },
+    "rows": [
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "unit-2x2-scale-150",
+        "expectedHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "actualHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "returnedBytesEqual": true,
+        "dimensions": {
+          "expected": {
+            "width": 3,
+            "height": 3
+          },
+          "actual": {
+            "width": 3,
+            "height": 3
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-30-pixel-pitch",
+        "expectedHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "actualHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-50-pixel-pitch",
+        "expectedHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "actualHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      }
+    ],
+    "node": "v22.12.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  {
+    "run": 2,
+    "totalMs": 3043.951292,
+    "stages": {
+      "launch": {
+        "count": 4,
+        "ms": 311.6859179999997
+      },
+      "new-page": {
+        "count": 4,
+        "ms": 135.97716599999876
+      },
+      "derive-images": {
+        "count": 1,
+        "ms": 793.0089159999998
+      },
+      "close": {
+        "count": 4,
+        "ms": 85.11629200000061
+      },
+      "input-transfer-resample": {
+        "count": 3,
+        "ms": 806.9206239999994
+      },
+      "output-transfer-hash": {
+        "count": 451,
+        "ms": 655.8531670000039
+      },
+      "cleanup": {
+        "count": 3,
+        "ms": 0.9525829999984126
+      }
+    },
+    "rows": [
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "unit-2x2-scale-150",
+        "expectedHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "actualHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "returnedBytesEqual": true,
+        "dimensions": {
+          "expected": {
+            "width": 3,
+            "height": 3
+          },
+          "actual": {
+            "width": 3,
+            "height": 3
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-30-pixel-pitch",
+        "expectedHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "actualHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-50-pixel-pitch",
+        "expectedHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "actualHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      }
+    ],
+    "node": "v22.12.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  {
+    "run": 3,
+    "totalMs": 3104.645042,
+    "stages": {
+      "launch": {
+        "count": 4,
+        "ms": 314.3631259999993
+      },
+      "new-page": {
+        "count": 4,
+        "ms": 132.4005420000003
+      },
+      "derive-images": {
+        "count": 1,
+        "ms": 826.1423339999992
+      },
+      "close": {
+        "count": 4,
+        "ms": 82.46433399999842
+      },
+      "input-transfer-resample": {
+        "count": 3,
+        "ms": 814.8227490000008
+      },
+      "output-transfer-hash": {
+        "count": 451,
+        "ms": 684.6156239999873
+      },
+      "cleanup": {
+        "count": 3,
+        "ms": 1.0189170000021477
+      }
+    },
+    "rows": [
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "unit-2x2-scale-150",
+        "expectedHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "actualHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "returnedBytesEqual": true,
+        "dimensions": {
+          "expected": {
+            "width": 3,
+            "height": 3
+          },
+          "actual": {
+            "width": 3,
+            "height": 3
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-30-pixel-pitch",
+        "expectedHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "actualHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-50-pixel-pitch",
+        "expectedHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "actualHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      }
+    ],
+    "node": "v22.12.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "baselineSha": "7b17af1cfde3c6c9af881bb75291d295d05918c8",
+  "node": "v22.12.0",
+  "platform": "darwin",
+  "arch": "arm64",
+  "chromium": "156.0.8078.4",
+  "files": {
+    "local-after.json": "17bec193b556d9bfc4287303ca0e93183b200651c450754de5068861c09e66ce",
+    "local-before.json": "70847c826fcfd0577e1f514cff82ac385b958bdf60298c509f0a97c9bff821d7",
+    "profile.ts.txt": "e9b885271f0a0942efcee8351be73e80b58e4a443737a45f3a5ffb87567be843"
+  }
+}

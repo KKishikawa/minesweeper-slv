@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { chromium, firefox, webkit } from "playwright";
+import { chromium, firefox, webkit, type Browser } from "playwright";
 import { transformWithOxc, version as viteVersion } from "vite";
 
 import {
@@ -35,6 +35,32 @@ export interface GridResampleCompatibilityRow {
 export interface GridResampleCompatibilitySummary {
   readonly transformer: { readonly name: "vite-oxc"; readonly version: string };
   readonly rows: readonly GridResampleCompatibilityRow[];
+}
+
+export interface GridResampleTiming {
+  readonly stage: "module-transform" | "formal-inputs" | "node-resample-hash"
+    | "browser-launch" | "browser-page" | "browser-input-resample" | "browser-resample"
+    | "browser-output-hash" | "browser-cleanup" | "browser-close";
+  readonly durationMs: number;
+  readonly status: "success" | "failure";
+  readonly engine?: BrowserEngine;
+  readonly caseId?: GridResampleCompatibilityRow["caseId"];
+}
+
+type TimingReporter = (timing: GridResampleTiming) => void;
+
+function stageTimer(report?: TimingReporter) {
+  return async <T>(stage: GridResampleTiming["stage"], action: () => T | Promise<T>): Promise<T> => {
+    const start = performance.now();
+    let status: GridResampleTiming["status"] = "failure";
+    try {
+      const result = await action();
+      status = "success";
+      return result;
+    } finally {
+      report?.({ stage, durationMs: performance.now() - start, status });
+    }
+  };
 }
 
 interface ResampleCase {
@@ -71,7 +97,7 @@ function byteArraysEqual(first: readonly number[], second: Uint8ClampedArray): b
 
 export async function hashBrowserOutputBytes(
   byteLength: number,
-  readChunk: (offset: number, length: number) => Promise<readonly number[]>,
+  readChunk: (offset: number, length: number) => Promise<readonly number[] | string>,
   chunkBytes = BROWSER_RESAMPLE_CHUNK_BYTES,
 ): Promise<string> {
   if (!Number.isSafeInteger(byteLength) || byteLength < 0) {
@@ -84,11 +110,12 @@ export async function hashBrowserOutputBytes(
   const hash = createHash("sha256");
   for (let offset = 0; offset < byteLength; offset += chunkBytes) {
     const length = Math.min(chunkBytes, byteLength - offset);
-    const chunk = await readChunk(offset, length);
+    const encoded = await readChunk(offset, length);
+    const chunk = typeof encoded === "string" ? Buffer.from(encoded, "base64") : Uint8Array.from(encoded);
     if (chunk.length !== length) {
       throw new Error(`Browser output chunk length mismatch at offset ${offset}.`);
     }
-    hash.update(Uint8Array.from(chunk));
+    hash.update(chunk);
   }
   return hash.digest("hex");
 }
@@ -142,13 +169,20 @@ async function browserResample(
   image: PixelImage,
   scale: number,
   includeBytes: boolean,
+  report?: TimingReporter,
 ): Promise<{ readonly browserVersion: string; readonly output: BrowserResampleResult }> {
-  const browser = await browserFor(engine).launch();
+  const measure = stageTimer(report);
+  let browser: Browser | undefined;
   try {
-    const page = await browser.newPage();
+    const activeBrowser = await measure("browser-launch", async () => {
+      // Retain ownership before notifying observers, which may throw.
+      browser = await browserFor(engine).launch();
+      return browser;
+    });
+    const page = await measure("browser-page", () => activeBrowser.newPage());
     const outputKey = `__gridResampleOutput_${randomUUID()}`;
     try {
-      const output = await page.evaluate(async ({ moduleSource: source, input, inputScale, includeBytes: returnBytes, key }) => {
+      const output = await measure("browser-input-resample", () => page.evaluate(async ({ moduleSource: source, input, inputScale, includeBytes: returnBytes, key }) => {
         const url = URL.createObjectURL(new Blob([source], { type: "text/javascript" }));
         try {
           const importModule = new Function("moduleUrl", "return import(moduleUrl)") as (moduleUrl: string) => Promise<{
@@ -168,16 +202,19 @@ async function browserResample(
           for (let index = 0; index < decoded.length; index += 1) {
             sourceBytes[index] = decoded.charCodeAt(index);
           }
+          const resampleStart = performance.now();
           const result = module.resampleCanonicalGridImage({
             width: input.width,
             height: input.height,
             data: sourceBytes,
           }, inputScale);
+          const resampleMs = performance.now() - resampleStart;
           Reflect.set(globalThis, key, result);
           return {
             width: result.width,
             height: result.height,
             data: returnBytes ? [...result.data] : null,
+            resampleMs,
           };
         } finally {
           URL.revokeObjectURL(url);
@@ -192,21 +229,31 @@ async function browserResample(
         inputScale: scale,
         includeBytes,
         key: outputKey,
-      });
-      const hash = await hashBrowserOutputBytes(
+      }));
+      report?.({ stage: "browser-resample", durationMs: output.resampleMs, status: "success" });
+      const hash = await measure("browser-output-hash", () => hashBrowserOutputBytes(
         output.width * output.height * 4,
         async (offset, length) => page.evaluate(({ key, start, end }) => {
           const stored = Reflect.get(globalThis, key) as { readonly data: Uint8ClampedArray } | undefined;
           if (stored === undefined) throw new Error("Browser resample output is unavailable.");
-          return Array.from(stored.data.subarray(start, end));
+          // A string avoids Playwright serializing one protocol value per byte.
+          // Still read every byte in the same bounded, ordered chunks.
+          let binary = "";
+          for (const byte of stored.data.subarray(start, end)) {
+            binary += String.fromCharCode(byte);
+          }
+          return btoa(binary);
         }, { key: outputKey, start: offset, end: offset + length }),
-      );
-      return { browserVersion: browser.version(), output: { ...output, hash } };
+      ));
+      return { browserVersion: activeBrowser.version(), output: { ...output, hash } };
     } finally {
-      await page.evaluate((key) => Reflect.deleteProperty(globalThis, key), outputKey).catch(() => undefined);
+      await measure("browser-cleanup", () => page.evaluate((key) => Reflect.deleteProperty(globalThis, key), outputKey)).catch(() => undefined);
     }
   } finally {
-    await browser.close();
+    if (browser !== undefined) {
+      const activeBrowser = browser;
+      await measure("browser-close", () => activeBrowser.close());
+    }
   }
 }
 
@@ -216,14 +263,22 @@ function errorText(error: unknown): string {
 
 export async function evaluateGridResampleCompatibility(options?: {
   readonly engines?: readonly BrowserEngine[];
+  readonly onTiming?: TimingReporter;
 }): Promise<GridResampleCompatibilitySummary> {
-  const [moduleSource, cases] = await Promise.all([transpiledResampleModule(), formalResampleCases()]);
+  const measure = stageTimer(options?.onTiming);
+  const [moduleSource, cases] = await Promise.all([
+    measure("module-transform", transpiledResampleModule),
+    measure("formal-inputs", formalResampleCases),
+  ]);
   const rows: GridResampleCompatibilityRow[] = [];
 
   for (const engine of options?.engines ?? engines) {
     for (const caseValue of cases) {
-      const expected = resampleCanonicalGridImage(caseValue.image, caseValue.scale);
-      const expectedHash = rgbaHash(expected.data);
+      const report: TimingReporter = (timing) => options?.onTiming?.({ ...timing, engine, caseId: caseValue.caseId });
+      const { expected, expectedHash } = await stageTimer(report)("node-resample-hash", () => {
+        const expected = resampleCanonicalGridImage(caseValue.image, caseValue.scale);
+        return { expected, expectedHash: rgbaHash(expected.data) };
+      });
       try {
         const result = await browserResample(
           engine,
@@ -231,6 +286,7 @@ export async function evaluateGridResampleCompatibility(options?: {
           caseValue.image,
           caseValue.scale,
           caseValue.caseId === "unit-2x2-scale-150",
+          report,
         );
         const actualHash = result.output.hash;
         const returnedBytesEqual = result.output.data === null

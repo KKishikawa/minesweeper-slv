@@ -1,0 +1,40 @@
+import { writeFile } from 'node:fs/promises';
+import { chromium } from 'playwright';
+import { evaluateGridResampleCompatibility } from '../../../scripts/recognition/evaluate-grid-resample-compatibility.js';
+const records: unknown[] = [];
+let stages: Record<string, { count: number; ms: number }>;
+const originalLaunch = chromium.launch.bind(chromium);
+async function measure<T>(stage: string, action: () => Promise<T>): Promise<T> {
+  const start = performance.now();
+  try { return await action(); }
+  finally { const entry = stages[stage] ??= { count: 0, ms: 0 }; entry.count++; entry.ms += performance.now() - start; }
+}
+chromium.launch = async (...args) => {
+  const browser = await measure('launch', () => originalLaunch(...args));
+  const originalNewPage = browser.newPage.bind(browser);
+  browser.newPage = async (...args) => {
+    const page = await measure('new-page', () => originalNewPage(...args));
+    const originalEvaluate = page.evaluate.bind(page);
+    page.evaluate = ((expression: any, input: any) => {
+      const stage = typeof expression === 'string' ? 'derive-images'
+        : typeof input === 'string' ? 'cleanup'
+        : input?.start !== undefined ? 'output-transfer-hash'
+        : 'input-transfer-resample';
+      return measure(stage, () => originalEvaluate(expression, input));
+    }) as typeof page.evaluate;
+    return page;
+  };
+  const originalClose = browser.close.bind(browser);
+  browser.close = (...args) => measure('close', () => originalClose(...args));
+  return browser;
+};
+for (let run = 1; run <= 3; run++) {
+  stages = {};
+  const start = performance.now();
+  const summary = await evaluateGridResampleCompatibility({ engines: ['chromium'] });
+  const record = { run, totalMs: performance.now() - start, stages, rows: summary.rows, node: process.version, platform: process.platform, arch: process.arch };
+  records.push(record);
+  console.log(JSON.stringify(record));
+  await writeFile(new URL(process.argv[2] ?? './baseline.json', import.meta.url), JSON.stringify(records, null, 2) + '\n');
+  if (!summary.rows.every(row => row.equal)) throw new Error('Compatibility failed');
+}
