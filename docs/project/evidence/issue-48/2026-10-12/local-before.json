@@ -1,0 +1,299 @@
+[
+  {
+    "run": 1,
+    "totalMs": 53858.920834000004,
+    "stages": {
+      "launch": {
+        "count": 4,
+        "ms": 441.12412500000005
+      },
+      "new-page": {
+        "count": 4,
+        "ms": 212.9495830000003
+      },
+      "derive-images": {
+        "count": 1,
+        "ms": 853.8799580000002
+      },
+      "close": {
+        "count": 4,
+        "ms": 110.10691700000098
+      },
+      "input-transfer-resample": {
+        "count": 3,
+        "ms": 839.0483329999997
+      },
+      "output-transfer-hash": {
+        "count": 451,
+        "ms": 51103.17616099996
+      },
+      "cleanup": {
+        "count": 3,
+        "ms": 2.46650000000227
+      }
+    },
+    "rows": [
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "unit-2x2-scale-150",
+        "expectedHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "actualHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "returnedBytesEqual": true,
+        "dimensions": {
+          "expected": {
+            "width": 3,
+            "height": 3
+          },
+          "actual": {
+            "width": 3,
+            "height": 3
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-30-pixel-pitch",
+        "expectedHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "actualHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-50-pixel-pitch",
+        "expectedHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "actualHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      }
+    ],
+    "node": "v22.12.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  {
+    "run": 2,
+    "totalMs": 54276.558042,
+    "stages": {
+      "launch": {
+        "count": 4,
+        "ms": 324.08933300000353
+      },
+      "new-page": {
+        "count": 4,
+        "ms": 144.9576240000024
+      },
+      "derive-images": {
+        "count": 1,
+        "ms": 811.4864579999994
+      },
+      "close": {
+        "count": 4,
+        "ms": 87.35158400001092
+      },
+      "input-transfer-resample": {
+        "count": 3,
+        "ms": 831.1507909999928
+      },
+      "output-transfer-hash": {
+        "count": 451,
+        "ms": 51801.52324600013
+      },
+      "cleanup": {
+        "count": 3,
+        "ms": 2.3896660000027623
+      }
+    },
+    "rows": [
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "unit-2x2-scale-150",
+        "expectedHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "actualHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "returnedBytesEqual": true,
+        "dimensions": {
+          "expected": {
+            "width": 3,
+            "height": 3
+          },
+          "actual": {
+            "width": 3,
+            "height": 3
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-30-pixel-pitch",
+        "expectedHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "actualHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-50-pixel-pitch",
+        "expectedHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "actualHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      }
+    ],
+    "node": "v22.12.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  {
+    "run": 3,
+    "totalMs": 54387.24695799999,
+    "stages": {
+      "launch": {
+        "count": 4,
+        "ms": 325.8529569999955
+      },
+      "new-page": {
+        "count": 4,
+        "ms": 138.24883299999055
+      },
+      "derive-images": {
+        "count": 1,
+        "ms": 805.0645829999994
+      },
+      "close": {
+        "count": 4,
+        "ms": 97.33437500000582
+      },
+      "input-transfer-resample": {
+        "count": 3,
+        "ms": 834.6087069999921
+      },
+      "output-transfer-hash": {
+        "count": 451,
+        "ms": 51913.59679399982
+      },
+      "cleanup": {
+        "count": 3,
+        "ms": 2.7651670000050217
+      }
+    },
+    "rows": [
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "unit-2x2-scale-150",
+        "expectedHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "actualHash": "9c92f19e969ad7aea15e674e822ef22c8071c911c1b63d61e3746faf360e6823",
+        "returnedBytesEqual": true,
+        "dimensions": {
+          "expected": {
+            "width": 3,
+            "height": 3
+          },
+          "actual": {
+            "width": 3,
+            "height": 3
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-30-pixel-pitch",
+        "expectedHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "actualHash": "28e5a9523bfc57dbd182fc77874feb431116062a4fd3bf2b7f1aaf2a6b17c0c7",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      },
+      {
+        "engine": "chromium",
+        "browserVersion": "156.0.8078.4",
+        "caseId": "formal-50-pixel-pitch",
+        "expectedHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "actualHash": "e5d8200bd9f7e1dee9646ab62689c90a00d026048237eb0109764947a0a1eede",
+        "returnedBytesEqual": null,
+        "dimensions": {
+          "expected": {
+            "width": 2560,
+            "height": 1440
+          },
+          "actual": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "equal": true,
+        "error": null
+      }
+    ],
+    "node": "v22.12.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  }
+]
