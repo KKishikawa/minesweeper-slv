@@ -10,14 +10,19 @@ import { statusText } from '../ui/status';
 import { renderLegend } from '../ui/board-legend';
 import { createDiagnosticHistory } from './diagnostic-history';
 import { mountDiagnosticsMenu } from '../ui/diagnostics-menu';
+import { mountImageInput } from '../ui/image-input';
+import type { ImageInputAdapter } from '../image-input/types';
 
-export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions> = {}): { dispose(): void } {
+export interface AppOptions extends Partial<SolverClientOptions> { imageInputAdapter?: ImageInputAdapter }
+
+export function mountApp(root: HTMLElement, options: AppOptions = {}): { dispose(): void } {
   root.innerHTML = `
     <header class="page-header"><p class="eyebrow">LOCAL MINE FINDER</p>
       <h1>マインスイーパー ソルバー</h1>
       <p class="intro">盤面を入力して、次の一手を確かめる。</p>
       <button class="privacy-badge" type="button" aria-haspopup="dialog" aria-controls="privacy-dialog">端末内で解析 · 盤面の外部送信なし <span aria-hidden="true">ⓘ</span></button>
     </header>
+    <div class="image-input-mount"></div>
     <section class="settings-card" aria-labelledby="settings-heading"><h2 id="settings-heading"><span class="step">01</span> 盤面の設定</h2><div class="settings-mount"></div></section>
     <section class="workbench" aria-labelledby="board-heading">
       <h2 id="board-heading"><span class="step">02</span> 盤面を入力</h2>
@@ -40,17 +45,19 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
     </section>
     <dialog id="privacy-dialog" class="privacy-dialog" aria-labelledby="privacy-heading">
       <h2 id="privacy-heading" tabindex="-1" autofocus>通信・保存・不具合報告</h2>
-      <p>盤面の入力と解析はブラウザ内で行い、アプリは盤面を外部へ送信しません。画像入力には対応していません。盤面はページ内のメモリに保持し、再読み込みすると初期化されます。ブラウザの保存領域への自動保存はありません。</p>
+      <p>画像の取込と盤面の解析はブラウザ内で行い、アプリは画像・盤面を外部へ送信しません。画像は表示のみです。盤面を自動入力する機能はまだありません。取得画像は最新1枚だけをページ内のメモリに保持します。画像をクリアすると消え、再読み込みやページ離脱でも画像は消えます。盤面と編集履歴も再読み込みで初期化されます。ブラウザの保存領域への自動保存はありません。</p>
+      <p>画面共有は「共有を停止」から終了できます。パネルを閉じても停止操作は使えます。共有停止後も最後の取得画像は残ります。ページ離脱では共有を停止し、画像を消します。画像のクリアだけでは共有を停止しません。</p>
       <p>ページ表示や解析に必要な静的ファイル（HTML・CSS・JavaScript・Worker）の取得には通信が発生します。GitHub Pagesでは、GitHubがアクセス時のIPアドレスをセキュリティ目的で記録します。<a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection">GitHub Pagesのデータ収集について</a></p>
-      <p>開発者向け診断はページ末尾で有効化した後の解析を直近100件までメモリ内に記録し、JSONをダウンロードできます。OFFで取得を停止し、実行中の記録を除外します。完了済み履歴は削除するか再読み込みするまで残り、再読み込みで設定も消えます。アプリから診断データを自動送信する機能はありません。不具合の報告は、利用者自身が内容を確認して<a href="https://github.com/KKishikawa/minesweeper-slv/issues">GitHub Issue</a>へ投稿するか選べます。公開Issueの本文・添付ファイルは公開されます。</p>
+      <p>開発者向け診断はページ末尾で有効化した後の解析を直近100件までメモリ内に記録し、JSONをダウンロードできます。OFFで取得を停止し、実行中の記録を除外します。完了済み履歴は削除するか再読み込みするまで残り、再読み込みで設定も消えます。診断JSONには画像の画素・ファイル名・共有元のラベルを含めません。アプリから診断データを自動送信する機能はありません。不具合の報告は、利用者自身が内容を確認して<a href="https://github.com/KKishikawa/minesweeper-slv/issues">GitHub Issue</a>へ投稿するか選べます。公開Issueの本文・添付ファイルは公開されます。</p>
       <form method="dialog"><button type="submit">閉じる</button></form>
     </dialog>
-    <footer>画像入力には対応していません。再読み込みすると盤面は初期化されます。<div class="diagnostics-mount"></div></footer>`;
+    <footer>画像は表示のみです。画像・盤面の外部送信と自動保存はありません。再読み込みすると画像・盤面・履歴は消えます。<div class="diagnostics-mount"></div></footer>`;
   const get = <T extends HTMLElement>(selector: string) => root.querySelector<T>(selector)!;
   const workspace = get<HTMLDivElement>('.workspace');
   const editorRoot = get<HTMLDivElement>('.editor-mount');
   let state = createAppState(createBoard(9, 9, 10, 0));
   const controller = new AbortController();
+  const imageInput = mountImageInput(get('.image-input-mount'), options.imageInputAdapter);
   const privacyDialog = get<HTMLDialogElement>('.privacy-dialog');
   const privacyTrigger = get<HTMLButtonElement>('.privacy-badge');
   privacyTrigger.addEventListener('click', () => privacyDialog.showModal(), { signal: controller.signal });
@@ -113,5 +120,5 @@ export function mountApp(root: HTMLElement, options: Partial<SolverClientOptions
   });
   observer.observe(workspace);
   dispatch({ type: 'solve' });
-  return { dispose() { observer.disconnect(); controller.abort(); client.dispose(); diagnosticsMenu.dispose(); editor.dispose(); settings.dispose(); root.replaceChildren(); } };
+  return { dispose() { observer.disconnect(); controller.abort(); imageInput.dispose(); client.dispose(); diagnosticsMenu.dispose(); editor.dispose(); settings.dispose(); root.replaceChildren(); } };
 }

@@ -12,14 +12,17 @@
 - ブラウザ製品: PR #20で手動入力版をmainへ統合済み。2026-10-10のWindows実機結果・証跡と改善課題#22〜#26を記録。開発版 `0.1.0-dev.1` の出荷確認・公開を完了
 - Issue #24: [入力時の描画・レイアウト調査と修正](issue-24-input-stability.md)を実装。確認者の指示により今回はChromiumで検証し、Windows再検証は要求しない。統合・公開前の変更
 
+- Issue #12: [表示専用の画像入力](issue-12-image-input.md)をローカル実装し、Chromiumの実画像・共有video/Canvas・production通信/保存/診断を自動検証。Windows Chrome手動確認、main統合、Pages配信は未完了。認識・盤面自動入力は未実装
+
 ## 次の作業
 
-[Issue #9](https://github.com/KKishikawa/minesweeper-slv/issues/9)の計画に沿う実装は、盤面モデル、solver、手動入力、日本語UIまで追加済みです。Windows Chrome実機確認の結果は[Windows確認票](manual-mvp-windows-checklist.md)と[検証整理・改善仮説](manual-mvp-windows-feedback-2026-10-10.md)に記録しました。#22の表示修正・再確認、表示・通信記録の補完、GitHub Pages配信・公開後smokeは完了しました。[公開サイト](https://kkishikawa.github.io/minesweeper-slv/)と[公開証跡](evidence/manual-mvp-pages/2026-10-10/README.md)を参照してください。#23〜#26で入力UX・ちらつき・solver診断・旗policyの説明改善を管理します。PR #20はmainへ統合済み、#10・#11・#14・#15はclosed、#16の出荷条件も満たしています。#10の基盤がmainへ統合されたため、画像取得の#12も着手可能です。認識研究は[Issue #5](https://github.com/KKishikawa/minesweeper-slv/issues/5)から独立して進められます。
+[Issue #9](https://github.com/KKishikawa/minesweeper-slv/issues/9)の計画に沿う実装は、盤面モデル、solver、手動入力、日本語UIまで追加済みです。Windows Chrome実機確認の結果は[Windows確認票](manual-mvp-windows-checklist.md)と[検証整理・改善仮説](manual-mvp-windows-feedback-2026-10-10.md)に記録しました。#22の表示修正・再確認、表示・通信記録の補完、GitHub Pages配信・公開後smokeは完了しました。[公開サイト](https://kkishikawa.github.io/minesweeper-slv/)と[公開証跡](evidence/manual-mvp-pages/2026-10-10/README.md)を参照してください。#23〜#26で入力UX・ちらつき・solver診断・旗policyの説明改善を管理します。PR #20はmainへ統合済み、#10・#11・#14・#15はclosed、#16の出荷条件も満たしています。#12はローカル実装とChromium自動検証まで進んでいます。次は[画像入力のWindows確認票](issue-12-image-input.md#Windows-Chrome手動確認票)の実機確認と最終レビューです。mainへの統合とPages配信は別の未完了作業で、公開サイトに画像入力があるとは扱いません。認識研究は[Issue #5](https://github.com/KKishikawa/minesweeper-slv/issues/5)から独立して進められます。
 
 ## 現在の正本
 
 - [製品定義](product.md)
 - [通信・保存・診断報告](privacy.md)
+- [Issue #12: 画像入力の検証記録・未実施のWindows確認票](issue-12-image-input.md)
 - [ロードマップ](roadmap.md)
 - [ADR log](../decisions/README.md)
 

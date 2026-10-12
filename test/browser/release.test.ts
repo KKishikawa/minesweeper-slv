@@ -49,7 +49,7 @@ it.each([{ width: 1920, height: 1080 }, { width: 1280, height: 800 }, { width: 9
     await state(page, '確定した手があります');
     const geometry = await page.evaluate(() => {
       const cell = document.querySelector('[role=gridcell]')!.getBoundingClientRect();
-      const canvas = document.querySelector('canvas')!;
+      const canvas = document.querySelector<HTMLCanvasElement>('.board-surface canvas')!;
       const surface = canvas.parentElement!;
       const workspace = document.querySelector<HTMLElement>('.workspace')!;
       return { width: cell.width, height: cell.height, surfaceScroll: surface.scrollWidth, surfaceWidth: surface.clientWidth,
