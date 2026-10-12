@@ -2,7 +2,11 @@
 
 ## 現在の状態
 
-Issue #5 の[承認済み設計](../superpowers/specs/2026-10-11-next-cell-recognition-design.md)に従う管理・被覆検証・Canvas変換の基盤。**新規の独立画面は未収録で、Issue #6 の受け入れ条件はまだ満たさない。#7 は開始不可。** 合成テストデータを正式fixtureへ転用しない。
+Issue #5 の[承認済み設計](../superpowers/specs/2026-10-11-next-cell-recognition-design.md)に従う管理・被覆検証・Canvas変換の基盤。2026-10-12に追加画像25枚と診断JSON25個を整理し、正規化truthの下書きを作成した。30×16は9独立group・24枚、対象外の16×16は1group・1枚。正式manifestには既存4画像だけを登録している。**Issue #6 の受け入れ条件はまだ満たさず、#7 は開始不可。** 合成テストデータを正式fixtureへ転用しない。
+
+最新の[収録・訂正・正規化記録](evidence/issue-6/2026-10-12/README.md)と[グリッド修正実験の停止記録](evidence/issue-6/2026-10-12/grid-location-safety.md)を参照する。訂正10セルの所有者確認は済んだが、盤面全体の2者確認、boundsの正式検証、scanline注釈、split、利用・公開条件、追加画像の正式4変換は未完了。グリッド第一案は既存成功を棄却したため採用せず、検出経路を統合前へ戻した。
+
+所有者は2026-10-12に追加negative収録を不要とした。今後の収録依頼には含めない。以下のnegative最低数は承認済み設計・auditに残る旧条件であり、その整合変更は未実施。既存のグリッド安全性テストは維持する。
 
 既存画像 `test/resources/0.png`〜`3.jpg` と `test/recognition/ground-truth/0.json`〜`3.json` は変更しない。[新manifest](../../test/recognition/dataset/manifest.json)はこれらを既知回帰集合として参照し、元ファイルのSHA-256と従来の11 direct／3 fallback／2期待棄却を固定する。撮影系列の独立性が確認されていないため、4画像とも同じ保守的なgroup/familyに置く。旧manifestや旧評価runnerの分割は変更しない。
 
