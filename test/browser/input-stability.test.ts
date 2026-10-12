@@ -158,12 +158,12 @@ it('keeps the page height stable when a fixed flag contradicts a number and is c
     await page.keyboard.press('0'); await settled(page);
     const before = await page.evaluate(() => document.documentElement.scrollHeight);
     await page.keyboard.press('ArrowRight'); await page.keyboard.press('f'); await settled(page);
-    expect(await page.getByRole('status').textContent()).toBe('盤面に矛盾があります');
+    expect(await page.locator('.result-card').getByRole('status').textContent()).toBe('盤面に矛盾があります');
     expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('入力旗');
     expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).not.toContain('提案:');
     expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(before);
     await page.keyboard.press('Delete'); await settled(page);
-    expect(await page.getByRole('status').textContent()).toBe('確定した手があります');
+    expect(await page.locator('.result-card').getByRole('status').textContent()).toBe('確定した手があります');
     expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(before);
   } finally { await page.close(); }
 });

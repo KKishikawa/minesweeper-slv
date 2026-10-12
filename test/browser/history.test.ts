@@ -129,9 +129,9 @@ it('undoes reset and disables redo after a new edit', async () => {
 // The UI must restore proposals when an erroneous fixed flag is undone.
 it('recovers from a contradictory flag by undoing it', async () => {
   await start(); await create(3, 1, 1); await edit(0, '0'); await edit(1, 'f');
-  expect(await page.getByRole('status').textContent()).toBe('盤面に矛盾があります');
+  expect(await page.locator('.result-card').getByRole('status').textContent()).toBe('盤面に矛盾があります');
   await undo().click(); await settled();
-  expect(await page.getByRole('status').textContent()).toBe('確定した手があります');
+  expect(await page.locator('.result-card').getByRole('status').textContent()).toBe('確定した手があります');
   expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('閉じたセル 提案: 安全 S');
 });
 

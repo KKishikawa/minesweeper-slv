@@ -53,3 +53,22 @@ it('supports keyboard opening and Escape dismissal with readable details on a na
   await page.keyboard.press('Escape');
   await page.close();
 });
+
+// Removing these explanations leaves users unaware that the imported image is only a local reference.
+it('explains display-only image input, local retention and explicit sharing stop', async () => {
+  const page = await harness.browser.newPage();
+  await page.goto(harness.baseUrl);
+  expect(await page.locator('.image-reference-note').isVisible()).toBe(true);
+  expect(await page.locator('.image-reference-note').textContent()).toContain('画像は表示のみです。盤面を自動入力する機能はまだありません');
+  await page.getByRole('button', { name: /端末内で解析/ }).click();
+  const dialog = page.getByRole('dialog', { name: '通信・保存・不具合報告' });
+  const text = await dialog.textContent();
+  expect(text).toContain('画像・盤面を外部へ送信しません');
+  expect(text).toContain('最新1枚');
+  expect(text).toContain('ページ内のメモリ');
+  expect(text).toContain('共有を停止');
+  expect(text).toContain('自動保存はありません');
+  expect(text).toContain('ファイル名・共有元のラベル');
+  expect(await page.locator('footer').textContent()).toContain('画像・盤面の外部送信と自動保存はありません');
+  await page.close();
+});

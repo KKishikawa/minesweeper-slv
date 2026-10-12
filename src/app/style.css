@@ -17,6 +17,22 @@ h1 { font-size: clamp(24px, 3vw, 34px); letter-spacing: -.04em; margin: 0; line-
 .privacy-dialog a:focus-visible { outline: 3px solid #0075bd; outline-offset: 3px; }
 .privacy-dialog form { display: flex; justify-content: flex-end; }
 .settings-card, .workbench { border: 1px solid #d5dfde; border-radius: 14px; background: #fff; padding: 24px; margin-bottom: 20px; }
+.image-input-card { border: 1px solid #d5dfde; border-radius: 14px; background: #fff; padding: 16px 24px; margin-bottom: 20px; font-size: 13px; line-height: 1.7; }
+.image-input summary { cursor: pointer; font-weight: 650; padding: 4px 0; }
+.image-summary-state { color: #397060; font-size: 12px; font-weight: 400; margin-left: 8px; }
+.image-input summary:focus-visible, .image-input-zone:focus-visible { outline: 3px solid #0075bd; outline-offset: 3px; }
+.image-input-content { padding-top: 16px; }
+.image-input-zone { border: 1px dashed #9bb0b7; border-radius: 8px; padding: 16px; background: #f5f9f7; }
+.image-input-zone p { margin: 0 0 12px; }
+.image-file-label { display: grid; gap: 8px; font-weight: 600; }
+.image-file { width: 100%; min-width: 0; }
+.image-input-zone .image-input-limits { margin: 10px 0 0; font-size: 12px; color: #657a82; }
+.image-actions, .image-sharing-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+.image-input-card [hidden] { display: none; }
+.image-status, .display-status, .image-metadata { margin: 12px 0; }
+.display-status:empty, .image-metadata:empty { display: none; }
+.image-preview { display: block; max-width: 100%; max-height: 320px; width: auto; height: auto; object-fit: contain; }
+.image-reference-note { margin: 8px 0 0; color: #657a82; font-size: 12px; }
 h2 { margin: 0 0 20px; font-size: 17px; font-weight: 650; }
 .step { color: #7b9499; font-size: 12px; letter-spacing: .08em; margin-right: 8px; }
 button, input { font: inherit; }
@@ -84,4 +100,4 @@ footer { font-size: 12px; color: #6c8185; padding: 4px 0 12px; }
 .diagnostics-actions button { color: #596b70; font-size: 12px; }
 .diagnostics-actions button:disabled { opacity: .55; cursor: default; }
 .diagnostics-content a { color: #526b77; }
-@media (max-width: 700px) { #app { padding: 24px 12px; } .settings-card, .workbench { padding: 16px; } }
+@media (max-width: 700px) { #app { padding: 24px 12px; } .settings-card, .workbench, .image-input-card { padding: 16px; } }
