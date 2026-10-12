@@ -1,0 +1,212 @@
+[
+  {
+    "id": "3/1.jpg",
+    "index": 195,
+    "row": 7,
+    "column": 16,
+    "jsonValue": "closed",
+    "imageValue": 0,
+    "status": "correction-confirmed-by-repository-owner",
+    "humanReviews": [
+      {
+        "reviewer": "repository-owner",
+        "recordedAt": "2026-10-12T10:14:46Z",
+        "scope": "listed-correction-cells-only",
+        "confirmationSource": "explicit-user-message",
+        "statement": "All presented correction candidates are correct.",
+        "imageSha256": "269c6fafab61d305ba727f6eeb10dfdfa895d0d40ee6578aed24abbda21d44cd",
+        "diagnosticJsonSha256": "bddd164b32db8722a41c03aaf31227bed1f6f95fde36235727a9fee929bf21c0",
+        "confirmedValue": 0
+      }
+    ]
+  },
+  {
+    "id": "3/1.jpg",
+    "index": 222,
+    "row": 8,
+    "column": 13,
+    "jsonValue": "closed",
+    "imageValue": 0,
+    "status": "correction-confirmed-by-repository-owner",
+    "humanReviews": [
+      {
+        "reviewer": "repository-owner",
+        "recordedAt": "2026-10-12T10:14:46Z",
+        "scope": "listed-correction-cells-only",
+        "confirmationSource": "explicit-user-message",
+        "statement": "All presented correction candidates are correct.",
+        "imageSha256": "269c6fafab61d305ba727f6eeb10dfdfa895d0d40ee6578aed24abbda21d44cd",
+        "diagnosticJsonSha256": "bddd164b32db8722a41c03aaf31227bed1f6f95fde36235727a9fee929bf21c0",
+        "confirmedValue": 0
+      }
+    ]
+  },
+  {
+    "id": "3/1.jpg",
+    "index": 223,
+    "row": 8,
+    "column": 14,
+    "jsonValue": "closed",
+    "imageValue": 0,
+    "status": "correction-confirmed-by-repository-owner",
+    "humanReviews": [
+      {
+        "reviewer": "repository-owner",
+        "recordedAt": "2026-10-12T10:14:46Z",
+        "scope": "listed-correction-cells-only",
+        "confirmationSource": "explicit-user-message",
+        "statement": "All presented correction candidates are correct.",
+        "imageSha256": "269c6fafab61d305ba727f6eeb10dfdfa895d0d40ee6578aed24abbda21d44cd",
+        "diagnosticJsonSha256": "bddd164b32db8722a41c03aaf31227bed1f6f95fde36235727a9fee929bf21c0",
+        "confirmedValue": 0
+      }
+    ]
+  },
+  {
+    "id": "3/1.jpg",
+    "index": 224,
+    "row": 8,
+    "column": 15,
+    "jsonValue": "closed",
+    "imageValue": 0,
+    "status": "correction-confirmed-by-repository-owner",
+    "humanReviews": [
+      {
+        "reviewer": "repository-owner",
+        "recordedAt": "2026-10-12T10:14:46Z",
+        "scope": "listed-correction-cells-only",
+        "confirmationSource": "explicit-user-message",
+        "statement": "All presented correction candidates are correct.",
+        "imageSha256": "269c6fafab61d305ba727f6eeb10dfdfa895d0d40ee6578aed24abbda21d44cd",
+        "diagnosticJsonSha256": "bddd164b32db8722a41c03aaf31227bed1f6f95fde36235727a9fee929bf21c0",
+        "confirmedValue": 0
+      }
+    ]
+  },
+  {
+    "id": "4/1.jpg",
+    "index": 46,
+    "row": 2,
+    "column": 17,
+    "jsonValue": "closed",
+    "imageValue": "flag",
+    "status": "correction-confirmed-by-repository-owner",
+    "humanReviews": [
+      {
+        "reviewer": "repository-owner",
+        "recordedAt": "2026-10-12T10:14:46Z",
+        "scope": "listed-correction-cells-only",
+        "confirmationSource": "explicit-user-message",
+        "statement": "All presented correction candidates are correct.",
+        "imageSha256": "cca10ece120e5542e1df2ec671a6e7abd1537c20204ca7b806055f132770aaf9",
+        "diagnosticJsonSha256": "cc57ac74bcf2b3644a401202ec6213746d9d0d4d65d29d836c442b0d69484c01",
+        "confirmedValue": "flag"
+      }
+    ]
+  },
+  {
+    "id": "8/1.jpg",
+    "index": 450,
+    "row": 16,
+    "column": 1,
+    "jsonValue": "closed",
+    "imageValue": 1,
+    "status": "correction-confirmed-by-repository-owner",
+    "humanReviews": [
+      {
+        "reviewer": "repository-owner",
+        "recordedAt": "2026-10-12T10:14:46Z",
+        "scope": "listed-correction-cells-only",
+        "confirmationSource": "explicit-user-message",
+        "statement": "All presented correction candidates are correct.",
+        "imageSha256": "7d48820edeee7231fca45369b6eb2e448d86f6a7bb17bb6035c2f2f7a0554708",
+        "diagnosticJsonSha256": "b457c88789add82fd18cf255eb98bbc20c0a28ef3d74b0017c3176274ae639b7",
+        "confirmedValue": 1
+      }
+    ]
+  },
+  {
+    "id": "10/3.jpg",
+    "index": 198,
+    "row": 7,
+    "column": 19,
+    "jsonValue": "closed",
+    "imageValue": 1,
+    "status": "correction-confirmed-by-repository-owner",
+    "humanReviews": [
+      {
+        "reviewer": "repository-owner",
+        "recordedAt": "2026-10-12T10:14:46Z",
+        "scope": "listed-correction-cells-only",
+        "confirmationSource": "explicit-user-message",
+        "statement": "All presented correction candidates are correct.",
+        "imageSha256": "762aef1dc8bb0611ffce4bde561a34693b6cd8d5711d90cfe693074afa03f43b",
+        "diagnosticJsonSha256": "0767b4b93cc577bee77f24a9cfcc62d98c66c2d3ca590360c7dedb03a77edcde",
+        "confirmedValue": 1
+      }
+    ]
+  },
+  {
+    "id": "10/3.jpg",
+    "index": 199,
+    "row": 7,
+    "column": 20,
+    "jsonValue": "closed",
+    "imageValue": 4,
+    "status": "correction-confirmed-by-repository-owner",
+    "humanReviews": [
+      {
+        "reviewer": "repository-owner",
+        "recordedAt": "2026-10-12T10:14:46Z",
+        "scope": "listed-correction-cells-only",
+        "confirmationSource": "explicit-user-message",
+        "statement": "All presented correction candidates are correct.",
+        "imageSha256": "762aef1dc8bb0611ffce4bde561a34693b6cd8d5711d90cfe693074afa03f43b",
+        "diagnosticJsonSha256": "0767b4b93cc577bee77f24a9cfcc62d98c66c2d3ca590360c7dedb03a77edcde",
+        "confirmedValue": 4
+      }
+    ]
+  },
+  {
+    "id": "10/3.jpg",
+    "index": 228,
+    "row": 8,
+    "column": 19,
+    "jsonValue": "closed",
+    "imageValue": 3,
+    "status": "correction-confirmed-by-repository-owner",
+    "humanReviews": [
+      {
+        "reviewer": "repository-owner",
+        "recordedAt": "2026-10-12T10:14:46Z",
+        "scope": "listed-correction-cells-only",
+        "confirmationSource": "explicit-user-message",
+        "statement": "All presented correction candidates are correct.",
+        "imageSha256": "762aef1dc8bb0611ffce4bde561a34693b6cd8d5711d90cfe693074afa03f43b",
+        "diagnosticJsonSha256": "0767b4b93cc577bee77f24a9cfcc62d98c66c2d3ca590360c7dedb03a77edcde",
+        "confirmedValue": 3
+      }
+    ]
+  },
+  {
+    "id": "10/3.jpg",
+    "index": 229,
+    "row": 8,
+    "column": 20,
+    "jsonValue": "closed",
+    "imageValue": 4,
+    "status": "correction-confirmed-by-repository-owner",
+    "humanReviews": [
+      {
+        "reviewer": "repository-owner",
+        "recordedAt": "2026-10-12T10:14:46Z",
+        "scope": "listed-correction-cells-only",
+        "confirmationSource": "explicit-user-message",
+        "statement": "All presented correction candidates are correct.",
+        "imageSha256": "762aef1dc8bb0611ffce4bde561a34693b6cd8d5711d90cfe693074afa03f43b",
+        "diagnosticJsonSha256": "0767b4b93cc577bee77f24a9cfcc62d98c66c2d3ca590360c7dedb03a77edcde",
+        "confirmedValue": 4
+      }
+    ]
+  }
+]

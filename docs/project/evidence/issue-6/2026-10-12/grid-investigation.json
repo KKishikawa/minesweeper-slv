@@ -1,0 +1,3342 @@
+{
+  "status": "root-cause-investigation-not-a-fix",
+  "scope": "source-RGBA-diagnostic-not-formal-Chromium-matrix",
+  "productionOutputsMatchInstrumentedOutputs": true,
+  "environment": {
+    "node": "v22.12.0",
+    "os": "macOS-27.0.1-arm64-arm-64bit",
+    "architecture": "arm64",
+    "gitCommit": "2bb7a480ef1a893163a04cb3389f245fa7b9a0bf",
+    "packageLockSha256": "daf7fca2d9faa43e3a3631cacc6ba54628f2120061449a49d650de8e3a43beea"
+  },
+  "productionSourceSha256": {
+    "src/recognition/grid-strict.ts": "eea4863362c0f7615fa273b99b90dd49624546ba358d68187292b4e37895ca67",
+    "src/recognition/grid-fallback.ts": "8205f15d4dd756e699d5f15665319446b9ce050f309a1907bdd69a936dd86413",
+    "src/recognition/grid-evidence.ts": "55dbf5b3b778af04d68d35944065751e5946cedb05509b52c3355ff2e93da2fd",
+    "src/recognition/grid-resample.ts": "6a1c50ad41ed7812ea83427ba4ae96e20b158a6f266ce8792e089b17785ae0f5"
+  },
+  "localInstrumentationSha256": {
+    "test/artifacts/grid-investigation-2026-10-12/summarize.py": "5b09440d3d4763268fd1dff6d5f1ab314f2e581a81286117461dcb40ae2ad033",
+    "test/artifacts/grid-investigation-2026-10-12/trace-phase.ts": "b576fd704b58d4ef4f707d997c59c9e10e2a78f496f4b88c40eb02be47efad6b",
+    "test/artifacts/grid-investigation-2026-10-12/instrumented-strict.ts": "ec2f05602576a06c23554f739019d3afea25ce4b9289c475b41c3c1c721cd2f3",
+    "test/artifacts/grid-investigation-2026-10-12/trace.ts": "866d4ac29f638ad99b3e2892dc4286e464bf5461f19e2635cb59ccb8fab8c8e9"
+  },
+  "cases": [
+    {
+      "id": "1/1.jpg",
+      "sourceImageSha256": "5dd86e7ff787cf8ce4950cc4a16e6e43a99b45a41f0a5fd4159eeef2db58f0e8",
+      "rgbaSha256": "bc781273f00d30efd1129861b3d7080451de9e135ed3997d017452fa36f8f3cf",
+      "stage": "direct",
+      "geometry": {
+        "bounds": {
+          "x": 617,
+          "y": 494,
+          "width": 1201,
+          "height": 641
+        },
+        "columns": 30,
+        "rows": 16,
+        "pitchX": 40.03333333333333,
+        "pitchY": 40.0625,
+        "score": 39.94043111312565
+      },
+      "reviewBounds": {
+        "x": 658,
+        "y": 498,
+        "width": 1200,
+        "height": 640
+      },
+      "calls": [
+        {
+          "size": [
+            2560,
+            1440
+          ],
+          "status": "found",
+          "pairCountBeforeBudget": 9500,
+          "estimatedPitch": 40,
+          "publicCandidates": [
+            {
+              "left": 619,
+              "top": 494,
+              "right": 1818,
+              "bottom": 1134,
+              "score": 39.94043111312565
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 658,
+              "y": 497,
+              "right": 1858,
+              "bottom": 1135,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9544592030360531,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.5843162929101628,
+              "outerBoundaryBalance": 0.6778660245838124,
+              "minimumOuterBoundaryEnergyRatio": 1.6466340185079822,
+              "localRangeScore": 57.68056799893997,
+              "rangeScore": 38.702431974711935,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 658,
+              "y": 494,
+              "right": 1858,
+              "bottom": 1134,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9924098671726755,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.4243524804709933,
+              "outerBoundaryBalance": 0.6788139823799466,
+              "minimumOuterBoundaryEnergyRatio": 2.0725764744509463,
+              "localRangeScore": 59.87972241870175,
+              "rangeScore": 40.08824587068137,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 655,
+              "y": 494,
+              "right": 1854,
+              "bottom": 1134,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9867172675521821,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.7798107203536654,
+              "outerBoundaryBalance": 0.12449290851063127,
+              "minimumOuterBoundaryEnergyRatio": 2.075133560617233,
+              "localRangeScore": 40.96013155178626,
+              "rangeScore": 27.021154612658993,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 655,
+              "y": 497,
+              "right": 1854,
+              "bottom": 1135,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9886148007590133,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.7751949853551557,
+              "outerBoundaryBalance": 0.12375602934254523,
+              "minimumOuterBoundaryEnergyRatio": 1.646625618379824,
+              "localRangeScore": 39.470941502320784,
+              "rangeScore": 26.094055406089527,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 658,
+              "y": 491,
+              "right": 1858,
+              "bottom": 1133,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6134833829941393,
+              "outerBoundaryBalance": 0.6816278553052413,
+              "minimumOuterBoundaryEnergyRatio": 3.518075959685214,
+              "localRangeScore": 57.68722314945172,
+              "rangeScore": 36.71704881504294,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            }
+          ],
+          "phaseCount": 140,
+          "supportCount": 75,
+          "extentFilterCount": 3,
+          "selectedCount": 3,
+          "closestSupportedCandidate": {
+            "x": 658,
+            "y": 497,
+            "right": 1858,
+            "bottom": 1135,
+            "pitchX": 40,
+            "pitchY": 40,
+            "intersectionSupportRatio": 0.9544592030360531,
+            "leadingIntersectionSupportRatio": 1,
+            "outerBoundaryDistinctiveness": 1.5843162929101628,
+            "outerBoundaryBalance": 0.6778660245838124,
+            "minimumOuterBoundaryEnergyRatio": 1.6466340185079822,
+            "localRangeScore": 57.68056799893997,
+            "rangeScore": 38.702431974711935
+          },
+          "closestBoundaryDistance": 3.0,
+          "closestRejectionReason": {
+            "gate": "relative-minimumOuterBoundaryEnergyRatio",
+            "value": 1.6466340185079822,
+            "threshold": 3.4125336808946574,
+            "strongestPeer": 3.518075959685214
+          },
+          "topSelected": [
+            {
+              "x": 619,
+              "y": 494,
+              "right": 1818,
+              "bottom": 1134,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9924098671726755,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.4417375629710725,
+              "outerBoundaryBalance": 0.7841982708167531,
+              "minimumOuterBoundaryEnergyRatio": 2.080825487621894,
+              "localRangeScore": 60.314661403909255,
+              "rangeScore": 39.94043111312565
+            },
+            {
+              "x": 619,
+              "y": 569,
+              "right": 1818,
+              "bottom": 1207,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9430740037950665,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.5505648811188385,
+              "outerBoundaryBalance": 0.6023633236989787,
+              "minimumOuterBoundaryEnergyRatio": 2.095764354426497,
+              "localRangeScore": 38.70416747606131,
+              "rangeScore": 27.049311264115893
+            }
+          ]
+        }
+      ],
+      "revalidation": [],
+      "sourceSurvivorCount": 0,
+      "cleanProductionResultMatches": true
+    },
+    {
+      "id": "1/2.jpg",
+      "sourceImageSha256": "1b6830b72cf3ff8f764a508dcc14449b31f862f704f72b70fe115f473fe1ae38",
+      "rgbaSha256": "c2b679d24e44e536cbbf8ee3eebfe801ee703eaccf205937336e59ff1d8f4a73",
+      "stage": "budget-exhausted",
+      "geometry": null,
+      "reviewBounds": {
+        "x": 658,
+        "y": 498,
+        "width": 1200,
+        "height": 640
+      },
+      "calls": [
+        {
+          "size": [
+            2560,
+            1440
+          ],
+          "status": "ambiguous",
+          "pairCountBeforeBudget": 15094,
+          "estimatedPitch": 40.483763210257514,
+          "publicCandidates": [
+            {
+              "left": 658,
+              "top": 563,
+              "right": 1858,
+              "bottom": 1205,
+              "score": 17.31837347019454
+            },
+            {
+              "left": 584,
+              "top": 563,
+              "right": 1782,
+              "bottom": 1205,
+              "score": 17.226865924574437
+            },
+            {
+              "left": 619,
+              "top": 563,
+              "right": 1818,
+              "bottom": 1205,
+              "score": 16.817223703367986
+            },
+            {
+              "left": 662,
+              "top": 563,
+              "right": 1864,
+              "bottom": 1205,
+              "score": 15.929541584072247
+            },
+            {
+              "left": 658,
+              "top": 523,
+              "right": 1858,
+              "bottom": 1163,
+              "score": 15.560704912016044
+            },
+            {
+              "left": 584,
+              "top": 523,
+              "right": 1782,
+              "bottom": 1163,
+              "score": 15.382012196510741
+            },
+            {
+              "left": 619,
+              "top": 523,
+              "right": 1818,
+              "bottom": 1163,
+              "score": 15.065464341586912
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 658,
+              "y": 498,
+              "right": 1858,
+              "bottom": 1138,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9905123339658444,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6557722503500679,
+              "outerBoundaryBalance": 0.4221356878261132,
+              "minimumOuterBoundaryEnergyRatio": 1.8784305128369354,
+              "localRangeScore": 27.339526899487822,
+              "rangeScore": 17.96104874285704,
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 658,
+              "y": 499,
+              "right": 1858,
+              "bottom": 1139,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6557722503500679,
+              "outerBoundaryBalance": 0.4221356878261132,
+              "minimumOuterBoundaryEnergyRatio": 1.8784305128369354,
+              "localRangeScore": 27.47685323567037,
+              "rangeScore": 18.276108955290663,
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 658,
+              "y": 497,
+              "right": 1858,
+              "bottom": 1135,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9639468690702088,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6513428418707622,
+              "outerBoundaryBalance": 0.4252491488208302,
+              "minimumOuterBoundaryEnergyRatio": 1.6598500835244439,
+              "localRangeScore": 25.771105091262143,
+              "rangeScore": 17.450036774836388,
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 658,
+              "y": 494,
+              "right": 1858,
+              "bottom": 1134,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9734345351043643,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6519717254911211,
+              "outerBoundaryBalance": 0.42543348204511683,
+              "minimumOuterBoundaryEnergyRatio": 1.5645889756462465,
+              "localRangeScore": 24.868750101324014,
+              "rangeScore": 16.95938409279102,
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 662,
+              "y": 499,
+              "right": 1864,
+              "bottom": 1139,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.846235985082126,
+              "outerBoundaryBalance": 0.6475891356606772,
+              "minimumOuterBoundaryEnergyRatio": 1.8780701231390422,
+              "localRangeScore": 26.05343297061026,
+              "rangeScore": 16.953074709643314,
+              "verticalPhase": true,
+              "horizontalPhase": false
+            }
+          ],
+          "phaseCount": 81,
+          "supportCount": 28,
+          "extentFilterCount": 11,
+          "selectedCount": 7,
+          "closestSupportedCandidate": {
+            "x": 658,
+            "y": 486,
+            "right": 1858,
+            "bottom": 1123,
+            "pitchX": 40,
+            "pitchY": 40,
+            "intersectionSupportRatio": 0.9449715370018975,
+            "leadingIntersectionSupportRatio": 0.3829787234042553,
+            "outerBoundaryDistinctiveness": 0.6450370074505525,
+            "outerBoundaryBalance": 0.4283538536296267,
+            "minimumOuterBoundaryEnergyRatio": 1.2372792580954208,
+            "localRangeScore": 22.166004521488258,
+            "rangeScore": 15.638311431818245
+          },
+          "closestBoundaryDistance": 15.0,
+          "closestRejectionReason": "minimum-outer-energy-below-1.3",
+          "topSelected": [
+            {
+              "x": 658,
+              "y": 563,
+              "right": 1858,
+              "bottom": 1205,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9411764705882353,
+              "leadingIntersectionSupportRatio": 0.9787234042553191,
+              "outerBoundaryDistinctiveness": 0.46493883027358945,
+              "outerBoundaryBalance": 0.41403869848350655,
+              "minimumOuterBoundaryEnergyRatio": 1.8200098851544726,
+              "localRangeScore": 24.604931012175975,
+              "rangeScore": 17.31837347019454
+            },
+            {
+              "x": 584,
+              "y": 563,
+              "right": 1782,
+              "bottom": 1205,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9449715370018975,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.3444836437412156,
+              "outerBoundaryBalance": 0.35684085016358386,
+              "minimumOuterBoundaryEnergyRatio": 1.7798580327786002,
+              "localRangeScore": 26.138215617289518,
+              "rangeScore": 17.226865924574437
+            }
+          ]
+        },
+        {
+          "size": [
+            2529,
+            1423
+          ],
+          "status": "budget-exhausted",
+          "pairCountBeforeBudget": 10105,
+          "estimatedPitch": null,
+          "publicCandidates": []
+        }
+      ],
+      "revalidation": [],
+      "sourceSurvivorCount": 0,
+      "cleanProductionResultMatches": true
+    },
+    {
+      "id": "1/3.jpg",
+      "sourceImageSha256": "d045f37cdddd2f62ea8cd04f98ac1f78720fe0afcde3ba2bda0fd06b435872ec",
+      "rgbaSha256": "e3837666503f7ae1c8206fa1ff16391e005ede5ed0ab2f97d079cd44f8a608bb",
+      "stage": "direct",
+      "geometry": {
+        "bounds": {
+          "x": 582,
+          "y": 563,
+          "width": 1200,
+          "height": 641
+        },
+        "columns": 30,
+        "rows": 16,
+        "pitchX": 40,
+        "pitchY": 40.0625,
+        "score": 17.42831608036803
+      },
+      "reviewBounds": {
+        "x": 658,
+        "y": 498,
+        "width": 1200,
+        "height": 640
+      },
+      "calls": [
+        {
+          "size": [
+            2560,
+            1440
+          ],
+          "status": "found",
+          "pairCountBeforeBudget": 17535,
+          "estimatedPitch": 40.481692414704625,
+          "publicCandidates": [
+            {
+              "left": 584,
+              "top": 563,
+              "right": 1782,
+              "bottom": 1205,
+              "score": 17.42831608036803
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 658,
+              "y": 498,
+              "right": 1858,
+              "bottom": 1138,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9905123339658444,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6320897163035281,
+              "outerBoundaryBalance": 0.4221356878261132,
+              "minimumOuterBoundaryEnergyRatio": 1.8678962317154206,
+              "localRangeScore": 26.66467361344199,
+              "rangeScore": 17.454644821952474,
+              "verticalInteriorOffsets": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "horizontalInteriorOffsets": [
+                0,
+                0,
+                1,
+                0,
+                -2,
+                1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1
+              ],
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 658,
+              "y": 499,
+              "right": 1858,
+              "bottom": 1139,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6320897163035281,
+              "outerBoundaryBalance": 0.4221356878261132,
+              "minimumOuterBoundaryEnergyRatio": 1.8678962317154206,
+              "localRangeScore": 26.84749715457729,
+              "rangeScore": 17.813573409582215,
+              "verticalInteriorOffsets": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "horizontalInteriorOffsets": [
+                -1,
+                2,
+                0,
+                -1,
+                2,
+                0,
+                -1,
+                2,
+                0,
+                -1,
+                2,
+                0,
+                -1,
+                2,
+                0
+              ],
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 658,
+              "y": 497,
+              "right": 1858,
+              "bottom": 1135,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9734345351043643,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6305835303613232,
+              "outerBoundaryBalance": 0.4255277087528362,
+              "minimumOuterBoundaryEnergyRatio": 1.5289477165233212,
+              "localRangeScore": 23.982264294444022,
+              "rangeScore": 16.249097628782536,
+              "verticalInteriorOffsets": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "horizontalInteriorOffsets": [
+                0,
+                -1,
+                2,
+                0,
+                -1,
+                2,
+                0,
+                -1,
+                -1,
+                0,
+                -1,
+                -1,
+                0,
+                -1,
+                -1
+              ],
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 658,
+              "y": 494,
+              "right": 1858,
+              "bottom": 1134,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9734345351043643,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6303846462992593,
+              "outerBoundaryBalance": 0.42543348204511683,
+              "minimumOuterBoundaryEnergyRatio": 1.5289477165233212,
+              "localRangeScore": 23.148004357154036,
+              "rangeScore": 15.712996224477838,
+              "verticalInteriorOffsets": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "horizontalInteriorOffsets": [
+                1,
+                0,
+                -2,
+                1,
+                0,
+                -2,
+                1,
+                0,
+                -2,
+                1,
+                0,
+                0,
+                1,
+                0,
+                -2
+              ],
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 662,
+              "y": 499,
+              "right": 1864,
+              "bottom": 1139,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.9381407094042197,
+              "outerBoundaryBalance": 0.6438023520671791,
+              "minimumOuterBoundaryEnergyRatio": 1.8675540447898205,
+              "localRangeScore": 26.868869298764277,
+              "rangeScore": 17.432332678350843,
+              "verticalInteriorOffsets": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "horizontalInteriorOffsets": [
+                -1,
+                2,
+                0,
+                -1,
+                2,
+                0,
+                -1,
+                2,
+                0,
+                -1,
+                2,
+                0,
+                -1,
+                2,
+                0
+              ],
+              "verticalPhase": true,
+              "horizontalPhase": false
+            }
+          ],
+          "phaseCount": 82,
+          "supportCount": 28,
+          "extentFilterCount": 12,
+          "selectedCount": 8,
+          "closestSupportedCandidate": {
+            "x": 658,
+            "y": 486,
+            "right": 1858,
+            "bottom": 1123,
+            "pitchX": 40,
+            "pitchY": 40,
+            "intersectionSupportRatio": 0.9449715370018975,
+            "leadingIntersectionSupportRatio": 0.3829787234042553,
+            "outerBoundaryDistinctiveness": 0.6386020565738681,
+            "outerBoundaryBalance": 0.4283538536296267,
+            "minimumOuterBoundaryEnergyRatio": 1.2375880361236489,
+            "localRangeScore": 21.313094358214745,
+            "rangeScore": 15.041283778371385
+          },
+          "closestBoundaryDistance": 15.0,
+          "closestRejectionReason": "minimum-outer-energy-below-1.3",
+          "topSelected": [
+            {
+              "x": 584,
+              "y": 563,
+              "right": 1782,
+              "bottom": 1205,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9449715370018975,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.3468379777343175,
+              "outerBoundaryBalance": 0.35684085016358386,
+              "minimumOuterBoundaryEnergyRatio": 1.7803022179132748,
+              "localRangeScore": 26.42614767205725,
+              "rangeScore": 17.42831608036803
+            },
+            {
+              "x": 658,
+              "y": 563,
+              "right": 1858,
+              "bottom": 1205,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9411764705882353,
+              "leadingIntersectionSupportRatio": 0.9787234042553191,
+              "outerBoundaryDistinctiveness": 0.46493883027358945,
+              "outerBoundaryBalance": 0.41403869848350655,
+              "minimumOuterBoundaryEnergyRatio": 1.8204640906703382,
+              "localRangeScore": 23.46653027446182,
+              "rangeScore": 16.553907902268126
+            }
+          ]
+        }
+      ],
+      "revalidation": [],
+      "sourceSurvivorCount": 0,
+      "cleanProductionResultMatches": true
+    },
+    {
+      "id": "4/1.jpg",
+      "sourceImageSha256": "cca10ece120e5542e1df2ec671a6e7abd1537c20204ca7b806055f132770aaf9",
+      "rgbaSha256": "37b8f1a33dd7675fd915607bb004a84d1b460f2c4a274d47b394f10647790142",
+      "stage": "hint-rejected",
+      "geometry": null,
+      "reviewBounds": {
+        "x": 97,
+        "y": 239.5,
+        "width": 750,
+        "height": 400.5
+      },
+      "calls": [
+        {
+          "size": [
+            1600,
+            900
+          ],
+          "status": "ambiguous",
+          "pairCountBeforeBudget": 1326,
+          "estimatedPitch": null,
+          "publicCandidates": [],
+          "nearestAll": [
+            {
+              "x": 97,
+              "y": 238,
+              "right": 847,
+              "bottom": 640,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.9012953570997999,
+              "outerBoundaryBalance": 0.5720133757164931,
+              "minimumOuterBoundaryEnergyRatio": 2.627386016895132,
+              "localRangeScore": 100.1871971920765,
+              "rangeScore": 64.95289220207707,
+              "verticalInteriorOffsets": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "horizontalInteriorOffsets": [
+                0,
+                -1,
+                -1,
+                0,
+                -1,
+                -1,
+                0,
+                -1,
+                -1,
+                0,
+                -1,
+                -1,
+                0,
+                -1,
+                -1
+              ],
+              "verticalPhase": false,
+              "horizontalPhase": true
+            },
+            {
+              "x": 97,
+              "y": 237,
+              "right": 847,
+              "bottom": 637,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.9012953570997999,
+              "outerBoundaryBalance": 0.5720133757164931,
+              "minimumOuterBoundaryEnergyRatio": 2.627386016895132,
+              "localRangeScore": 100.1871971920765,
+              "rangeScore": 63.65670919619645,
+              "verticalInteriorOffsets": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "horizontalInteriorOffsets": [
+                1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                0
+              ],
+              "verticalPhase": false,
+              "horizontalPhase": true
+            },
+            {
+              "x": 97,
+              "y": 235,
+              "right": 847,
+              "bottom": 635,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9430740037950665,
+              "leadingIntersectionSupportRatio": 0.3829787234042553,
+              "outerBoundaryDistinctiveness": 0.8305817078563719,
+              "outerBoundaryBalance": 0.693964929405327,
+              "minimumOuterBoundaryEnergyRatio": 3.4534282786701653,
+              "localRangeScore": 102.69387460535266,
+              "rangeScore": 58.76775798058797,
+              "verticalInteriorOffsets": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "horizontalInteriorOffsets": [
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                -1,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "verticalPhase": false,
+              "horizontalPhase": false
+            },
+            {
+              "x": 97,
+              "y": 236,
+              "right": 847,
+              "bottom": 634,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9297912713472486,
+              "leadingIntersectionSupportRatio": 0.3829787234042553,
+              "outerBoundaryDistinctiveness": 0.6391722042047583,
+              "outerBoundaryBalance": 0.693964929405327,
+              "minimumOuterBoundaryEnergyRatio": 3.4534282786701653,
+              "localRangeScore": 83.08708998428186,
+              "rangeScore": 53.043795831458624,
+              "verticalInteriorOffsets": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "horizontalInteriorOffsets": [
+                0,
+                1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                1,
+                -2,
+                1,
+                -1,
+                0,
+                1,
+                1
+              ],
+              "verticalPhase": false,
+              "horizontalPhase": false
+            },
+            {
+              "x": 97,
+              "y": 259,
+              "right": 847,
+              "bottom": 659,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9259962049335864,
+              "leadingIntersectionSupportRatio": 0.9787234042553191,
+              "outerBoundaryDistinctiveness": 1.0343886584640687,
+              "outerBoundaryBalance": 0.5065107560465576,
+              "minimumOuterBoundaryEnergyRatio": 1.566754724059317,
+              "localRangeScore": 66.31263916417416,
+              "rangeScore": 44.62853168116621,
+              "verticalInteriorOffsets": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                0,
+                2,
+                0,
+                0,
+                2,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "horizontalInteriorOffsets": [
+                1,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                1,
+                -2,
+                1,
+                -1,
+                0,
+                1,
+                1,
+                0
+              ],
+              "verticalPhase": false,
+              "horizontalPhase": false
+            }
+          ],
+          "phaseCount": 0,
+          "supportCount": 0,
+          "extentFilterCount": 0,
+          "selectedCount": 0,
+          "closestSupportedCandidate": null,
+          "closestBoundaryDistance": null,
+          "closestRejectionReason": "no-phase-and-support-candidate",
+          "topSelected": []
+        }
+      ],
+      "revalidation": [],
+      "sourceSurvivorCount": 0,
+      "cleanProductionResultMatches": true
+    },
+    {
+      "id": "8/1.jpg",
+      "sourceImageSha256": "7d48820edeee7231fca45369b6eb2e448d86f6a7bb17bb6035c2f2f7a0554708",
+      "rgbaSha256": "3d10bb0733b378fb8a4d8e1a1ab0ad4d8ca7a0799edd25d056df1a6d69f62592",
+      "stage": "direct",
+      "geometry": {
+        "bounds": {
+          "x": 75,
+          "y": 455,
+          "width": 900,
+          "height": 480
+        },
+        "columns": 30,
+        "rows": 16,
+        "pitchX": 30,
+        "pitchY": 30,
+        "score": 90.89213050399222
+      },
+      "reviewBounds": {
+        "x": 75,
+        "y": 455,
+        "width": 900,
+        "height": 480
+      },
+      "calls": [
+        {
+          "size": [
+            1920,
+            1080
+          ],
+          "status": "found",
+          "pairCountBeforeBudget": 482,
+          "estimatedPitch": 30.000000000000004,
+          "publicCandidates": [
+            {
+              "left": 76,
+              "top": 458,
+              "right": 976,
+              "bottom": 935,
+              "score": 90.89213050399222
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 76,
+              "y": 458,
+              "right": 976,
+              "bottom": 935,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9962049335863378,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.2273573900357113,
+              "outerBoundaryBalance": 0.6925661238434073,
+              "minimumOuterBoundaryEnergyRatio": 6.542889518027873,
+              "localRangeScore": 143.57441510378936,
+              "rangeScore": 90.89213050399222,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 76,
+              "y": 458,
+              "right": 976,
+              "bottom": 938,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9962049335863378,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.2273573900357113,
+              "outerBoundaryBalance": 0.6925661238434073,
+              "minimumOuterBoundaryEnergyRatio": 6.542889518027873,
+              "localRangeScore": 143.57441510378936,
+              "rangeScore": 90.82169083337142,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 46,
+              "y": 458,
+              "right": 946,
+              "bottom": 935,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9658444022770398,
+              "leadingIntersectionSupportRatio": 0.6382978723404256,
+              "outerBoundaryDistinctiveness": 1.2001684218611186,
+              "outerBoundaryBalance": 0.9555072925736346,
+              "minimumOuterBoundaryEnergyRatio": 6.314035129715456,
+              "localRangeScore": 142.87797290956297,
+              "rangeScore": 89.66335984895485,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 46,
+              "y": 458,
+              "right": 946,
+              "bottom": 938,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9658444022770398,
+              "leadingIntersectionSupportRatio": 0.6382978723404256,
+              "outerBoundaryDistinctiveness": 1.2001684218611186,
+              "outerBoundaryBalance": 0.9555072925736346,
+              "minimumOuterBoundaryEnergyRatio": 6.314035129715456,
+              "localRangeScore": 142.87797290956297,
+              "rangeScore": 89.5938724521968,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 76,
+              "y": 426,
+              "right": 976,
+              "bottom": 908,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.0068677183045451,
+              "outerBoundaryBalance": 0.03642444125742168,
+              "minimumOuterBoundaryEnergyRatio": 0.37088753224261817,
+              "localRangeScore": 127.99081390540381,
+              "rangeScore": 82.45791601557686,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            }
+          ],
+          "phaseCount": 99,
+          "supportCount": 29,
+          "extentFilterCount": 2,
+          "selectedCount": 1,
+          "closestSupportedCandidate": {
+            "x": 76,
+            "y": 458,
+            "right": 976,
+            "bottom": 935,
+            "pitchX": 30,
+            "pitchY": 30,
+            "intersectionSupportRatio": 0.9962049335863378,
+            "leadingIntersectionSupportRatio": 1,
+            "outerBoundaryDistinctiveness": 1.2273573900357113,
+            "outerBoundaryBalance": 0.6925661238434073,
+            "minimumOuterBoundaryEnergyRatio": 6.542889518027873,
+            "localRangeScore": 143.57441510378936,
+            "rangeScore": 90.89213050399222
+          },
+          "closestBoundaryDistance": 3.0,
+          "closestRejectionReason": null,
+          "topSelected": [
+            {
+              "x": 76,
+              "y": 458,
+              "right": 976,
+              "bottom": 935,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9962049335863378,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.2273573900357113,
+              "outerBoundaryBalance": 0.6925661238434073,
+              "minimumOuterBoundaryEnergyRatio": 6.542889518027873,
+              "localRangeScore": 143.57441510378936,
+              "rangeScore": 90.89213050399222
+            }
+          ]
+        }
+      ],
+      "revalidation": [],
+      "sourceSurvivorCount": 0,
+      "cleanProductionResultMatches": true
+    },
+    {
+      "id": "8/2.jpg",
+      "sourceImageSha256": "24c443f67e1a0eb50c97fcbe34c58b96ecdf5b33eaeaa78adb91745dddc1b597",
+      "rgbaSha256": "9b6a3777c27dab3bfc222424277441eab831225c995e3d7bffb6dbd5c3b4964a",
+      "stage": "source-revalidation-rejected",
+      "geometry": null,
+      "reviewBounds": {
+        "x": 75,
+        "y": 455,
+        "width": 900,
+        "height": 480
+      },
+      "calls": [
+        {
+          "size": [
+            1920,
+            1080
+          ],
+          "status": "ambiguous",
+          "pairCountBeforeBudget": 482,
+          "estimatedPitch": 30,
+          "publicCandidates": [
+            {
+              "left": 76,
+              "top": 458,
+              "right": 976,
+              "bottom": 935,
+              "score": 77.0739575442047
+            },
+            {
+              "left": 76,
+              "top": 425,
+              "right": 976,
+              "bottom": 905,
+              "score": 73.74012733928836
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 76,
+              "y": 458,
+              "right": 976,
+              "bottom": 935,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.1356909353747207,
+              "outerBoundaryBalance": 0.6307408610025504,
+              "minimumOuterBoundaryEnergyRatio": 6.100775514144994,
+              "localRangeScore": 121.64031518538455,
+              "rangeScore": 77.0739575442047,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 76,
+              "y": 458,
+              "right": 976,
+              "bottom": 938,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.1356909353747207,
+              "outerBoundaryBalance": 0.6307408610025504,
+              "minimumOuterBoundaryEnergyRatio": 6.100775514144994,
+              "localRangeScore": 121.64031518538455,
+              "rangeScore": 77.00101118920288,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 79,
+              "y": 458,
+              "right": 980,
+              "bottom": 935,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9943074003795066,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.926947877491891,
+              "outerBoundaryBalance": 0.8047654193570989,
+              "minimumOuterBoundaryEnergyRatio": 6.065840811333423,
+              "localRangeScore": 84.91156566926041,
+              "rangeScore": 53.57479318051334,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 79,
+              "y": 458,
+              "right": 980,
+              "bottom": 938,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9943074003795066,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.926947877491891,
+              "outerBoundaryBalance": 0.8047654193570989,
+              "minimumOuterBoundaryEnergyRatio": 6.065840811333423,
+              "localRangeScore": 84.91156566926041,
+              "rangeScore": 53.52408752055999,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 46,
+              "y": 458,
+              "right": 946,
+              "bottom": 935,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9658444022770398,
+              "leadingIntersectionSupportRatio": 0.6382978723404256,
+              "outerBoundaryDistinctiveness": 1.1105326033772427,
+              "outerBoundaryBalance": 0.8144732484343834,
+              "minimumOuterBoundaryEnergyRatio": 5.97730503791571,
+              "localRangeScore": 121.1059850556932,
+              "rangeScore": 75.97728594997912,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            }
+          ],
+          "phaseCount": 108,
+          "supportCount": 44,
+          "extentFilterCount": 3,
+          "selectedCount": 2,
+          "closestSupportedCandidate": {
+            "x": 76,
+            "y": 458,
+            "right": 976,
+            "bottom": 935,
+            "pitchX": 30,
+            "pitchY": 30,
+            "intersectionSupportRatio": 0.9981024667931688,
+            "leadingIntersectionSupportRatio": 1,
+            "outerBoundaryDistinctiveness": 1.1356909353747207,
+            "outerBoundaryBalance": 0.6307408610025504,
+            "minimumOuterBoundaryEnergyRatio": 6.100775514144994,
+            "localRangeScore": 121.64031518538455,
+            "rangeScore": 77.0739575442047
+          },
+          "closestBoundaryDistance": 3.0,
+          "closestRejectionReason": null,
+          "topSelected": [
+            {
+              "x": 76,
+              "y": 458,
+              "right": 976,
+              "bottom": 935,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.1356909353747207,
+              "outerBoundaryBalance": 0.6307408610025504,
+              "minimumOuterBoundaryEnergyRatio": 6.100775514144994,
+              "localRangeScore": 121.64031518538455,
+              "rangeScore": 77.0739575442047
+            },
+            {
+              "x": 76,
+              "y": 425,
+              "right": 976,
+              "bottom": 905,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.101937428359142,
+              "outerBoundaryBalance": 0.6667982410325616,
+              "minimumOuterBoundaryEnergyRatio": 6.435560324043093,
+              "localRangeScore": 117.48751701835833,
+              "rangeScore": 73.74012733928836
+            }
+          ]
+        },
+        {
+          "size": [
+            2560,
+            1440
+          ],
+          "status": "found",
+          "pairCountBeforeBudget": 559,
+          "estimatedPitch": 40,
+          "publicCandidates": [
+            {
+              "left": 102,
+              "top": 610,
+              "right": 1302,
+              "bottom": 1250,
+              "score": 95.45319164343259
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 102,
+              "y": 610,
+              "right": 1302,
+              "bottom": 1250,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9962049335863378,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.1133945977316768,
+              "outerBoundaryBalance": 0.6505706476068972,
+              "minimumOuterBoundaryEnergyRatio": 6.427447456423632,
+              "localRangeScore": 150.64189047353224,
+              "rangeScore": 95.45319164343259,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 101,
+              "y": 610,
+              "right": 1301,
+              "bottom": 1250,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9962049335863378,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.1133945977316768,
+              "outerBoundaryBalance": 0.6505706476068972,
+              "minimumOuterBoundaryEnergyRatio": 6.427447456423632,
+              "localRangeScore": 150.64189047353224,
+              "rangeScore": 90.85718944239147,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 106,
+              "y": 610,
+              "right": 1307,
+              "bottom": 1250,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9924098671726755,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.8116367452436449,
+              "outerBoundaryBalance": 0.7418549840771569,
+              "minimumOuterBoundaryEnergyRatio": 8.066576243587821,
+              "localRangeScore": 107.23024340609317,
+              "rangeScore": 67.91447324941886,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 66,
+              "y": 610,
+              "right": 1266,
+              "bottom": 1250,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9620493358633776,
+              "leadingIntersectionSupportRatio": 0.6382978723404256,
+              "outerBoundaryDistinctiveness": 0.9726542999387292,
+              "outerBoundaryBalance": 0.028714625942872152,
+              "minimumOuterBoundaryEnergyRatio": 0.2601593790940367,
+              "localRangeScore": 95.55527670744078,
+              "rangeScore": 61.66748511990496,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 62,
+              "y": 610,
+              "right": 1262,
+              "bottom": 1250,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9658444022770398,
+              "leadingIntersectionSupportRatio": 0.6382978723404256,
+              "outerBoundaryDistinctiveness": 1.3034319799239757,
+              "outerBoundaryBalance": 0.455673996302043,
+              "minimumOuterBoundaryEnergyRatio": 3.8455552311307257,
+              "localRangeScore": 143.4637977185629,
+              "rangeScore": 91.15886680959002,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            }
+          ],
+          "phaseCount": 87,
+          "supportCount": 47,
+          "extentFilterCount": 2,
+          "selectedCount": 1,
+          "closestSupportedCandidate": {
+            "x": 102,
+            "y": 610,
+            "right": 1302,
+            "bottom": 1250,
+            "pitchX": 40,
+            "pitchY": 40,
+            "intersectionSupportRatio": 0.9962049335863378,
+            "leadingIntersectionSupportRatio": 1,
+            "outerBoundaryDistinctiveness": 1.1133945977316768,
+            "outerBoundaryBalance": 0.6505706476068972,
+            "minimumOuterBoundaryEnergyRatio": 6.427447456423632,
+            "localRangeScore": 150.64189047353224,
+            "rangeScore": 95.45319164343259
+          },
+          "closestBoundaryDistance": 3.3333333333333712,
+          "closestRejectionReason": null,
+          "topSelected": [
+            {
+              "x": 102,
+              "y": 610,
+              "right": 1302,
+              "bottom": 1250,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9962049335863378,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.1133945977316768,
+              "outerBoundaryBalance": 0.6505706476068972,
+              "minimumOuterBoundaryEnergyRatio": 6.427447456423632,
+              "localRangeScore": 150.64189047353224,
+              "rangeScore": 95.45319164343259
+            }
+          ]
+        }
+      ],
+      "revalidation": [
+        {
+          "geometry": null,
+          "gates": [
+            {
+              "stage": "score-selection",
+              "mappedBounds": {
+                "x": 77,
+                "y": 458,
+                "width": 900,
+                "height": 479
+              },
+              "mappedScore": 77.00101118920288,
+              "mappedIsWinner": true,
+              "separated": false,
+              "selectedScores": [
+                77.00101118920288,
+                73.74012733928836
+              ],
+              "selectedBounds": [
+                {
+                  "x": 77,
+                  "y": 458,
+                  "right": 977,
+                  "bottom": 937
+                },
+                {
+                  "x": 76,
+                  "y": 425,
+                  "right": 976,
+                  "bottom": 905
+                }
+              ]
+            },
+            "gate-7"
+          ]
+        }
+      ],
+      "sourceSurvivorCount": 0,
+      "cleanProductionResultMatches": true
+    },
+    {
+      "id": "9/2.jpg",
+      "sourceImageSha256": "ee8e15c55ca7cb4a42258f5a268944e291496b19e4893afbf24ec7a5d49e3abc",
+      "rgbaSha256": "94c12a41860ddcf8aa977c8bd0ca89b541945ec8a97b0f788028e126f968571f",
+      "stage": "source-revalidation-rejected",
+      "geometry": null,
+      "reviewBounds": {
+        "x": 467,
+        "y": 385,
+        "width": 900,
+        "height": 480
+      },
+      "calls": [
+        {
+          "size": [
+            1920,
+            1080
+          ],
+          "status": "ambiguous",
+          "pairCountBeforeBudget": 488,
+          "estimatedPitch": 30,
+          "publicCandidates": [
+            {
+              "left": 468,
+              "top": 385,
+              "right": 1368,
+              "bottom": 862,
+              "score": 44.7169842480625
+            },
+            {
+              "left": 471,
+              "top": 385,
+              "right": 1372,
+              "bottom": 862,
+              "score": 43.09031504521658
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 468,
+              "y": 385,
+              "right": 1368,
+              "bottom": 865,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6679609221687125,
+              "outerBoundaryBalance": 0.39904311697834455,
+              "minimumOuterBoundaryEnergyRatio": 5.279201329150063,
+              "localRangeScore": 72.09540347987631,
+              "rangeScore": 45.75823553849647,
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 468,
+              "y": 385,
+              "right": 1368,
+              "bottom": 862,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6679609221687125,
+              "outerBoundaryBalance": 0.39904311697834455,
+              "minimumOuterBoundaryEnergyRatio": 5.279201329150063,
+              "localRangeScore": 70.2596021186533,
+              "rangeScore": 44.7169842480625,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 471,
+              "y": 385,
+              "right": 1372,
+              "bottom": 865,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9924098671726755,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6787575396142689,
+              "outerBoundaryBalance": 0.5095386603969065,
+              "minimumOuterBoundaryEnergyRatio": 5.245654947113283,
+              "localRangeScore": 70.44989862436071,
+              "rangeScore": 44.09438416928135,
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 471,
+              "y": 385,
+              "right": 1372,
+              "bottom": 862,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9924098671726755,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6729070729686107,
+              "outerBoundaryBalance": 0.5095386603969065,
+              "minimumOuterBoundaryEnergyRatio": 5.245654947113283,
+              "localRangeScore": 68.65445074758337,
+              "rangeScore": 43.09031504521658,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 468,
+              "y": 380,
+              "right": 1368,
+              "bottom": 859,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.937381404174573,
+              "leadingIntersectionSupportRatio": 0.8936170212765957,
+              "outerBoundaryDistinctiveness": 0.5802699272685964,
+              "outerBoundaryBalance": 0.40259432160802944,
+              "minimumOuterBoundaryEnergyRatio": 4.532835114212699,
+              "localRangeScore": 62.21975119487212,
+              "rangeScore": 39.97054998475052,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            }
+          ],
+          "phaseCount": 16,
+          "supportCount": 15,
+          "extentFilterCount": 2,
+          "selectedCount": 2,
+          "closestSupportedCandidate": {
+            "x": 468,
+            "y": 385,
+            "right": 1368,
+            "bottom": 862,
+            "pitchX": 30,
+            "pitchY": 30,
+            "intersectionSupportRatio": 1,
+            "leadingIntersectionSupportRatio": 1,
+            "outerBoundaryDistinctiveness": 0.6679609221687125,
+            "outerBoundaryBalance": 0.39904311697834455,
+            "minimumOuterBoundaryEnergyRatio": 5.279201329150063,
+            "localRangeScore": 70.2596021186533,
+            "rangeScore": 44.7169842480625
+          },
+          "closestBoundaryDistance": 3.0,
+          "closestRejectionReason": null,
+          "topSelected": [
+            {
+              "x": 468,
+              "y": 385,
+              "right": 1368,
+              "bottom": 862,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6679609221687125,
+              "outerBoundaryBalance": 0.39904311697834455,
+              "minimumOuterBoundaryEnergyRatio": 5.279201329150063,
+              "localRangeScore": 70.2596021186533,
+              "rangeScore": 44.7169842480625
+            },
+            {
+              "x": 471,
+              "y": 385,
+              "right": 1372,
+              "bottom": 862,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9924098671726755,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6729070729686107,
+              "outerBoundaryBalance": 0.5095386603969065,
+              "minimumOuterBoundaryEnergyRatio": 5.245654947113283,
+              "localRangeScore": 68.65445074758337,
+              "rangeScore": 43.09031504521658
+            }
+          ]
+        },
+        {
+          "size": [
+            2560,
+            1440
+          ],
+          "status": "ambiguous",
+          "pairCountBeforeBudget": 1311,
+          "estimatedPitch": 40,
+          "publicCandidates": [
+            {
+              "left": 624,
+              "top": 513,
+              "right": 1824,
+              "bottom": 1153,
+              "score": 56.47579538635349
+            },
+            {
+              "left": 628,
+              "top": 513,
+              "right": 1829,
+              "bottom": 1153,
+              "score": 54.84547163577755
+            },
+            {
+              "left": 628,
+              "top": 517,
+              "right": 1829,
+              "bottom": 1158,
+              "score": 49.918263591653506
+            },
+            {
+              "left": 624,
+              "top": 593,
+              "right": 1824,
+              "bottom": 1231,
+              "score": 43.47709900955108
+            },
+            {
+              "left": 628,
+              "top": 593,
+              "right": 1829,
+              "bottom": 1231,
+              "score": 42.18481608691251
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 624,
+              "y": 513,
+              "right": 1824,
+              "bottom": 1153,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6656830942028875,
+              "outerBoundaryBalance": 0.41716958159904216,
+              "minimumOuterBoundaryEnergyRatio": 5.832576903748228,
+              "localRangeScore": 88.49263602958607,
+              "rangeScore": 56.47579538635349,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 625,
+              "y": 513,
+              "right": 1825,
+              "bottom": 1153,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6656830942028875,
+              "outerBoundaryBalance": 0.41716958159904216,
+              "minimumOuterBoundaryEnergyRatio": 5.832576903748228,
+              "localRangeScore": 88.49263602958607,
+              "rangeScore": 52.133109996779076,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 624,
+              "y": 517,
+              "right": 1824,
+              "bottom": 1158,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9943074003795066,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6688983118159718,
+              "outerBoundaryBalance": 0.41428908813208876,
+              "minimumOuterBoundaryEnergyRatio": 5.745040786326553,
+              "localRangeScore": 83.1405934992195,
+              "rangeScore": 51.281198424061934,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 625,
+              "y": 517,
+              "right": 1825,
+              "bottom": 1158,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9943074003795066,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6688983118159718,
+              "outerBoundaryBalance": 0.41428908813208876,
+              "minimumOuterBoundaryEnergyRatio": 5.745040786326553,
+              "localRangeScore": 83.1405934992195,
+              "rangeScore": 47.337949645845484,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 628,
+              "y": 513,
+              "right": 1829,
+              "bottom": 1153,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9943074003795066,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6738545474011974,
+              "outerBoundaryBalance": 0.5108321908428208,
+              "minimumOuterBoundaryEnergyRatio": 7.051536231160762,
+              "localRangeScore": 87.0555017952786,
+              "rangeScore": 54.84547163577755,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            }
+          ],
+          "phaseCount": 56,
+          "supportCount": 48,
+          "extentFilterCount": 10,
+          "selectedCount": 5,
+          "closestSupportedCandidate": {
+            "x": 624,
+            "y": 513,
+            "right": 1824,
+            "bottom": 1153,
+            "pitchX": 40,
+            "pitchY": 40,
+            "intersectionSupportRatio": 0.9981024667931688,
+            "leadingIntersectionSupportRatio": 1,
+            "outerBoundaryDistinctiveness": 0.6656830942028875,
+            "outerBoundaryBalance": 0.41716958159904216,
+            "minimumOuterBoundaryEnergyRatio": 5.832576903748228,
+            "localRangeScore": 88.49263602958607,
+            "rangeScore": 56.47579538635349
+          },
+          "closestBoundaryDistance": 1.333333333333485,
+          "closestRejectionReason": null,
+          "topSelected": [
+            {
+              "x": 624,
+              "y": 513,
+              "right": 1824,
+              "bottom": 1153,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6656830942028875,
+              "outerBoundaryBalance": 0.41716958159904216,
+              "minimumOuterBoundaryEnergyRatio": 5.832576903748228,
+              "localRangeScore": 88.49263602958607,
+              "rangeScore": 56.47579538635349
+            },
+            {
+              "x": 628,
+              "y": 513,
+              "right": 1829,
+              "bottom": 1153,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9943074003795066,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6738545474011974,
+              "outerBoundaryBalance": 0.5108321908428208,
+              "minimumOuterBoundaryEnergyRatio": 7.051536231160762,
+              "localRangeScore": 87.0555017952786,
+              "rangeScore": 54.84547163577755
+            }
+          ]
+        }
+      ],
+      "revalidation": [
+        {
+          "geometry": null,
+          "gates": [
+            {
+              "stage": "score-selection",
+              "mappedBounds": {
+                "x": 466,
+                "y": 385,
+                "width": 903,
+                "height": 480
+              },
+              "mappedScore": 44.76109019695941,
+              "mappedIsWinner": true,
+              "separated": false,
+              "selectedScores": [
+                44.76109019695941,
+                44.7169842480625,
+                43.09031504521658
+              ],
+              "selectedBounds": [
+                {
+                  "x": 466,
+                  "y": 385,
+                  "right": 1369,
+                  "bottom": 865
+                },
+                {
+                  "x": 468,
+                  "y": 385,
+                  "right": 1368,
+                  "bottom": 862
+                },
+                {
+                  "x": 471,
+                  "y": 385,
+                  "right": 1372,
+                  "bottom": 862
+                }
+              ]
+            },
+            "gate-7"
+          ]
+        },
+        {
+          "geometry": {
+            "bounds": {
+              "x": 469,
+              "y": 385,
+              "width": 904,
+              "height": 480
+            },
+            "columns": 30,
+            "rows": 16,
+            "pitchX": 30.133333333333333,
+            "pitchY": 30,
+            "score": 46.401391390525845
+          },
+          "gates": [
+            {
+              "stage": "score-selection",
+              "mappedBounds": {
+                "x": 469,
+                "y": 385,
+                "width": 904,
+                "height": 480
+              },
+              "mappedScore": 46.401391390525845,
+              "mappedIsWinner": true,
+              "separated": true,
+              "selectedScores": [
+                46.401391390525845,
+                43.09031504521658
+              ],
+              "selectedBounds": [
+                {
+                  "x": 469,
+                  "y": 385,
+                  "right": 1373,
+                  "bottom": 865
+                },
+                {
+                  "x": 471,
+                  "y": 385,
+                  "right": 1372,
+                  "bottom": 862
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "geometry": {
+            "bounds": {
+              "x": 469,
+              "y": 387,
+              "width": 904,
+              "height": 482
+            },
+            "columns": 30,
+            "rows": 16,
+            "pitchX": 30.133333333333333,
+            "pitchY": 30.125,
+            "score": 45.16629853485062
+          },
+          "gates": [
+            {
+              "stage": "score-selection",
+              "mappedBounds": {
+                "x": 469,
+                "y": 387,
+                "width": 904,
+                "height": 482
+              },
+              "mappedScore": 45.16629853485062,
+              "mappedIsWinner": true,
+              "separated": true,
+              "selectedScores": [
+                45.16629853485062
+              ],
+              "selectedBounds": [
+                {
+                  "x": 469,
+                  "y": 387,
+                  "right": 1373,
+                  "bottom": 869
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "geometry": null,
+          "gates": [
+            {
+              "stage": "score-selection",
+              "mappedBounds": {
+                "x": 466,
+                "y": 445,
+                "width": 903,
+                "height": 478
+              },
+              "mappedScore": 35.94891913971239,
+              "mappedIsWinner": false,
+              "separated": false,
+              "selectedScores": [
+                44.7169842480625,
+                43.09031504521658,
+                35.94891913971239
+              ],
+              "selectedBounds": [
+                {
+                  "x": 468,
+                  "y": 385,
+                  "right": 1368,
+                  "bottom": 862
+                },
+                {
+                  "x": 471,
+                  "y": 385,
+                  "right": 1372,
+                  "bottom": 862
+                },
+                {
+                  "x": 466,
+                  "y": 445,
+                  "right": 1369,
+                  "bottom": 923
+                }
+              ]
+            },
+            "gate-7"
+          ]
+        },
+        {
+          "geometry": null,
+          "gates": [
+            {
+              "stage": "score-selection",
+              "mappedBounds": {
+                "x": 469,
+                "y": 445,
+                "width": 904,
+                "height": 478
+              },
+              "mappedScore": 38.02030932218541,
+              "mappedIsWinner": false,
+              "separated": false,
+              "selectedScores": [
+                44.7169842480625,
+                43.09031504521658,
+                38.02030932218541
+              ],
+              "selectedBounds": [
+                {
+                  "x": 468,
+                  "y": 385,
+                  "right": 1368,
+                  "bottom": 862
+                },
+                {
+                  "x": 471,
+                  "y": 385,
+                  "right": 1372,
+                  "bottom": 862
+                },
+                {
+                  "x": 469,
+                  "y": 445,
+                  "right": 1373,
+                  "bottom": 923
+                }
+              ]
+            },
+            "gate-7"
+          ]
+        }
+      ],
+      "sourceSurvivorCount": 2,
+      "cleanProductionResultMatches": true
+    },
+    {
+      "id": "9/3.jpg",
+      "sourceImageSha256": "e6abffe62a38b17d7bdacfb1d6dab875936f37bea058e0037e86d1ad64f50249",
+      "rgbaSha256": "a2ff217b4b305cee44f47448fb5587e7e39efa04a1680fde83439f4771ec9a93",
+      "stage": "source-revalidation-rejected",
+      "geometry": null,
+      "reviewBounds": {
+        "x": 467,
+        "y": 385,
+        "width": 900,
+        "height": 480
+      },
+      "calls": [
+        {
+          "size": [
+            1920,
+            1080
+          ],
+          "status": "ambiguous",
+          "pairCountBeforeBudget": 416,
+          "estimatedPitch": 30,
+          "publicCandidates": [
+            {
+              "left": 468,
+              "top": 385,
+              "right": 1368,
+              "bottom": 862,
+              "score": 44.27748754754329
+            },
+            {
+              "left": 471,
+              "top": 385,
+              "right": 1372,
+              "bottom": 862,
+              "score": 42.76410228815393
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 468,
+              "y": 385,
+              "right": 1368,
+              "bottom": 865,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6679609221687125,
+              "outerBoundaryBalance": 0.39904311697834455,
+              "minimumOuterBoundaryEnergyRatio": 5.267086489261865,
+              "localRangeScore": 71.62851810058824,
+              "rangeScore": 45.42063624624156,
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 468,
+              "y": 385,
+              "right": 1368,
+              "bottom": 862,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6589256529649987,
+              "outerBoundaryBalance": 0.39904311697834455,
+              "minimumOuterBoundaryEnergyRatio": 5.267086489261865,
+              "localRangeScore": 69.560434605434,
+              "rangeScore": 44.27748754754329,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 471,
+              "y": 385,
+              "right": 1372,
+              "bottom": 865,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9924098671726755,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6782079188026868,
+              "outerBoundaryBalance": 0.5095386603969065,
+              "minimumOuterBoundaryEnergyRatio": 5.233617090280259,
+              "localRangeScore": 70.17975336579953,
+              "rangeScore": 43.87865567127911,
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 471,
+              "y": 385,
+              "right": 1372,
+              "bottom": 862,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9924098671726755,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6605765532540798,
+              "outerBoundaryBalance": 0.5095386603969065,
+              "minimumOuterBoundaryEnergyRatio": 5.233617090280259,
+              "localRangeScore": 68.13025291264199,
+              "rangeScore": 42.76410228815393,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 468,
+              "y": 380,
+              "right": 1368,
+              "bottom": 859,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.937381404174573,
+              "leadingIntersectionSupportRatio": 0.8936170212765957,
+              "outerBoundaryDistinctiveness": 0.5821999610981368,
+              "outerBoundaryBalance": 0.40259432160802944,
+              "minimumOuterBoundaryEnergyRatio": 4.522433053706866,
+              "localRangeScore": 61.991327956657045,
+              "rangeScore": 39.82583916123482,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            }
+          ],
+          "phaseCount": 16,
+          "supportCount": 15,
+          "extentFilterCount": 2,
+          "selectedCount": 2,
+          "closestSupportedCandidate": {
+            "x": 468,
+            "y": 385,
+            "right": 1368,
+            "bottom": 862,
+            "pitchX": 30,
+            "pitchY": 30,
+            "intersectionSupportRatio": 1,
+            "leadingIntersectionSupportRatio": 1,
+            "outerBoundaryDistinctiveness": 0.6589256529649987,
+            "outerBoundaryBalance": 0.39904311697834455,
+            "minimumOuterBoundaryEnergyRatio": 5.267086489261865,
+            "localRangeScore": 69.560434605434,
+            "rangeScore": 44.27748754754329
+          },
+          "closestBoundaryDistance": 3.0,
+          "closestRejectionReason": null,
+          "topSelected": [
+            {
+              "x": 468,
+              "y": 385,
+              "right": 1368,
+              "bottom": 862,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6589256529649987,
+              "outerBoundaryBalance": 0.39904311697834455,
+              "minimumOuterBoundaryEnergyRatio": 5.267086489261865,
+              "localRangeScore": 69.560434605434,
+              "rangeScore": 44.27748754754329
+            },
+            {
+              "x": 471,
+              "y": 385,
+              "right": 1372,
+              "bottom": 862,
+              "pitchX": 30,
+              "pitchY": 30,
+              "intersectionSupportRatio": 0.9924098671726755,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6605765532540798,
+              "outerBoundaryBalance": 0.5095386603969065,
+              "minimumOuterBoundaryEnergyRatio": 5.233617090280259,
+              "localRangeScore": 68.13025291264199,
+              "rangeScore": 42.76410228815393
+            }
+          ]
+        },
+        {
+          "size": [
+            2560,
+            1440
+          ],
+          "status": "ambiguous",
+          "pairCountBeforeBudget": 1273,
+          "estimatedPitch": 39.99999999999999,
+          "publicCandidates": [
+            {
+              "left": 624,
+              "top": 513,
+              "right": 1824,
+              "bottom": 1153,
+              "score": 55.92136569851648
+            },
+            {
+              "left": 628,
+              "top": 513,
+              "right": 1829,
+              "bottom": 1153,
+              "score": 54.437295458750825
+            },
+            {
+              "left": 628,
+              "top": 517,
+              "right": 1829,
+              "bottom": 1158,
+              "score": 49.790507303247445
+            },
+            {
+              "left": 624,
+              "top": 593,
+              "right": 1824,
+              "bottom": 1231,
+              "score": 43.00459037944582
+            },
+            {
+              "left": 628,
+              "top": 593,
+              "right": 1829,
+              "bottom": 1231,
+              "score": 41.83708313735801
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 624,
+              "y": 513,
+              "right": 1824,
+              "bottom": 1153,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6573503235454756,
+              "outerBoundaryBalance": 0.41716958159904216,
+              "minimumOuterBoundaryEnergyRatio": 5.825997846105523,
+              "localRangeScore": 87.60495174262368,
+              "rangeScore": 55.92136569851648,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 625,
+              "y": 513,
+              "right": 1825,
+              "bottom": 1153,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6573503235454756,
+              "outerBoundaryBalance": 0.41716958159904216,
+              "minimumOuterBoundaryEnergyRatio": 5.825997846105523,
+              "localRangeScore": 87.60495174262368,
+              "rangeScore": 51.64184549718388,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 624,
+              "y": 517,
+              "right": 1824,
+              "bottom": 1158,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9943074003795066,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6688983118159718,
+              "outerBoundaryBalance": 0.41428908813208876,
+              "minimumOuterBoundaryEnergyRatio": 5.738560468087004,
+              "localRangeScore": 82.7146825943175,
+              "rangeScore": 51.02715643647302,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 625,
+              "y": 517,
+              "right": 1825,
+              "bottom": 1158,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9943074003795066,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6688983118159718,
+              "outerBoundaryBalance": 0.41428908813208876,
+              "minimumOuterBoundaryEnergyRatio": 5.738560468087004,
+              "localRangeScore": 82.7146825943175,
+              "rangeScore": 47.12217764958623,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 628,
+              "y": 513,
+              "right": 1829,
+              "bottom": 1153,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9943074003795066,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.659008852430573,
+              "outerBoundaryBalance": 0.5108321908428208,
+              "minimumOuterBoundaryEnergyRatio": 7.035761199557173,
+              "localRangeScore": 86.40114693011112,
+              "rangeScore": 54.437295458750825,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            }
+          ],
+          "phaseCount": 56,
+          "supportCount": 48,
+          "extentFilterCount": 10,
+          "selectedCount": 5,
+          "closestSupportedCandidate": {
+            "x": 624,
+            "y": 513,
+            "right": 1824,
+            "bottom": 1153,
+            "pitchX": 40,
+            "pitchY": 40,
+            "intersectionSupportRatio": 0.9981024667931688,
+            "leadingIntersectionSupportRatio": 1,
+            "outerBoundaryDistinctiveness": 0.6573503235454756,
+            "outerBoundaryBalance": 0.41716958159904216,
+            "minimumOuterBoundaryEnergyRatio": 5.825997846105523,
+            "localRangeScore": 87.60495174262368,
+            "rangeScore": 55.92136569851648
+          },
+          "closestBoundaryDistance": 1.333333333333485,
+          "closestRejectionReason": null,
+          "topSelected": [
+            {
+              "x": 624,
+              "y": 513,
+              "right": 1824,
+              "bottom": 1153,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6573503235454756,
+              "outerBoundaryBalance": 0.41716958159904216,
+              "minimumOuterBoundaryEnergyRatio": 5.825997846105523,
+              "localRangeScore": 87.60495174262368,
+              "rangeScore": 55.92136569851648
+            },
+            {
+              "x": 628,
+              "y": 513,
+              "right": 1829,
+              "bottom": 1153,
+              "pitchX": 40,
+              "pitchY": 40,
+              "intersectionSupportRatio": 0.9943074003795066,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.659008852430573,
+              "outerBoundaryBalance": 0.5108321908428208,
+              "minimumOuterBoundaryEnergyRatio": 7.035761199557173,
+              "localRangeScore": 86.40114693011112,
+              "rangeScore": 54.437295458750825
+            }
+          ]
+        }
+      ],
+      "revalidation": [
+        {
+          "geometry": null,
+          "gates": [
+            {
+              "stage": "score-selection",
+              "mappedBounds": {
+                "x": 466,
+                "y": 385,
+                "width": 903,
+                "height": 480
+              },
+              "mappedScore": 44.32186701480791,
+              "mappedIsWinner": true,
+              "separated": false,
+              "selectedScores": [
+                44.32186701480791,
+                44.27748754754329,
+                42.76410228815393
+              ],
+              "selectedBounds": [
+                {
+                  "x": 466,
+                  "y": 385,
+                  "right": 1369,
+                  "bottom": 865
+                },
+                {
+                  "x": 468,
+                  "y": 385,
+                  "right": 1368,
+                  "bottom": 862
+                },
+                {
+                  "x": 471,
+                  "y": 385,
+                  "right": 1372,
+                  "bottom": 862
+                }
+              ]
+            },
+            "gate-7"
+          ]
+        },
+        {
+          "geometry": {
+            "bounds": {
+              "x": 469,
+              "y": 385,
+              "width": 904,
+              "height": 480
+            },
+            "columns": 30,
+            "rows": 16,
+            "pitchX": 30.133333333333333,
+            "pitchY": 30,
+            "score": 45.949396076495866
+          },
+          "gates": [
+            {
+              "stage": "score-selection",
+              "mappedBounds": {
+                "x": 469,
+                "y": 385,
+                "width": 904,
+                "height": 480
+              },
+              "mappedScore": 45.949396076495866,
+              "mappedIsWinner": true,
+              "separated": true,
+              "selectedScores": [
+                45.949396076495866,
+                42.76410228815393
+              ],
+              "selectedBounds": [
+                {
+                  "x": 469,
+                  "y": 385,
+                  "right": 1373,
+                  "bottom": 865
+                },
+                {
+                  "x": 471,
+                  "y": 385,
+                  "right": 1372,
+                  "bottom": 862
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "geometry": {
+            "bounds": {
+              "x": 469,
+              "y": 387,
+              "width": 904,
+              "height": 482
+            },
+            "columns": 30,
+            "rows": 16,
+            "pitchX": 30.133333333333333,
+            "pitchY": 30.125,
+            "score": 44.879081654793566
+          },
+          "gates": [
+            {
+              "stage": "score-selection",
+              "mappedBounds": {
+                "x": 469,
+                "y": 387,
+                "width": 904,
+                "height": 482
+              },
+              "mappedScore": 44.879081654793566,
+              "mappedIsWinner": true,
+              "separated": true,
+              "selectedScores": [
+                44.879081654793566
+              ],
+              "selectedBounds": [
+                {
+                  "x": 469,
+                  "y": 387,
+                  "right": 1373,
+                  "bottom": 869
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "geometry": null,
+          "gates": [
+            {
+              "stage": "score-selection",
+              "mappedBounds": {
+                "x": 466,
+                "y": 445,
+                "width": 903,
+                "height": 478
+              },
+              "mappedScore": 35.63837458689662,
+              "mappedIsWinner": false,
+              "separated": false,
+              "selectedScores": [
+                44.27748754754329,
+                42.76410228815393,
+                35.63837458689662
+              ],
+              "selectedBounds": [
+                {
+                  "x": 468,
+                  "y": 385,
+                  "right": 1368,
+                  "bottom": 862
+                },
+                {
+                  "x": 471,
+                  "y": 385,
+                  "right": 1372,
+                  "bottom": 862
+                },
+                {
+                  "x": 466,
+                  "y": 445,
+                  "right": 1369,
+                  "bottom": 923
+                }
+              ]
+            },
+            "gate-7"
+          ]
+        },
+        {
+          "geometry": null,
+          "gates": [
+            {
+              "stage": "score-selection",
+              "mappedBounds": {
+                "x": 469,
+                "y": 445,
+                "width": 904,
+                "height": 478
+              },
+              "mappedScore": 37.66536852496803,
+              "mappedIsWinner": false,
+              "separated": false,
+              "selectedScores": [
+                44.27748754754329,
+                42.76410228815393,
+                37.66536852496803
+              ],
+              "selectedBounds": [
+                {
+                  "x": 468,
+                  "y": 385,
+                  "right": 1368,
+                  "bottom": 862
+                },
+                {
+                  "x": 471,
+                  "y": 385,
+                  "right": 1372,
+                  "bottom": 862
+                },
+                {
+                  "x": 469,
+                  "y": 445,
+                  "right": 1373,
+                  "bottom": 923
+                }
+              ]
+            },
+            "gate-7"
+          ]
+        }
+      ],
+      "sourceSurvivorCount": 2,
+      "cleanProductionResultMatches": true
+    },
+    {
+      "id": "10/1.jpg",
+      "sourceImageSha256": "9c3532e8c5318ed07adbf0a3cd917bfefb006c60296c681217b815a80985e732",
+      "rgbaSha256": "a15a4d069b0afc7ab00f90d0037480131b8628e27ce7b86067a20738b23c5c77",
+      "stage": "hint-rejected",
+      "geometry": null,
+      "reviewBounds": {
+        "x": 391,
+        "y": 320,
+        "width": 750,
+        "height": 400.5
+      },
+      "calls": [
+        {
+          "size": [
+            1600,
+            900
+          ],
+          "status": "ambiguous",
+          "pairCountBeforeBudget": 1800,
+          "estimatedPitch": null,
+          "publicCandidates": [
+            {
+              "left": 391,
+              "top": 346,
+              "right": 1141,
+              "bottom": 744,
+              "score": 84.76681749272277
+            },
+            {
+              "left": 416,
+              "top": 346,
+              "right": 1166,
+              "bottom": 744,
+              "score": 82.42955992020454
+            },
+            {
+              "left": 391,
+              "top": 316,
+              "right": 1141,
+              "bottom": 716,
+              "score": 77.29312574392081
+            },
+            {
+              "left": 416,
+              "top": 316,
+              "right": 1166,
+              "bottom": 716,
+              "score": 75.00640840205267
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 391,
+              "y": 319,
+              "right": 1141,
+              "bottom": 721,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9620493358633776,
+              "leadingIntersectionSupportRatio": 0.8297872340425532,
+              "outerBoundaryDistinctiveness": 1.0301798568163385,
+              "outerBoundaryBalance": 0.5524904042866108,
+              "minimumOuterBoundaryEnergyRatio": 2.5557498268969208,
+              "localRangeScore": 130.32102578773188,
+              "rangeScore": 84.24268225040231,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 391,
+              "y": 318,
+              "right": 1141,
+              "bottom": 718,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9772296015180265,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 1.0301798568163385,
+              "outerBoundaryBalance": 0.42123809158123127,
+              "minimumOuterBoundaryEnergyRatio": 1.9485934439553327,
+              "localRangeScore": 127.85531598420405,
+              "rangeScore": 81.87955806511361,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 391,
+              "y": 316,
+              "right": 1141,
+              "bottom": 716,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9981024667931688,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.9410183323458298,
+              "outerBoundaryBalance": 0.6710623687804617,
+              "minimumOuterBoundaryEnergyRatio": 3.3983762167245106,
+              "localRangeScore": 135.5261525016161,
+              "rangeScore": 77.29312574392081,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 391,
+              "y": 317,
+              "right": 1141,
+              "bottom": 715,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.6947379993246443,
+              "outerBoundaryBalance": 0.6710623687804617,
+              "minimumOuterBoundaryEnergyRatio": 3.3983762167245106,
+              "localRangeScore": 109.17855211399963,
+              "rangeScore": 68.69925186813968,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 391,
+              "y": 340,
+              "right": 1141,
+              "bottom": 740,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.8047423082977826,
+              "outerBoundaryBalance": 0.38337682119271105,
+              "minimumOuterBoundaryEnergyRatio": 1.6189762334486975,
+              "localRangeScore": 91.31060631393892,
+              "rangeScore": 60.28257861739141,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            }
+          ],
+          "phaseCount": 28,
+          "supportCount": 20,
+          "extentFilterCount": 4,
+          "selectedCount": 4,
+          "closestSupportedCandidate": {
+            "x": 391,
+            "y": 319,
+            "right": 1141,
+            "bottom": 721,
+            "pitchX": 25,
+            "pitchY": 25,
+            "intersectionSupportRatio": 0.9620493358633776,
+            "leadingIntersectionSupportRatio": 0.8297872340425532,
+            "outerBoundaryDistinctiveness": 1.0301798568163385,
+            "outerBoundaryBalance": 0.5524904042866108,
+            "minimumOuterBoundaryEnergyRatio": 2.5557498268969208,
+            "localRangeScore": 130.32102578773188,
+            "rangeScore": 84.24268225040231
+          },
+          "closestBoundaryDistance": 1.0,
+          "closestRejectionReason": {
+            "gate": "relative-minimumOuterBoundaryEnergyRatio",
+            "value": 2.5557498268969208,
+            "threshold": 4.27346859036379,
+            "strongestPeer": 4.405637722024526
+          },
+          "topSelected": [
+            {
+              "x": 391,
+              "y": 346,
+              "right": 1141,
+              "bottom": 744,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9772296015180265,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.7898558508016357,
+              "outerBoundaryBalance": 0.7370062245992496,
+              "minimumOuterBoundaryEnergyRatio": 4.405637722024526,
+              "localRangeScore": 131.6812878549989,
+              "rangeScore": 84.76681749272277
+            },
+            {
+              "x": 416,
+              "y": 346,
+              "right": 1166,
+              "bottom": 744,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9772296015180265,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.8093927131872873,
+              "outerBoundaryBalance": 0.7569313655320354,
+              "minimumOuterBoundaryEnergyRatio": 4.405963988645339,
+              "localRangeScore": 130.0184679224821,
+              "rangeScore": 82.42955992020454
+            }
+          ]
+        }
+      ],
+      "revalidation": [],
+      "sourceSurvivorCount": 0,
+      "cleanProductionResultMatches": true
+    },
+    {
+      "id": "10/3.jpg",
+      "sourceImageSha256": "762aef1dc8bb0611ffce4bde561a34693b6cd8d5711d90cfe693074afa03f43b",
+      "rgbaSha256": "3aba2b27a5fd0ef29136629a9a4359eb71a356348e8d0d2225304f95896cde76",
+      "stage": "direct",
+      "geometry": {
+        "bounds": {
+          "x": 391,
+          "y": 345,
+          "width": 750,
+          "height": 400
+        },
+        "columns": 30,
+        "rows": 16,
+        "pitchX": 25,
+        "pitchY": 25,
+        "score": 56.392333933068294
+      },
+      "reviewBounds": {
+        "x": 391,
+        "y": 320,
+        "width": 750,
+        "height": 400
+      },
+      "calls": [
+        {
+          "size": [
+            1600,
+            900
+          ],
+          "status": "found",
+          "pairCountBeforeBudget": 2667,
+          "estimatedPitch": null,
+          "publicCandidates": [
+            {
+              "left": 391,
+              "top": 346,
+              "right": 1141,
+              "bottom": 744,
+              "score": 56.392333933068294
+            }
+          ],
+          "nearestAll": [
+            {
+              "x": 391,
+              "y": 319,
+              "right": 1141,
+              "bottom": 721,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9791271347248577,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.8318153272448654,
+              "outerBoundaryBalance": 0.561982848444025,
+              "minimumOuterBoundaryEnergyRatio": 2.569743778231869,
+              "localRangeScore": 87.28575883046199,
+              "rangeScore": 57.28699331766641,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 391,
+              "y": 318,
+              "right": 1141,
+              "bottom": 718,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9791271347248577,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.8318153272448654,
+              "outerBoundaryBalance": 0.561982848444025,
+              "minimumOuterBoundaryEnergyRatio": 2.569743778231869,
+              "localRangeScore": 87.28575883046199,
+              "rangeScore": 56.33605968913781,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 391,
+              "y": 316,
+              "right": 1141,
+              "bottom": 716,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.7598221484185106,
+              "outerBoundaryBalance": 0.6710623687804617,
+              "minimumOuterBoundaryEnergyRatio": 3.359267723681394,
+              "localRangeScore": 91.15114788448223,
+              "rangeScore": 52.37792790294154,
+              "verticalPhase": true,
+              "horizontalPhase": true
+            },
+            {
+              "x": 391,
+              "y": 317,
+              "right": 1141,
+              "bottom": 715,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9886148007590133,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.5764775229540181,
+              "outerBoundaryBalance": 0.6710623687804617,
+              "minimumOuterBoundaryEnergyRatio": 3.359267723681394,
+              "localRangeScore": 73.0346191251396,
+              "rangeScore": 46.49712645729876,
+              "verticalPhase": true,
+              "horizontalPhase": false
+            },
+            {
+              "x": 391,
+              "y": 329,
+              "right": 1141,
+              "bottom": 713,
+              "pitchX": 25,
+              "pitchY": 24,
+              "intersectionSupportRatio": 0.9013282732447818,
+              "leadingIntersectionSupportRatio": 0.7446808510638298,
+              "outerBoundaryDistinctiveness": 0.951458270538542,
+              "outerBoundaryBalance": 0.4529304907122604,
+              "minimumOuterBoundaryEnergyRatio": 1.5215147785208716,
+              "localRangeScore": 65.25329307516724,
+              "rangeScore": 41.46797587946676,
+              "verticalPhase": true,
+              "horizontalPhase": false
+            }
+          ],
+          "phaseCount": 32,
+          "supportCount": 22,
+          "extentFilterCount": 3,
+          "selectedCount": 3,
+          "closestSupportedCandidate": {
+            "x": 391,
+            "y": 319,
+            "right": 1141,
+            "bottom": 721,
+            "pitchX": 25,
+            "pitchY": 25,
+            "intersectionSupportRatio": 0.9791271347248577,
+            "leadingIntersectionSupportRatio": 1,
+            "outerBoundaryDistinctiveness": 0.8318153272448654,
+            "outerBoundaryBalance": 0.561982848444025,
+            "minimumOuterBoundaryEnergyRatio": 2.569743778231869,
+            "localRangeScore": 87.28575883046199,
+            "rangeScore": 57.28699331766641
+          },
+          "closestBoundaryDistance": 1.0,
+          "closestRejectionReason": {
+            "gate": "relative-minimumOuterBoundaryEnergyRatio",
+            "value": 2.569743778231869,
+            "threshold": 3.258489691970952,
+            "strongestPeer": 3.359267723681394
+          },
+          "topSelected": [
+            {
+              "x": 391,
+              "y": 346,
+              "right": 1141,
+              "bottom": 744,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 0.9791271347248577,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.7817275080480558,
+              "outerBoundaryBalance": 0.8950424995074739,
+              "minimumOuterBoundaryEnergyRatio": 4.354937669642346,
+              "localRangeScore": 87.2274647357073,
+              "rangeScore": 56.392333933068294
+            },
+            {
+              "x": 391,
+              "y": 316,
+              "right": 1141,
+              "bottom": 716,
+              "pitchX": 25,
+              "pitchY": 25,
+              "intersectionSupportRatio": 1,
+              "leadingIntersectionSupportRatio": 1,
+              "outerBoundaryDistinctiveness": 0.7598221484185106,
+              "outerBoundaryBalance": 0.6710623687804617,
+              "minimumOuterBoundaryEnergyRatio": 3.359267723681394,
+              "localRangeScore": 91.15114788448223,
+              "rangeScore": 52.37792790294154
+            }
+          ]
+        }
+      ],
+      "revalidation": [],
+      "sourceSurvivorCount": 0,
+      "cleanProductionResultMatches": true
+    }
+  ],
+  "minimumExecutionsPerRepresentative": 2
+}

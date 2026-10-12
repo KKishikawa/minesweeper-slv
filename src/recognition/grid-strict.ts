@@ -131,6 +131,75 @@ export interface RefinedGridCandidate {
   readonly rangeScore: number;
 }
 
+
+export type GridLocationSafetyResult =
+  | { readonly status: "safe" }
+  | {
+      readonly status: "conflict";
+      readonly reason: "invalid-evidence" | "competing-location";
+      readonly candidateIndex: number | null;
+      readonly maximumBoundaryDifference: number | null;
+    };
+
+export function assessGridLocationSafety(
+  image: Pick<PixelImage, "width" | "height">,
+  dimensions: GridDimensions,
+  proposed: GridBoundaryCandidate,
+  candidates: readonly RefinedGridCandidate[],
+): GridLocationSafetyResult {
+  const invalidEvidence = (candidateIndex: number | null): GridLocationSafetyResult => ({
+    status: "conflict", reason: "invalid-evidence", candidateIndex, maximumBoundaryDifference: null,
+  });
+  const validBoundaries = (boundaries: readonly number[], count: number, limit: number): boolean =>
+    boundaries.length === count + 1
+    && boundaries.every((coordinate, index) => Number.isFinite(coordinate)
+      && coordinate >= 0 && coordinate < limit
+      && (index === 0 || coordinate > boundaries[index - 1]!));
+  const pitch = (boundaries: readonly number[]): number =>
+    (boundaries[boundaries.length - 1]! - boundaries[0]!) / (boundaries.length - 1);
+  const matchingPitch = (first: number, second: number): boolean =>
+    Math.abs(first - second) / Math.max(first, second) <= 0.05;
+
+  if (!isPositiveInteger(image.width) || !isPositiveInteger(image.height)
+    || !isPositiveInteger(dimensions.columns) || !isPositiveInteger(dimensions.rows)
+    || !validBoundaries(proposed.verticalBoundaries, dimensions.columns, image.width)
+    || !validBoundaries(proposed.horizontalBoundaries, dimensions.rows, image.height)) {
+    return invalidEvidence(null);
+  }
+  const proposedVerticalPitch = pitch(proposed.verticalBoundaries);
+  const proposedHorizontalPitch = pitch(proposed.horizontalBoundaries);
+  for (const [candidateIndex, candidate] of candidates.entries()) {
+    const vertical = candidate.canonicalVerticalBoundaries;
+    const horizontal = candidate.canonicalHorizontalBoundaries;
+    if (!validBoundaries(vertical, dimensions.columns, image.width)
+      || !validBoundaries(horizontal, dimensions.rows, image.height)
+      || !Number.isFinite(candidate.intersectionSupportRatio)
+      || !Number.isFinite(candidate.minimumOuterBoundaryEnergyRatio)) {
+      return invalidEvidence(candidateIndex);
+    }
+    const verticalPitch = pitch(vertical);
+    const horizontalPitch = pitch(horizontal);
+    if (!matchingPitch(verticalPitch, horizontalPitch)
+      || !matchingPitch(verticalPitch, proposedVerticalPitch)
+      || !matchingPitch(horizontalPitch, proposedHorizontalPitch)
+      || candidate.intersectionSupportRatio < 0.9
+      || candidate.minimumOuterBoundaryEnergyRatio < 1.3) continue;
+    let maximumBoundaryDifference = 0;
+    for (let index = 0; index < vertical.length; index += 1) {
+      maximumBoundaryDifference = Math.max(maximumBoundaryDifference,
+        Math.abs(vertical[index]! - proposed.verticalBoundaries[index]!));
+    }
+    for (let index = 0; index < horizontal.length; index += 1) {
+      maximumBoundaryDifference = Math.max(maximumBoundaryDifference,
+        Math.abs(horizontal[index]! - proposed.horizontalBoundaries[index]!));
+    }
+    if (maximumBoundaryDifference > 4) {
+      return { status: "conflict", reason: "competing-location", candidateIndex, maximumBoundaryDifference };
+    }
+  }
+  return { status: "safe" };
+}
+
 function isPositiveInteger(value: number): boolean {
   return Number.isInteger(value) && value > 0;
 }
