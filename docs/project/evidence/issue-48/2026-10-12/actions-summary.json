@@ -1,0 +1,365 @@
+[
+  {
+    "runId": 38245586597,
+    "attempt": 1,
+    "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38245586597",
+    "headSha": "288d9b802c4867424e10f7a5dfb5c53527ba70b4",
+    "conclusion": "success",
+    "metadata": {
+      "schemaVersion": 1,
+      "group": "grid-compatibility",
+      "targetSha": "7c9c3a0fbac6e56a7b651a4dd2f6a72c067fba0e",
+      "controlSha": "7c9c3a0fbac6e56a7b651a4dd2f6a72c067fba0e",
+      "condition": null,
+      "nodeVersion": "v22.12.0",
+      "chromiumVersion": "Google Chrome for Testing 156.0.8078.4",
+      "chromiumUnavailableReason": null,
+      "startedAt": "2026-10-12T11:54:18.158Z",
+      "finishedAt": "2026-10-12T11:55:49.595Z",
+      "durationMs": 91436.232588,
+      "exitCode": 0,
+      "signal": null,
+      "spawnError": null,
+      "reportMissing": false,
+      "maxRssKiB": 882412,
+      "rssScope": "GNU time maximum resident set size of the Vitest command and its waited-for descendants; not the simultaneous RSS sum of all processes",
+      "rssUnavailableReason": null
+    },
+    "jobs": [
+      {
+        "id": 114798503791,
+        "name": "Regression / recognition",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:45Z",
+        "completed_at": "2026-10-12T11:57:21Z"
+      },
+      {
+        "id": 114798504146,
+        "name": "Regression / product",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:45Z",
+        "completed_at": "2026-10-12T11:55:22Z"
+      },
+      {
+        "id": 114798504162,
+        "name": "Regression / formal",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:45Z",
+        "completed_at": "2026-10-12T12:00:45Z"
+      },
+      {
+        "id": 114798504292,
+        "name": "Regression / grid-compatibility",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:45Z",
+        "completed_at": "2026-10-12T11:55:52Z"
+      },
+      {
+        "id": 114798504812,
+        "name": "Regression / holdout",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:46Z",
+        "completed_at": "2026-10-12T11:57:19Z"
+      },
+      {
+        "id": 114801001587,
+        "name": "CI / quality",
+        "conclusion": "success",
+        "started_at": "2026-10-12T12:00:50Z",
+        "completed_at": "2026-10-12T12:01:07Z"
+      }
+    ],
+    "testResults": [
+      {
+        "name": "/home/runner/work/minesweeper-slv/minesweeper-slv/test/recognition/browser-grid-fallback.test.ts",
+        "status": "passed",
+        "tests": [
+          {
+            "title": "keeps the exact formal matrix deterministic across three runs over retained inputs",
+            "status": "passed",
+            "duration": 82871.929291
+          }
+        ]
+      },
+      {
+        "name": "/home/runner/work/minesweeper-slv/minesweeper-slv/test/recognition/browser-grid-resample.test.ts",
+        "status": "passed",
+        "tests": [
+          {
+            "title": "hashes every browser output chunk in fixed offset order",
+            "status": "passed",
+            "duration": 2.7040719999999965
+          },
+          {
+            "title": "rejects a browser chunk that omits trailing bytes",
+            "status": "passed",
+            "duration": 1.4696010000000115
+          },
+          {
+            "title": "hashes decoded Base64 chunks including high bytes and a partial final chunk",
+            "status": "passed",
+            "duration": 0.39039099999990867
+          },
+          {
+            "title": "rejects a Base64 chunk with missing bytes after decoding",
+            "status": "passed",
+            "duration": 0.5088919999999462
+          },
+          {
+            "title": "closes launched browsers when the timing reporter fails",
+            "status": "passed",
+            "duration": 2060.803547
+          },
+          {
+            "title": "matches Node bytes in formal Chromium for unit, 30-pixel, and 50-pixel inputs",
+            "status": "passed",
+            "duration": 4770.895409999999
+          }
+        ]
+      }
+    ],
+    "artifactId": 11745391651
+  },
+  {
+    "runId": 38245586597,
+    "attempt": 2,
+    "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38245586597",
+    "headSha": "288d9b802c4867424e10f7a5dfb5c53527ba70b4",
+    "conclusion": "success",
+    "metadata": {
+      "schemaVersion": 1,
+      "group": "grid-compatibility",
+      "targetSha": "7c9c3a0fbac6e56a7b651a4dd2f6a72c067fba0e",
+      "controlSha": "7c9c3a0fbac6e56a7b651a4dd2f6a72c067fba0e",
+      "condition": null,
+      "nodeVersion": "v22.12.0",
+      "chromiumVersion": "Google Chrome for Testing 156.0.8078.4",
+      "chromiumUnavailableReason": null,
+      "startedAt": "2026-10-12T16:57:05.204Z",
+      "finishedAt": "2026-10-12T16:58:36.901Z",
+      "durationMs": 91697.101596,
+      "exitCode": 0,
+      "signal": null,
+      "spawnError": null,
+      "reportMissing": false,
+      "maxRssKiB": 882312,
+      "rssScope": "GNU time maximum resident set size of the Vitest command and its waited-for descendants; not the simultaneous RSS sum of all processes",
+      "rssUnavailableReason": null
+    },
+    "jobs": [
+      {
+        "id": 114917539604,
+        "name": "Regression / grid-compatibility",
+        "conclusion": "success",
+        "started_at": "2026-10-12T16:56:29Z",
+        "completed_at": "2026-10-12T16:58:41Z"
+      },
+      {
+        "id": 114917541517,
+        "name": "Regression / formal",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:45Z",
+        "completed_at": "2026-10-12T12:00:45Z"
+      },
+      {
+        "id": 114917574044,
+        "name": "Regression / product",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:45Z",
+        "completed_at": "2026-10-12T11:55:22Z"
+      },
+      {
+        "id": 114917576807,
+        "name": "Regression / holdout",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:46Z",
+        "completed_at": "2026-10-12T11:57:19Z"
+      },
+      {
+        "id": 114917602987,
+        "name": "Regression / recognition",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:45Z",
+        "completed_at": "2026-10-12T11:57:21Z"
+      },
+      {
+        "id": 114918374835,
+        "name": "CI / quality",
+        "conclusion": "success",
+        "started_at": "2026-10-12T16:58:45Z",
+        "completed_at": "2026-10-12T16:59:00Z"
+      }
+    ],
+    "testResults": [
+      {
+        "name": "/home/runner/work/minesweeper-slv/minesweeper-slv/test/recognition/browser-grid-fallback.test.ts",
+        "status": "passed",
+        "tests": [
+          {
+            "title": "keeps the exact formal matrix deterministic across three runs over retained inputs",
+            "status": "passed",
+            "duration": 83368.685362
+          }
+        ]
+      },
+      {
+        "name": "/home/runner/work/minesweeper-slv/minesweeper-slv/test/recognition/browser-grid-resample.test.ts",
+        "status": "passed",
+        "tests": [
+          {
+            "title": "hashes every browser output chunk in fixed offset order",
+            "status": "passed",
+            "duration": 2.627344999999991
+          },
+          {
+            "title": "rejects a browser chunk that omits trailing bytes",
+            "status": "passed",
+            "duration": 1.4149970000000849
+          },
+          {
+            "title": "hashes decoded Base64 chunks including high bytes and a partial final chunk",
+            "status": "passed",
+            "duration": 0.3935860000000275
+          },
+          {
+            "title": "rejects a Base64 chunk with missing bytes after decoding",
+            "status": "passed",
+            "duration": 0.45915899999999965
+          },
+          {
+            "title": "closes launched browsers when the timing reporter fails",
+            "status": "passed",
+            "duration": 2023.197512
+          },
+          {
+            "title": "matches Node bytes in formal Chromium for unit, 30-pixel, and 50-pixel inputs",
+            "status": "passed",
+            "duration": 4683.820564000001
+          }
+        ]
+      }
+    ],
+    "artifactId": 11761630739
+  },
+  {
+    "runId": 38245586597,
+    "attempt": 3,
+    "url": "https://github.com/KKishikawa/minesweeper-slv/actions/runs/38245586597",
+    "headSha": "288d9b802c4867424e10f7a5dfb5c53527ba70b4",
+    "conclusion": "success",
+    "metadata": {
+      "schemaVersion": 1,
+      "group": "grid-compatibility",
+      "targetSha": "7c9c3a0fbac6e56a7b651a4dd2f6a72c067fba0e",
+      "controlSha": "7c9c3a0fbac6e56a7b651a4dd2f6a72c067fba0e",
+      "condition": null,
+      "nodeVersion": "v22.12.0",
+      "chromiumVersion": "Google Chrome for Testing 156.0.8078.4",
+      "chromiumUnavailableReason": null,
+      "startedAt": "2026-10-12T16:59:54.612Z",
+      "finishedAt": "2026-10-12T17:01:25.968Z",
+      "durationMs": 91356.304703,
+      "exitCode": 0,
+      "signal": null,
+      "spawnError": null,
+      "reportMissing": false,
+      "maxRssKiB": 914160,
+      "rssScope": "GNU time maximum resident set size of the Vitest command and its waited-for descendants; not the simultaneous RSS sum of all processes",
+      "rssUnavailableReason": null
+    },
+    "jobs": [
+      {
+        "id": 114918606814,
+        "name": "Regression / grid-compatibility",
+        "conclusion": "success",
+        "started_at": "2026-10-12T16:59:22Z",
+        "completed_at": "2026-10-12T17:01:29Z"
+      },
+      {
+        "id": 114918608285,
+        "name": "Regression / formal",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:45Z",
+        "completed_at": "2026-10-12T12:00:45Z"
+      },
+      {
+        "id": 114918608577,
+        "name": "Regression / recognition",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:45Z",
+        "completed_at": "2026-10-12T11:57:21Z"
+      },
+      {
+        "id": 114918609156,
+        "name": "Regression / product",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:45Z",
+        "completed_at": "2026-10-12T11:55:22Z"
+      },
+      {
+        "id": 114918655925,
+        "name": "Regression / holdout",
+        "conclusion": "success",
+        "started_at": "2026-10-12T11:53:46Z",
+        "completed_at": "2026-10-12T11:57:19Z"
+      },
+      {
+        "id": 114919420563,
+        "name": "CI / quality",
+        "conclusion": "success",
+        "started_at": "2026-10-12T17:01:32Z",
+        "completed_at": "2026-10-12T17:01:47Z"
+      }
+    ],
+    "testResults": [
+      {
+        "name": "/home/runner/work/minesweeper-slv/minesweeper-slv/test/recognition/browser-grid-fallback.test.ts",
+        "status": "passed",
+        "tests": [
+          {
+            "title": "keeps the exact formal matrix deterministic across three runs over retained inputs",
+            "status": "passed",
+            "duration": 83023.80365700001
+          }
+        ]
+      },
+      {
+        "name": "/home/runner/work/minesweeper-slv/minesweeper-slv/test/recognition/browser-grid-resample.test.ts",
+        "status": "passed",
+        "tests": [
+          {
+            "title": "hashes every browser output chunk in fixed offset order",
+            "status": "passed",
+            "duration": 2.7853829999999107
+          },
+          {
+            "title": "rejects a browser chunk that omits trailing bytes",
+            "status": "passed",
+            "duration": 1.454898000000071
+          },
+          {
+            "title": "hashes decoded Base64 chunks including high bytes and a partial final chunk",
+            "status": "passed",
+            "duration": 0.4075639999999794
+          },
+          {
+            "title": "rejects a Base64 chunk with missing bytes after decoding",
+            "status": "passed",
+            "duration": 0.4687589999999773
+          },
+          {
+            "title": "closes launched browsers when the timing reporter fails",
+            "status": "passed",
+            "duration": 2016.2455109999999
+          },
+          {
+            "title": "matches Node bytes in formal Chromium for unit, 30-pixel, and 50-pixel inputs",
+            "status": "passed",
+            "duration": 4695.82623
+          }
+        ]
+      }
+    ],
+    "artifactId": 11761407232
+  }
+]

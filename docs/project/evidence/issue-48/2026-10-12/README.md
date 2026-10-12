@@ -36,8 +36,24 @@ RPC時間はブラウザー内処理・待機・シリアライズ・転送・No
 
 評価器は段階ごとの所要時間と成功/失敗を任意コールバックへ通知する。ブラウザー内のリサンプリング時間はブラウザーの時計で測り、入力転送・処理RPCの包含値として記録する。これらを足し合わせて全体時間にはしない。`grid-compatibility` のCIテストでは各段階の完了直後にログと既存のCI artifact内 `resample-timings.jsonl` へ保存する。後続の段階がタイムアウトしても既に完了した区間は残る。タイムアウト中の未完了区間の値は存在せず、0として扱わない。
 
-CIの実行結果は検証後に追記する。
+## GitHub Actionsでの検証（10月12〜13日 JST）
+
+[PR #49](https://github.com/KKishikawa/minesweeper-slv/pull/49)の実装コミット `288d9b802c4867424e10f7a5dfb5c53527ba70b4`、PR merge ref `7c9c3a0fbac6e56a7b651a4dd2f6a72c067fba0e` を3回検証した。Ubuntu 24.04 / Node v22.12.0 / Chrome for Testing 156.0.8078.4。全反復でtargetShaとブラウザー版が一致する。
+
+| attempt | 対象テスト (秒) | 出力取得・ハッシュ合計 (秒) | grid-compatibility | CI / quality |
+| --- | --- | --- | --- | --- |
+| [1](https://github.com/KKishikawa/minesweeper-slv/actions/runs/38245586597/attempts/1) | 4.771 | 1.262 | success (7/7) | success |
+| [2](https://github.com/KKishikawa/minesweeper-slv/actions/runs/38245586597/attempts/2) | 4.684 | 1.203 | success (7/7) | success |
+| [3](https://github.com/KKishikawa/minesweeper-slv/actions/runs/38245586597/attempts/3) | 4.696 | 1.202 | success (7/7) | success |
+
+初回は全5回帰グループを実行し、すべて成功した。2・3回目は同じrunのgrid-compatibilityジョブと依存するqualityのみ再実行し、他4グループは初回の成功を引き継いだ。全グループを3回実行したという意味ではない。fallbackの全16入力・3反復と、対象ファイルの全6テストも各回成功した。各回のtimings JSONLが既存の `ci-grid-compatibility` artifactへ格納されたことをダウンロードして確認した。
+
+実結果は [actions-summary.json](actions-summary.json)、段階ログは [attempt 1](actions-attempt-1-timings.jsonl) / [attempt 2](actions-attempt-2-timings.jsonl) / [attempt 3](actions-attempt-3-timings.jsonl) に保存した。同名artifactが反復ごとに作られるため、attemptと記録時刻を確認し、summaryにartifact IDも保存する。3回目の取得ではartifact ID `11761407232` を明示した。
+
+初回の純粋なブラウザー内リサンプリングは計0.324秒、Nodeリサンプリング・ハッシュは計0.437秒、正式入力生成は1.278秒。RPCの包含区間とこれらの時間を重複して合算しない。変更前のCIは過去の別ランナーなので、ローカル同条件比較とは区別する。変更後の3回が120秒の制限を十分下回ったことは確認できるが、将来の任意のランナー変動を保証する結果ではない。
 
 ## ローカル検証
 
 Base64正常系と欠落拒否の追加テストは変更前に失敗し、変更後に成功した。計測コールバックの通知テストも未実装時の失敗を確認した。独立レビューで見つかった「起動成功後の計測通知例外でブラウザーが閉じられない」経路は、実際の接続状態を確認するテストを先に失敗させてから、通知前にブラウザー所有権を保持する構造へ修正した。対象ファイルは6テストすべて成功。型検査と本番ビルドも成功した。上の性能測定はこの終了処理修正を加える前の候補であり、全体回帰とCIは最終コードで検証する。
+
+`npm test` の全体回帰は62ファイル / 566テスト成功（390.47秒、exit 0）。
