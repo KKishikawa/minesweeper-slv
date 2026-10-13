@@ -97,7 +97,7 @@ export function auditCoverage(fixtures: readonly AnnotatedFixture[]): CoverageRe
     const summary = report.negative[split];
     summary.groups = groupCount(entries);
     summary.unknownCells = uniqueSources.reduce((count, { cells }) => count + cells.filter((cell) => cell === "?").length, 0);
-    if (summary.groups < 3 || summary.unknownCells < 30) issue("coverage-incomplete", `${split}:negative`, `Independent groups ${summary.groups}/3, unknown source cells ${summary.unknownCells}/30.`);
+    // Optional captures: report coverage without imposing a collection minimum.
   }
   const training = fixtures.filter(({ fixture }) => fixture.split === "train" && fixture.kind === "positive");
   for (const group of new Set(training.map(({ fixture }) => fixture.group))) {

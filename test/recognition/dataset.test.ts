@@ -57,6 +57,30 @@ describe("next recognition dataset gate", () => {
     expect(report.negative.evaluation).toEqual({ groups: 3, unknownCells: 30 });
   });
 
+  it("accepts complete positive coverage without requiring negative captures", () => {
+    const fixtures = completeDataset().filter(({ fixture }) => fixture.kind === "positive");
+    const report = auditCoverage(fixtures);
+    expect(report.status).toBe("ready-for-fixture-review");
+    expect(report.issues).toEqual([]);
+    expect(report.negative).toEqual({ calibration: { groups: 0, unknownCells: 0 }, evaluation: { groups: 0, unknownCells: 0 } });
+  });
+
+  it("reports optional negative coverage below the former minimum", () => {
+    const fixtures = completeDataset().filter(({ fixture }) => fixture.kind === "positive" || fixture.id === "evaluation-negative-0");
+    const report = auditCoverage(fixtures);
+    expect(report.status).toBe("ready-for-fixture-review");
+    expect(report.negative.evaluation).toEqual({ groups: 1, unknownCells: 10 });
+  });
+
+  it("still requires unknown annotations on registered negative fixtures", () => {
+    const fixtures = completeDataset();
+    const negative = fixtures.find(({ fixture }) => fixture.kind === "negative")!;
+    negative.cells = negative.cells.map((cell) => cell === "?" ? "#" : cell);
+    const report = auditCoverage(fixtures);
+    expect(report.status).toBe("next-cell-recognition-blocked");
+    expect(report.issues).toContainEqual(expect.objectContaining({ code: "unknown-unannotated", subject: negative.fixture.id }));
+  });
+
   it("does not count regression or additional captures as independent groups", () => {
     const fixtures = completeDataset();
     const evaluation = fixtures.filter(({ fixture }) => fixture.split === "evaluation" && fixture.kind === "positive");

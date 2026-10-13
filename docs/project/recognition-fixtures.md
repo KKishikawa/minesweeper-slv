@@ -6,7 +6,7 @@ Issue #5 の[承認済み設計](../superpowers/specs/2026-10-11-next-cell-recog
 
 最新の[収録・訂正・正規化記録](evidence/issue-6/2026-10-12/README.md)と[グリッド修正実験の停止記録](evidence/issue-6/2026-10-12/grid-location-safety.md)を参照する。訂正10セルの所有者確認は済んだが、盤面全体の2者確認、boundsの正式検証、scanline注釈、split、利用・公開条件、追加画像の正式4変換は未完了。グリッド第一案は既存成功を棄却したため採用せず、検出経路を統合前へ戻した。
 
-所有者は2026-10-12に追加negative収録を不要とした。今後の収録依頼には含めない。以下のnegative最低数は承認済み設計・auditに残る旧条件であり、その整合変更は未実施。既存のグリッド安全性テストは維持する。
+所有者は2026-10-12に追加negative収録を不要とし、2026-10-13に設計・auditへの反映を承認した。追加negativeに最低group数・未知セル数を課さず、未収録だけでは開始停止にしない。登録済みnegativeの注釈・権利・truth確認・分離規則と既存のグリッド安全性テストは維持する。未知テーマ・終局表示は未評価ならその旨を報告し、安全性を保証しない。
 
 既存画像 `test/resources/0.png`〜`3.jpg` と `test/recognition/ground-truth/0.json`〜`3.json` は変更しない。[新manifest](../../test/recognition/dataset/manifest.json)はこれらを既知回帰集合として参照し、元ファイルのSHA-256と従来の11 direct／3 fallback／2期待棄却を固定する。撮影系列の独立性が確認されていないため、4画像とも同じ保守的なgroup/familyに置く。旧manifestや旧評価runnerの分割は変更しない。
 
@@ -19,13 +19,13 @@ Issue #5 の[承認済み設計](../superpowers/specs/2026-10-11-next-cell-recog
 | train positive | 6 | 全11ラベル各10セル以上・3group以上 |
 | calibration positive | 3 | 同上 |
 | evaluation positive | 3 | 同上 |
-| calibration negative | 3 | 未知セル合計30以上 |
-| evaluation negative | 3 | 未知セル合計30以上 |
+| calibration negative（任意） | 最低数なし | 登録時は未知セルを注釈 |
+| evaluation negative（任意） | 最低数なし | 登録時は未知セルを注釈 |
 | regression | 既存4画像 | 上記最低数に算入しない |
 
 positiveは30×16の収録テーマで、closed・empty・flag・1〜8を含む。全positive splitで、scanlineあり6／なし6をそれぞれ3group以上収録する。1画面に両方あれば両条件へ数えられるが、撮り直しや加工から独立groupを作らない。train内のleave-one-group-outで残る訓練集合からラベルが消えないことも確認する。
 
-negativeはpositiveと別のgroup。未収録の終局表示や未知テーマを撮影し、未知セルを人手で注釈する。範囲外のサイズ、テーマ、倍率／圧縮率、回転、遠近、欠けた盤面、地雷・爆発・誤旗をpositive保証へ追加しない。元画像の観測後にpositiveをnegativeや期待棄却へ変更しない。
+negativeの追加収録は要求しない。登録する場合はpositiveと別のgroupにし、未知セルを人手で注釈する。範囲外のサイズ、テーマ、倍率／圧縮率、回転、遠近、欠けた盤面、地雷・爆発・誤旗をpositive保証へ追加しない。元画像の観測後にpositiveをnegativeや期待棄却へ変更しない。
 
 同じ盤面の再撮影、同じゲーム進行の連続capture、crop・scanline加工・画像変換は同じ `family` と `group` にまとめる。`group` はsplitをまたがない。同じfamilyまたはsource hashを別groupへ登録した場合も検証が失敗する。バイト一致だけでは異なる盤面の独立性は証明できないので、撮影履歴をレビューする。派生画像をsource fixtureとして再登録して最低数を増やさない。
 
@@ -72,8 +72,10 @@ auditは#6のデータキュレーター専用。#7のモデル担当者は、�
 
 trainだけでfitし、calibrationは事前候補と共有閾値の選択だけに使う。train＋calibrationを再fitしない。独立評価の失敗を見て調整した集合は回帰／開発用へ移し、新しい独立groupを用意する。
 
-未完了項目は、新規positive 12group以上、新規negative 6group以上、7・8・scanline条件、複数テーマ／終局negativeの収録、出典・許諾の証拠、truthの2者確認、fixture構成レビュー、および新規画像の全4変換とgrid契約の検証。現時点でモデル学習・較正・独立評価、認識性能や採否の判断は実行していない。
+未完了項目は、新規positive 12group以上、7・8・scanline条件、出典・許諾の証拠、truthの2者確認、fixture構成レビュー、および新規画像の全4変換とgrid契約の検証。現時点でモデル学習・較正・独立評価、認識性能や採否の判断は実行していない。
 
 初回の基盤検証と3エンジンのhash／環境snapshotは[2026-10-11の証拠](evidence/issue-6/2026-10-11/README.md)を参照。
 
 追加画像の収録担当者向けに[収録チェックリスト](recognition-fixture-collection.md)を用意した。既存の証拠snapshotは実行当時のmanifestを保持し、今回の出典追記で書き換えない。
+
+2026-10-13の進捗とnegative条件変更は[進捗記録](evidence/issue-6/2026-10-13/README.md)を参照。希少数字の収録条件の見直しは別途検討し、今回positiveの最低数は変更しない。
