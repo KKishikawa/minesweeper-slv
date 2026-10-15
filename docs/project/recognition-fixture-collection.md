@@ -11,19 +11,17 @@
 
 ## 最低収録表
 
-以下は2026-10-11の承認済み設計・auditが定めた条件。2026-10-12の所有者方針により、追加negativeの収録は要求しない。設計・auditとの整合変更は別途必要で、既存negativeテストは維持する。
+以下はpositiveの必須収録条件。2026-10-12の所有者方針と2026-10-13の承認により、設計・auditでも追加negativeの最低数を撤廃した。追加negativeの収録は要求せず、既存negativeテストは維持する。
 
 | split / kind | groupの仮ID | 必要な元画像の被覆 |
 | --- | --- | --- |
 | train / positive | train-positive-01〜06 | 各ラベル10セル以上・3group以上 |
 | calibration / positive | calibration-positive-01〜03 | 同上 |
 | evaluation / positive | evaluation-positive-01〜03 | 同上 |
-| calibration / negative | calibration-negative-01〜03 | 人手で確認した未知セル合計30以上 |
-| evaluation / negative | evaluation-negative-01〜03 | 同上 |
 
 positiveは30列×16行、ラベルは `# . F 1 2 3 4 5 6 7 8`。各positive splitでscanline付き6／なし6をそれぞれ3group以上含める。希少な7・8も実画面から収録する。最低12positive groupで被覆が足りなければ追加する。
 
-scanline設定を変えた同じ盤面は同一group。特にcalibrationとevaluationを3groupだけで構成する場合、各groupに両条件の実画面が必要になる。同じセルの再撮影や派生画像でセル数を水増しせず、被覆の独立性も人手で確認する。negativeには未知テーマや終局表示などを含め、positiveとは別groupにする。
+scanline設定を変えた同じ盤面は同一group。特にcalibrationとevaluationを3groupだけで構成する場合、各groupに両条件の実画面が必要になる。同じセルの再撮影や派生画像でセル数を水増しせず、被覆の独立性も人手で確認する。negativeを任意で登録する場合はpositiveとは別groupにし、未知セルを注釈する。
 
 ## 元画像からレビューまで
 

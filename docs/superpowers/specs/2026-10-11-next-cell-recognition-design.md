@@ -70,7 +70,7 @@ RGBA＋利用者が入力した列数・行数
 | 既存11 direct＋3 fallback | 採用済みgeometry許容差内で同じstage。実検出cropで分類する | 14ケースすべてでセル条件を判定。成功しないケースを分母から外さない |
 | `1:canvas-scale-075`、`2:canvas-scale-075` | 決定的な `source-revalidation-rejected`、公開null、cells空 | **期待されたグリッド棄却2件**。セル正解／uncertainの分母には含めず、全16件のcase outcomeには必ず記録 |
 | #6で追加する対応範囲内positive | 元画像と3派生すべてで正しいgridとセル条件 | 未検出・誤geometryは失敗。観測後に期待棄却へ移さない |
-| #6のnegative・範囲外入力 | グリッド棄却、または未知セルがcertainにならないreview結果 | 安全性ゲートとして別表で判定。positiveのuncertain上限を適用しない |
+| 登録済みnegative・既存の範囲外入力テスト | グリッド棄却、または未知セルがcertainにならないreview結果 | 安全性ゲートとして別表で判定。positiveのuncertain上限を適用しない |
 
 この設計によって初めて「グリッドが安全に得られた範囲のセル認識＋期待棄却」を次期採用対象にできる。過去のmulti-prototype採否は変わらず、16/16の全画像自動認識を達成したとは表現しない。
 
@@ -94,7 +94,7 @@ RGBA＋利用者が入力した列数・行数
 
 7・8およびscanline付き6は #6 の必須追加。各splitの各ラベルについて元画像セル10個以上かつ3独立screen group以上、6はscanlineあり／なし各3 group以上を必要とする。派生画像を元ラベル数の水増しに使わない。条件不足は `coverage-incomplete` として #7 開始を止め、既存のclosed〜6だけを全ラベル対応と呼ばない。
 
-未収録の終局表示や未知テーマのnegativeは #6 で固定し、較正／評価それぞれ3独立group以上、各集合で未知セル30個以上を人手で注釈する。gridを棄却すれば安全なケース棄却、有効gridなら注釈された未知セルのcertain数=0を必要とする。既知セルまでuncertainにすることはnegativeでは許すが、その挙動を集計する。ラベル欠落モデルを強制的に作る診断では、欠落ラベルのセルが既知ラベルへcertain化された件数も報告する。
+2026-10-13の所有者承認により、追加negativeの収録と最低group数・未知セル数は #6／#7 の開始条件から外す。対象ゲームで収録対象が存在しないためであり、未知テーマ・終局表示の認識安全性を確認済みとはしない。既存negativeのグリッド安全性テストは維持する。任意でnegativeを登録する場合は、positiveとは別groupとして較正／評価へ固定し、未知セルを人手で注釈する。gridを棄却すれば安全なケース棄却、有効gridなら注釈された未知セルのcertain数=0を必要とする。既知セルまでuncertainにすることはnegativeでは許すが、その挙動を集計する。ラベル欠落モデルを強制的に作る診断では、欠落ラベルのセルが既知ラベルへcertain化された件数も報告する。
 
 有限のnegative集合でcertain誤りが0でも、任意の未収録ラベル・未知テーマを完全に検出できるとは保証しない。未知データ不足を距離ゲートだけで補ったことにしない。全セルを棄却する方式はpositiveのU条件で不合格になる。
 
@@ -104,7 +104,7 @@ RGBA＋利用者が入力した列数・行数
 
 - 既存4画面と全派生: 既知の回帰専用。学習／較正／独立評価の最低数には含めない。
 - 新positive: 最低12独立groupを、訓練6／較正3／独立評価3以上へ固定。上記ラベル・scanline被覆を満たすまで追加する。各sourceから4ケースを作り、最低48ケース。
-- 新negative: positiveとは別のgroupを較正3／独立評価3以上へ固定。
+- 新negative: 収録は任意、最低数なし。登録する場合はpositiveとは別のgroupを較正／独立評価へ固定し、注釈・権利・truth確認・分離規則を適用する。
 - manifestは source/group ID、split、出典・利用権・公開可否、撮影条件、theme、scanline条件、truthとsource hash、変換パラメータ、RGBA hash、positive/negativeと期待stageを持つ。truthは2者確認する。既存truthは上書きしない。
 
 scaler・重み・距離中心のfitは訓練集合だけ。訓練Canvas派生はaugmentationに使えるがgroupを越えない。較正集合は固定候補の選択・棄却閾値だけに使い、重みfitやモデル再学習には使わない。訓練＋較正を合併して最終モデルを作り直さない。
@@ -167,8 +167,8 @@ Firefox、Playwright WebKitは同じ固定成果物と変換手順で全ケー�
 
 1. **開始前停止**: split漏洩、権利不明、ラベル／group被覆不足、未確認truth、正式変換／manifest未固定なら `next-cell-recognition-blocked`。#6へ戻り、採否は未判定。
 2. **開発段階の棄却**: 固定候補のどれも較正・fold条件を満たさない、期限／候補数超過、fixture本番分岐・truth参照・グリッド閾値変更が必要なら `next-cell-recognition-rejected`。独立評価のtruthを開封しない。
-3. **正式評価**: 固定した1成果物で全回帰・独立positive・negativeを評価。欠落／未実行／途中失敗を成功件数だけで隠さない。certain誤りは1件で棄却確定し、診断目的の残ケース実行は許すが調整しない。
-4. **結果**: 全grid契約、E/U、被覆、negative、browser整合、決定性、速度・サイズを満たす場合だけ `next-cell-recognition-passed`。1条件でも未達なら `next-cell-recognition-rejected`。環境障害で評価不能ならblockedとして環境修復後、固定成果物の評価を再実行する。
+3. **正式評価**: 固定した1成果物で全回帰・独立positive・登録済みnegativeを評価。negativeが未収録の場合は未評価と明記し、未知テーマ・終局表示への保証を追加しない。欠落／未実行／途中失敗を成功件数だけで隠さない。certain誤りは1件で棄却確定し、診断目的の残ケース実行は許すが調整しない。
+4. **結果**: 全grid契約、E/U、positive被覆、既存negative安全性テストと登録済みnegativeの条件、browser整合、決定性、速度・サイズを満たす場合だけ `next-cell-recognition-passed`。1条件でも未達なら `next-cell-recognition-rejected`。環境障害で評価不能ならblockedとして環境修復後、固定成果物の評価を再実行する。
 5. **#8 の決定**: passedは採用候補としてレビューへ送る。#8は `next-cell-recognition-adopted` または `next-cell-recognition-rejected` の一方を新ADRに記録する。採用時は14/16制限と対応範囲を製品定義へ反映し #13 のゲートを開く。棄却時はモデルを製品化せず、再設計Issueを作り #13 のゲートを閉じたままにする。手動MVPをblockedにしない。
 
 報告にはgateごとのpass/fail/not-run、全case outcome、検出成功・期待棄却・想定外失敗の数、実検出セル分母N、E/U、ラベル別混同行列（uncertainを別列）、未知セルcertain数、oracle診断、fold、資産hash、時間・サイズ、環境、全正式case overlayを含める。全overlayを確認し、geometryや注釈の誤りを数値だけで見逃さない。失敗でも報告と環境・設定・入力hashを保存する。正式終了codeはpassedで0、rejected/blockedで非0とし、理由を機械可読にする。
