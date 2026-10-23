@@ -19,8 +19,8 @@ it('creates, solves, detects contradictions and recovers by editing', async () =
   await page.getByRole('gridcell').nth(0).focus();
   await page.keyboard.press('0');
   await status('確定した手があります');
-  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('閉じたセル 提案: 安全 S');
-  expect(await page.getByRole('gridcell').nth(2).getAttribute('aria-label')).toContain('閉じたセル 提案: 地雷 M');
+  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('未開封のセル 提案: 安全 S');
+  expect(await page.getByRole('gridcell').nth(2).getAttribute('aria-label')).toContain('未開封のセル 提案: 地雷 M');
   await board(3, 1, 2);
   await page.getByRole('gridcell').nth(1).focus(); await page.keyboard.press('1');
   await status('盤面に矛盾があります');
@@ -41,7 +41,7 @@ it('treats flags as fixed mines, explains the limitation and recovers by manual 
   await status('盤面に矛盾があります');
   await page.getByRole('gridcell').nth(1).focus(); await page.keyboard.press('Delete');
   await status('確定した手があります');
-  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('閉じたセル 提案: 安全 S');
+  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('未開封のセル 提案: 安全 S');
   await board(3, 1, 1);
   await page.getByRole('gridcell').nth(1).focus(); await page.keyboard.press('1');
   await page.keyboard.press('ArrowLeft'); await page.keyboard.press('f');

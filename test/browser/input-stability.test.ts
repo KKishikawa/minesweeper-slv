@@ -66,7 +66,7 @@ it.each([1920, 1280, 960].flatMap(width => [9, 30].map(columns => ({ width, colu
       }
       const frames = await page.evaluate(() => (window as any).inputProbe.report().events.filter((e: any) => e.type === 'frame'));
       expect(frames.every((e: any) => e.pageHeight === before.page && e.result.height === before.result && e.scrollY === before.scroll)).toBe(true);
-      expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('閉じたセル 提案: 推測 ?');
+      expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('未開封のセル 提案: 推測 ?');
       expect(await page.getByRole('gridcell').first().evaluate(el => el === document.activeElement)).toBe(true);
     } finally { await page.close(); }
   });

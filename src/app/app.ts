@@ -38,7 +38,7 @@ export function mountApp(root: HTMLElement, options: AppOptions = {}): { dispose
           <section class="legend" aria-label="凡例"><h3>表示の見方</h3>
             <p class="legend-items"><span><canvas data-symbol="flag" aria-hidden="true"></canvas> 入力旗</span><span><canvas data-symbol="safe" aria-hidden="true"></canvas> 提案: 安全 S</span></p>
             <p class="legend-items"><span><canvas data-symbol="mine" aria-hidden="true"></canvas> 提案: 地雷 M</span><span><canvas data-symbol="guess" aria-hidden="true"></canvas> 推測候補 ?</span></p>
-            <p class="legend-note">入力旗は確定地雷として残り、閉じたセルに解析の提案を表示します。提案は入力を変更しません。青い枠は操作中のセルです。</p>
+            <p class="legend-note">入力旗は確定地雷として残り、未開封のセルに解析の提案を表示します。提案は入力を変更しません。青い枠は操作中のセルです。</p>
           </section>
         </aside>
       </div>
