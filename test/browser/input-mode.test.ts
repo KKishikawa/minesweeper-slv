@@ -37,12 +37,12 @@ it.each(['mouse', 'touch'] as const)('inputs every palette value through %s and 
     if (method === 'mouse') await pointerMode.check();
     expect(await pointerMode.isChecked()).toBe(true);
     const cell = page.getByRole('gridcell').first();
-    for (const label of ['空き', '旗', '1', '2', '3', '4', '5', '6', '7', '8', '閉じる']) {
+    for (const label of ['空き', '旗', '1', '2', '3', '4', '5', '6', '7', '8', '未開封']) {
       const palette = page.getByRole('button', { name: label, exact: true });
       if (method === 'touch') { await palette.tap(); await cell.tap(); }
       else { await palette.click(); await cell.click(); }
       const value = await page.evaluate(() => (window as any).inspection.state.board.cells[0].value);
-      expect(value).toBe(label === '空き' ? 0 : label === '旗' ? 'flag' : label === '閉じる' ? 'closed' : Number(label));
+      expect(value).toBe(label === '空き' ? 0 : label === '旗' ? 'flag' : label === '未開封' ? 'closed' : Number(label));
     }
     await keyboardMode.check();
     const before = await page.evaluate(() => (window as any).inspection);

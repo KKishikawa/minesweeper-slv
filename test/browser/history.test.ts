@@ -91,7 +91,7 @@ it.each(['history', 'draft'])('synchronizes drafts and errors on same-settings u
   await undo().click(); await settled();
   const values = () => page.locator('.board-settings input').evaluateAll(inputs => inputs.map(input => (input as HTMLInputElement).value));
   expect(await values()).toEqual(['9', '9', '10']);
-  expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('閉じたセル');
+  expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('未開封のセル');
   await page.getByLabel('幅', { exact: true }).fill('0');
   await page.getByRole('button', { name: '盤面を作成', exact: true }).click();
   expect(await page.getByLabel('幅', { exact: true }).getAttribute('aria-invalid')).toBe('true');
@@ -116,7 +116,7 @@ it.each(['history', 'draft'])('synchronizes drafts and errors on same-settings u
 it('undoes reset and disables redo after a new edit', async () => {
   await start(); await create(3, 1, 1); await edit(0, '0');
   await page.getByRole('button', { name: '盤面をリセット', exact: true }).click(); await settled();
-  expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('閉じたセル');
+  expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('未開封のセル');
   await undo().click(); await settled();
   expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('空き');
   expect(await redo().isEnabled()).toBe(true);
@@ -132,7 +132,7 @@ it('recovers from a contradictory flag by undoing it', async () => {
   expect(await page.locator('.result-card').getByRole('status').textContent()).toBe('盤面に矛盾があります');
   await undo().click(); await settled();
   expect(await page.locator('.result-card').getByRole('status').textContent()).toBe('確定した手があります');
-  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('閉じたセル 提案: 安全 S');
+  expect(await page.getByRole('gridcell').nth(1).getAttribute('aria-label')).toContain('未開封のセル 提案: 安全 S');
 });
 
 // Recreating the controls or handling only pointer clicks breaks focus/native activation.
@@ -148,7 +148,7 @@ it('reaches history controls with Tab and activates them with Enter and Space', 
   await tabTo('.undo-button'); await page.keyboard.press('Enter'); await settled();
   expect(await undo().evaluate(el => el === document.activeElement)).toBe(true);
   await page.keyboard.press('Enter'); await settled();
-  expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('閉じたセル');
+  expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('未開封のセル');
   await tabTo('.redo-button'); await page.keyboard.press('Space'); await settled();
   expect(await redo().evaluate(el => el === document.activeElement)).toBe(true);
   expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('空き');

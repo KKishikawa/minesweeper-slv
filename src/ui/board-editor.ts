@@ -30,7 +30,7 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
   const values: CellValue[] = ['closed', 0, 'flag', 1, 2, 3, 4, 5, 6, 7, 8];
   const paletteButtons = values.map(value => {
     const button = document.createElement('button'); button.type = 'button';
-    button.textContent = value === 'closed' ? '閉じる' : value === 'flag' ? '旗' : value === 0 ? '空き' : String(value);
+    button.textContent = value === 'closed' ? '未開封' : value === 'flag' ? '旗' : value === 0 ? '空き' : String(value);
     button.setAttribute('aria-pressed', String(value === tool));
     button.addEventListener('click', () => {
       tool = value;
@@ -42,7 +42,7 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
   function updateHelp() {
     palette.hidden = inputMode === 'keyboard';
     help.textContent = inputMode === 'keyboard'
-      ? 'セルをクリックして選択（値は変わりません）。矢印で移動、0 / Spaceで空き、Fで旗、Deleteで閉じる、1〜8で数字。'
+      ? 'セルをクリックして選択（値は変わりません）。矢印で移動、0 / Spaceで空き、Fで旗、Deleteで未開封に戻す、1〜8で数字。'
       : '入力する値を選んでセルをクリック・タップ。キーボードで入力する場合は「キーボード中心」に切り替えられます。';
   }
   updateHelp();
@@ -74,7 +74,7 @@ export function mountBoardEditor(root: HTMLElement, onEdit: (index: number, valu
     if (ctx) { ctx.setTransform(dpr, 0, 0, dpr, 0, 0); renderBoard(ctx, board, proposal, validation, selected, size); }
     buttons.forEach((button, index) => {
       const cell = board!.cells[index]!;
-      const observed = cell.value === 'closed' ? '閉じたセル' : cell.value === 'flag' ? '入力旗' : cell.value === 0 ? '空き' : `数字${cell.value}`;
+      const observed = cell.value === 'closed' ? '未開封のセル' : cell.value === 'flag' ? '入力旗' : cell.value === 0 ? '空き' : `数字${cell.value}`;
       const suggestion = proposal?.safe.includes(index) ? ' 提案: 安全 S' : proposal?.mines.includes(index) ? ' 提案: 地雷 M' : proposal?.guesses.includes(index) ? ' 提案: 推測 ?' : '';
       const concern = cell.uncertain ? ' 要確認' : validation.status !== 'valid' && validation.cells.includes(index) ? ' 矛盾' : '';
       button.setAttribute('aria-label', `行${Math.floor(index / board!.width) + 1} 列${index % board!.width + 1} ${observed}${suggestion}${concern}`);

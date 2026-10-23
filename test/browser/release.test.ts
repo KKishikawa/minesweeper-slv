@@ -138,6 +138,6 @@ it('supports the main workflow using keyboard navigation only', async () => {
   await tabTo('.reanalyze'); await page.keyboard.press('Enter'); await state(page, '確定した手があります');
   await tabTo('.reset-button'); await page.keyboard.press('Enter'); await state(page, '推測が必要です');
   expect(await page.getByRole('gridcell').count()).toBe(3);
-  expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('閉じたセル');
+  expect(await page.getByRole('gridcell').first().getAttribute('aria-label')).toContain('未開封のセル');
   await page.close();
 });
